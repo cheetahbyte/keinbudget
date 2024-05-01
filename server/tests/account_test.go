@@ -6,6 +6,7 @@ import (
 	"keinbudget/server/src/database"
 	"keinbudget/server/src/dto"
 	"keinbudget/server/src/handlers"
+	"net/http"
 	"net/http/httptest"
 	"testing"
 
@@ -28,5 +29,18 @@ func Test_Create_Account_Handler(t *testing.T) {
 	req := httptest.NewRequest("POST", "/test", bytes.NewBuffer(jsonData))
 
 	app.ServeHTTP(w, req)
-	assert.Equal(t, 200, w.Code)
+	assert.Equal(t, http.StatusCreated, w.Code)
+}
+
+func Test_Get_Accounts(t *testing.T) {
+	app := SetupRouter()
+
+	accountsHandler := handlers.AccountsHandler{DB: database.DB}
+	app.GET("/test", accountsHandler.Get)
+
+	w := httptest.NewRecorder()
+	req := httptest.NewRequest("GET", "/test", nil)
+
+	app.ServeHTTP(w, req)
+	assert.Equal(t, http.StatusOK, w.Code)
 }
