@@ -14,7 +14,11 @@ func main() {
 
 	accountsHandler := handlers.AccountsHandler{DB: database.DB}
 
-	app.POST("/", accountsHandler.Create)
+	accounts := app.Group("/accounts")
+	{
+		accounts.POST("/", accountsHandler.Create)
+		accounts.GET("/", accountsHandler.Get)
+	}
 
 	app.Run(":8080")
 }
