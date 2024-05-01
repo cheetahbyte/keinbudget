@@ -4,17 +4,17 @@ import (
 	"keinbudget/server/src/database"
 	"keinbudget/server/src/handlers"
 
-	"github.com/gofiber/fiber/v2"
+	"github.com/gin-gonic/gin"
 )
 
 func main() {
-	app := fiber.New()
+	app := gin.Default()
 
 	database.SetupDatabase("gorm.db")
 
 	accountsHandler := handlers.AccountsHandler{DB: database.DB}
 
-	app.Post("/", accountsHandler.Create)
+	app.POST("/", accountsHandler.Create)
 
-	app.Listen(":8080")
+	app.Run(":8080")
 }
