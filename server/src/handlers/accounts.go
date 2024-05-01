@@ -4,7 +4,7 @@ import (
 	"keinbudget/server/src/database/models"
 	"keinbudget/server/src/dto"
 
-	"github.com/gofiber/fiber/v2"
+	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
 )
 
@@ -12,17 +12,16 @@ type AccountsHandler struct {
 	DB *gorm.DB
 }
 
-func (handler *AccountsHandler) Create(c *fiber.Ctx) error {
-	data := new(dto.AccountCreate)
-	if err := c.BodyParser(data); err != nil {
-		return c.Status(fiber.StatusUnprocessableEntity).JSON(fiber.Map{"error": "Something went wrong"})
+func (handler *AccountsHandler) Create(c *gin.Context) {
+	var accountData dto.AccountCreate
+	if err := c.ShouldBindJSON(&accountData); err != nil {
+		c.JSON(400, gin.H{"error": err.Error()})
 	}
-
 	account := models.Account{
-		Name: data.Name,
-		Iban: data.Iban,
+		Name: accountData.Name,
+		Iban: accountData.Iban,
 	}
 
 	handler.DB.Create(&account)
-	return c.JSON(account)
+	c.JSON(200, gin.H{"account": account})
 }

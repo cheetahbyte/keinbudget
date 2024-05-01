@@ -2,30 +2,31 @@ package tests
 
 import (
 	"bytes"
+	"encoding/json"
 	"keinbudget/server/src/database"
+	"keinbudget/server/src/dto"
 	"keinbudget/server/src/handlers"
 	"net/http/httptest"
-	"net/url"
 	"testing"
 
-	"github.com/gofiber/fiber/v2"
-	utils "github.com/gofiber/utils"
+	"github.com/stretchr/testify/assert"
 )
 
 func Test_Create_Account_Handler(t *testing.T) {
-	app := fiber.New()
-	database.SetupDatabase(":memory:")
+	app := SetupRouter()
+
 	accountsHandler := handlers.AccountsHandler{DB: database.DB}
-	app.Post("/test", accountsHandler.Create)
+	app.POST("/test", accountsHandler.Create)
 
-	form := url.Values{}
-	form.Add("name", "test.account")
-	form.Add("iban", "test.iban")
+	data := dto.AccountCreate{
+		Name: "test.name",
+		Iban: "test.iban",
+	}
+	jsonData, _ := json.Marshal(data)
 
-	req := httptest.NewRequest("POST", "/test", bytes.NewBufferString(form.Encode()))
-	req.Header.Add("Content-Type", "application/x-www-form-urlencoded")
+	w := httptest.NewRecorder()
+	req := httptest.NewRequest("POST", "/test", bytes.NewBuffer(jsonData))
 
-	resp, err := app.Test(req)
-	utils.AssertEqual(t, nil, err, "app.Test")
-	utils.AssertEqual(t, 200, resp.StatusCode, "Status code")
+	app.ServeHTTP(w, req)
+	assert.Equal(t, 200, w.Code)
 }
