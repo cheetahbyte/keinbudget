@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"keinbudget/server/src/database"
+	"keinbudget/server/src/database/models"
 	"keinbudget/server/src/dto"
 	"keinbudget/server/src/handlers"
 	"net/http"
@@ -43,4 +44,28 @@ func Test_Get_Accounts(t *testing.T) {
 
 	app.ServeHTTP(w, req)
 	assert.Equal(t, http.StatusOK, w.Code)
+}
+
+func Test_Get_Account_By_ID(t *testing.T) {
+	app := SetupRouter()
+
+	helper := TestHelper{DB: database.DB}
+	account := helper.CreateAccount(&dto.AccountCreate{
+		Name: "test.name",
+		Iban: "test.iban",
+	})
+
+	accountsHandler := handlers.AccountsHandler{DB: database.DB}
+	app.GET("/test/:id", accountsHandler.GetById)
+
+	w := httptest.NewRecorder()
+	req := httptest.NewRequest("GET", "/test/"+account.ID.String(), nil)
+	app.ServeHTTP(w, req)
+
+	var createdAccount models.Account
+	json.Unmarshal(w.Body.Bytes(), &createdAccount)
+
+	assert.Equal(t, http.StatusOK, w.Code)
+	assert.Equal(t, account.ID, createdAccount.ID)
+	assert.Equal(t, account.Name, createdAccount.Name)
 }
