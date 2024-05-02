@@ -18,6 +18,18 @@ func main() {
 	{
 		accounts.POST("/", accountsHandler.Create)
 		accounts.GET("/", accountsHandler.Get)
+		accounts.GET("/:id", accountsHandler.GetById)
+		accounts.DELETE("/:id", accountsHandler.Delete)
+	}
+
+	extneralAccountsHandler := handlers.ExternalAccountsHandler{DB: database.DB}
+
+	externalAccounts := app.Group("/external-accounts")
+	{
+		externalAccounts.POST("/", extneralAccountsHandler.Create)
+		externalAccounts.GET("/", extneralAccountsHandler.Get)
+		externalAccounts.GET("/:id", extneralAccountsHandler.GetById)
+		externalAccounts.DELETE("/:id", extneralAccountsHandler.Delete)
 	}
 
 	app.Run(":8080")
