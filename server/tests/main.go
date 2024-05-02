@@ -37,3 +37,12 @@ func (helper *TestHelper) GetAccountById(id uuid.UUID) bool {
 	helper.DB.Where("id = ?", id).First(&account)
 	return account.ID != uuid.Nil
 }
+
+func (helper *TestHelper) CreateExternalAccount(data *dto.ExternalAccountCreate) models.ExternalAccount {
+	externalAccount := models.ExternalAccount{
+		Name: data.Name,
+		Iban: data.Iban,
+	}
+	helper.DB.Create(&externalAccount)
+	return externalAccount
+}
