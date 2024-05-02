@@ -69,3 +69,25 @@ func Test_Get_Account_By_ID(t *testing.T) {
 	assert.Equal(t, account.ID, createdAccount.ID)
 	assert.Equal(t, account.Name, createdAccount.Name)
 }
+
+func Test_Delete_Account_By_ID(t *testing.T) {
+	app := SetupRouter()
+	helper := TestHelper{DB: database.DB}
+	account := helper.CreateAccount(&dto.AccountCreate{
+		Name: "test.name",
+		Iban: "test.iban",
+	})
+
+	accountsHandler := handlers.AccountsHandler{DB: database.DB}
+
+	app.DELETE("/test/:id", accountsHandler.Delete)
+
+	w := httptest.NewRecorder()
+	req := httptest.NewRequest("DELETE", "/test/"+account.ID.String(), nil)
+	app.ServeHTTP(w, req)
+
+	stillExists := helper.GetAccountById(account.ID)
+
+	assert.Equal(t, http.StatusNoContent, w.Code)
+	assert.Equal(t, false, stillExists)
+}

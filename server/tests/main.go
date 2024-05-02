@@ -6,6 +6,7 @@ import (
 	"keinbudget/server/src/dto"
 
 	"github.com/gin-gonic/gin"
+	"github.com/google/uuid"
 	"gorm.io/gorm"
 )
 
@@ -29,4 +30,10 @@ func (helper *TestHelper) CreateAccount(data *dto.AccountCreate) models.Account 
 	}
 	helper.DB.Create(&account)
 	return account
+}
+
+func (helper *TestHelper) GetAccountById(id uuid.UUID) bool {
+	var account models.Account
+	helper.DB.Where("id = ?", id).First(&account)
+	return account.ID != uuid.Nil
 }
