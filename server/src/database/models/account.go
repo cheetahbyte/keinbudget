@@ -21,6 +21,7 @@ type Account struct {
 type ExternalAccount struct {
 	ID        uuid.UUID `json:"id" gorm:"primaryKey"`
 	Name      string    `json:"name"`
+	Iban      string    `json:"iban"`
 	CreatedAt time.Time `json:"created_at"`
 	UpdatedAt time.Time `json:"updated_at"`
 	DeletedAt time.Time `gorm:"index" json:"deleted_at"`

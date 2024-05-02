@@ -22,5 +22,15 @@ func main() {
 		accounts.DELETE("/:id", accountsHandler.Delete)
 	}
 
+	extneralAccountsHandler := handlers.ExternalAccountsHandler{DB: database.DB}
+
+	externalAccounts := app.Group("/external-accounts")
+	{
+		externalAccounts.POST("/", extneralAccountsHandler.Create)
+		externalAccounts.GET("/", extneralAccountsHandler.Get)
+		externalAccounts.GET("/:id", extneralAccountsHandler.GetById)
+		externalAccounts.DELETE("/:id", extneralAccountsHandler.Delete)
+	}
+
 	app.Run(":8080")
 }
