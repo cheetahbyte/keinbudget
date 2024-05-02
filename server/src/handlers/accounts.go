@@ -26,13 +26,34 @@ func (handler *AccountsHandler) Create(c *gin.Context) {
 	}
 
 	handler.DB.Create(&account)
-	c.JSON(http.StatusCreated, gin.H{"account": account})
+	c.JSON(http.StatusCreated, account)
 }
 
 func (handler *AccountsHandler) Get(c *gin.Context) {
 	var accounts []models.Account
 	// dont need to raise an error here as we will just return an empty array
 	handler.DB.Find(&accounts)
-	c.JSON(http.StatusOK, gin.H{"accounts": accounts})
+	c.JSON(http.StatusOK, accounts)
 
+}
+
+func (handler *AccountsHandler) GetById(c *gin.Context) {
+	id := c.Param("id")
+	var account models.Account
+	if err := handler.DB.Where("id = ?", id).First(&account).Error; err != nil {
+		c.JSON(http.StatusNotFound, gin.H{"error": "Account not found"})
+		return
+	}
+	c.JSON(http.StatusOK, account)
+}
+
+func (handler *AccountsHandler) Update(c *gin.Context) {
+	var account models.Account
+	id := c.Param("id")
+	if err := handler.DB.Where("id = ?", id).First(&account).Error; err != nil {
+		c.JSON(http.StatusNotFound, gin.H{"error": "Account not found"})
+		return
+	}
+	// TODO: implement update
+	c.JSON(http.StatusNotImplemented, gin.H{"error": "Not implemented"})
 }

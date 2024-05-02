@@ -18,6 +18,7 @@ func main() {
 	{
 		accounts.POST("/", accountsHandler.Create)
 		accounts.GET("/", accountsHandler.Get)
+		accounts.GET("/:id", accountsHandler.GetById)
 	}
 
 	app.Run(":8080")
