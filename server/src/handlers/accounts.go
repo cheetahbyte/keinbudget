@@ -57,3 +57,14 @@ func (handler *AccountsHandler) Update(c *gin.Context) {
 	// TODO: implement update
 	c.JSON(http.StatusNotImplemented, gin.H{"error": "Not implemented"})
 }
+
+func (handler *AccountsHandler) Delete(c *gin.Context) {
+	var account models.Account
+	id := c.Param("id")
+	if err := handler.DB.Where("id = ?", id).First(&account).Error; err != nil {
+		c.JSON(http.StatusNotFound, gin.H{"error": "Account not found"})
+		return
+	}
+	handler.DB.Delete(&account)
+	c.JSON(http.StatusNoContent, nil)
+}

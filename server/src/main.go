@@ -19,6 +19,7 @@ func main() {
 		accounts.POST("/", accountsHandler.Create)
 		accounts.GET("/", accountsHandler.Get)
 		accounts.GET("/:id", accountsHandler.GetById)
+		accounts.DELETE("/:id", accountsHandler.Delete)
 	}
 
 	app.Run(":8080")
