@@ -12,11 +12,13 @@ origins = [
     "http://localhost:3000"
 ]
 
-app = FastAPI()
+is_production: bool = os.getenv("MODE") == "prod"
+
+app = FastAPI(docs_url=None if is_production else "/docs", redoc_url=None if is_production else "/redoc")
 app.add_middleware(CORSMiddleware, allow_origins=origins, allow_credentials=True, allow_methods=["*"], allow_headers=["*"])
 register_tortoise(app, db_url='sqlite://db.sqlite3', modules={'models': ['database']}, generate_schemas=True)
 
-is_production: bool = os.getenv("MODE") == "prod"
+
 route_prefix: str = "/api" if is_production else ""
 
 
@@ -90,4 +92,5 @@ async def get_account_transactions(account_id: str):
 
 health
 if (is_production):
+    app.mount("/assets", StaticFiles(directory="./static/assets", html=False), name="assets")
     app.mount("/", StaticFiles(directory="./static", html=True), name="webapp")
