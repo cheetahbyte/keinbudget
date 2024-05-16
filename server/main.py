@@ -6,7 +6,8 @@ from database import Account, ExternalAccount, Transaction, _AccountBase
 import decimal
 
 origins = [
-    "http://localhost:5173"
+    "http://localhost:5173",
+    "http://localhost:3000"
 ]
 
 app = FastAPI()
@@ -35,6 +36,10 @@ async def create_transaction(transaction: TransactionCreateDTO):
 async def get_transaction(transaction_id: str):
     transaction = await Transaction.get(id=transaction_id)
     return transaction
+
+@app.get("/external-account")
+async def get_external_accounts():
+    return await ExternalAccount.all();
 
 @app.post("/external_account")
 async def create_external_account(exacc: ExternalAccountCreateDTO ):
