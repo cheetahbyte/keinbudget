@@ -6,6 +6,7 @@ from fastapi.staticfiles import StaticFiles
 from dto import AccountCreateDTO, ExternalAccountCreateDTO, TransactionCreateDTO
 from database import Account, ExternalAccount, Transaction, _AccountBase
 import decimal
+import middleware
 
 origins = [
     "http://localhost:5173",
@@ -21,7 +22,12 @@ register_tortoise(app, db_url='sqlite://db.sqlite3', modules={'models': ['databa
 
 route_prefix: str = "/api" if is_production else ""
 
-
+class SPAStaticFiles(StaticFiles):
+    async def get_response(self, path: str, scope):
+        response = await super().get_response(path, scope)
+        if response.status_code == 404:
+            response = await super().get_response('.', scope)
+        return response
 
 @app.get("/health")
 async def health():
@@ -92,5 +98,6 @@ async def get_account_transactions(account_id: str):
 
 health
 if (is_production):
-    app.mount("/assets", StaticFiles(directory="./static/assets", html=False), name="assets")
-    app.mount("/", StaticFiles(directory="./static", html=True), name="webapp")
+    app.mount("/assets", StaticFiles(directory="./dist/assets", html=False), name="assets")
+    app.mount("/", SPAStaticFiles(directory="./dist", html=True), name="webapp")
+    app.add_middleware(middleware.RewriteMiddleware)
