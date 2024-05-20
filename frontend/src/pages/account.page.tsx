@@ -44,9 +44,9 @@ const AccountPage: Component = () => {
                         <tbody>
                             {transactions()!.map((transaction: any) => (
                                 <tr>
-                                    <td>{transaction.fr_id == params.id ? "(me)": transaction.fr_id}</td>
-                                    <td>{transaction.to_id == params.id ? "(me)": transaction.fr_id}</td>
-                                    <td>{transaction.fr_id == params.id ? transaction.amount * -1: transaction.amount}</td>
+                                    <td>{transaction.fr.id == params.id ? "(me)": transaction.fr.name}</td>
+                                    <td>{transaction.to.id == params.id ? "(me)": transaction.fr.name}</td>
+                                    <td>{transaction.fr.id == params.id ? transaction.amount * -1: transaction.amount}</td>
                                     <td>{new Intl.DateTimeFormat("de-DE").format(new Date(transaction.created_at))}</td>
                                 </tr>
                             ))}
