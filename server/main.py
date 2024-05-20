@@ -7,7 +7,7 @@ from dto import AccountCreateDTO, ExternalAccountCreateDTO, TransactionCreateDTO
 from database import Account, ExternalAccount, Transaction, _AccountBase
 import decimal
 import middleware
-
+import utils
 origins = [
     "http://localhost:5173",
     "http://localhost:3000"
@@ -38,12 +38,14 @@ async def health():
 async def create_transaction(transaction: TransactionCreateDTO):
     fr = await Account.filter(id=transaction.fr).first() or await ExternalAccount.filter(id=transaction.fr).first()
     to = await Account.filter(id=transaction.to).first() or await ExternalAccount.filter(id=transaction.to).first()
-    fr.balance -= decimal.Decimal(transaction.amount)
-    to.balance += decimal.Decimal(transaction.amount)
+    if type(fr) != ExternalAccount:
+        fr.balance -= decimal.Decimal(transaction.amount)
+    if type(to) != ExternalAccount:
+        to.balance += decimal.Decimal(transaction.amount)
     await fr.save()
     await to.save()
-    transaction.fr = fr
-    transaction.to = to
+    transaction.fr = fr.id
+    transaction.to = to.id
     transaction = await Transaction.create(**transaction.model_dump())
     return transaction
 
@@ -54,7 +56,7 @@ async def get_transaction(transaction_id: str):
 
 @app.get(route_prefix+ "/external-account")
 async def get_external_accounts():
-    return await ExternalAccount.all();
+    return await ExternalAccount.all()
 
 @app.post(route_prefix+ "/external_account")
 async def create_external_account(exacc: ExternalAccountCreateDTO ):
@@ -79,7 +81,7 @@ async def get_accounts():
 
 @app.get(route_prefix+ "/account/{account_id}")
 async def get_account(account_id: str):
-    account = await Account.get(id=account_id)
+    account = await utils.fetch_account(account_id)
     return account
 
 @app.delete(route_prefix+ "/account/{account_id}")
@@ -90,10 +92,13 @@ async def delete_account(account_id: str):
 
 @app.get(route_prefix+ "/account/{account_id}/transactions")
 async def get_account_transactions(account_id: str):
-    account = await Account.filter(id=account_id).first()
-    transactions_from = await Transaction.filter(fr=account)
-    transactions_to = await Transaction.filter(to=account)
+    account = await Account.filter(id=account_id).first() or await ExternalAccount.filter(id=account_id).first()
+    transactions_from = await Transaction.filter(fr=account.id)
+    transactions_to = await Transaction.filter(to=account.id)
     transactions = sorted(list(transactions_from) + list(transactions_to), key=lambda x: x.created_at)
+    for t in transactions:
+        t.fr = await utils.fetch_account(t.fr)
+        t.to = await utils.fetch_account(t.to)
     return transactions
 
 health
