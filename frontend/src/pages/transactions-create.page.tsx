@@ -41,7 +41,7 @@ const TransactionsCreatePage: Component = () => {
             <Show when={accounts.error}>Error: {accounts.error.message}</Show>
             <Show when={accounts() && !accounts.loading} fallback={<div>No accounts found</div>}>
                 <datalist id="all-accounts">
-                    {accounts()!.map((account: any) => account.map((acc: Account | ExternalAccount) => <option value={acc.id}>{acc.name} {isAccount(acc) ? "(Account)" : "(External Account"}</option>))}
+                    {accounts()!.map((account: any) => account.map((acc: Account | ExternalAccount) => <option value={acc.id}>{acc.name} {isAccount(acc) ? "(Account)" : "(External Account)"}</option>))}
                 </datalist>
                 <form onSubmit={fn}>
                     <h1>Create Transaction</h1>
