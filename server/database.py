@@ -17,11 +17,10 @@ class Account(_AccountBase):
 class ExternalAccount(_AccountBase):
     pass
 
-
 class Transaction(models.Model):
     id = fields.UUIDField(pk=True)
-    fr = fields.ForeignKeyField('models.Account', related_name='from')
-    to = fields.ForeignKeyField('models.Account', related_name='to')
+    fr = fields.UUIDField(null=False)
+    to = fields.UUIDField(null=False)
     amount = fields.DecimalField(max_digits=55, decimal_places=2)
     description = fields.CharField(max_length=255, null=True)
     currency = fields.CharField(max_length=3, null=True)
