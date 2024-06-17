@@ -1,4 +1,4 @@
-import type { Account, ExternalAccount } from "./types"
+import type { Account, ExternalAccount } from "@/utils/types"
 
 // create string enum for each method type
 enum Method {
