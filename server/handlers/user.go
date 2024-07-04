@@ -29,7 +29,7 @@ type User struct {
 type Session struct {
 	ID        uuid.UUID `db:"id"`
 	UserID    uuid.UUID `db:"user_id"`
-	CreatedAt string    `db:"createdAt"`
+	CreatedAt string    `db:"created_at"`
 }
 
 type UserDataDTO struct {
