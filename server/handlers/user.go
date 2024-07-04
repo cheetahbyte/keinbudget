@@ -23,13 +23,13 @@ type User struct {
 	ID        uuid.UUID `db:"id"`
 	Username  string    `json:"usernane" db:"username"`
 	Password  string    `json:"password" db:"password"`
-	CreatedAt string    `json:"created_at" db:"created_at"`
+	CreatedAt time.Time `json:"created_at" db:"created_at"`
 }
 
 type Session struct {
 	ID        uuid.UUID `db:"id"`
 	UserID    uuid.UUID `db:"user_id"`
-	CreatedAt string    `db:"created_at"`
+	CreatedAt time.Time `db:"created_at"`
 }
 
 type UserDataDTO struct {
