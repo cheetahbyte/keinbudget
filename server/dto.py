@@ -32,3 +32,8 @@ class TransactionCreateDTO(BaseModel):
     model_config: ConfigDict = {
         'arbitrary_types_allowed': True
     }
+
+class UserCreateDTO(BaseModel):
+    name: str
+    email: str
+    password: str

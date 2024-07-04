@@ -1,6 +1,10 @@
 import os
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+import fastapi_oauth2.config
+import fastapi_oauth2.core
+import fastapi_oauth2.middleware
+import social_core.backends.oauth
 from tortoise.contrib.fastapi import register_tortoise
 from fastapi.staticfiles import StaticFiles
 from dto import AccountCreateDTO, ExternalAccountCreateDTO, TransactionCreateDTO
@@ -8,6 +12,10 @@ from database import Account, ExternalAccount, Transaction, _AccountBase
 import decimal
 import middleware
 import utils
+from routes.user import router as user_router
+import fastapi_oauth2
+import social_core.backends
+
 origins = [
     "http://localhost:5173",
     "http://localhost:3000"
@@ -101,7 +109,8 @@ async def get_account_transactions(account_id: str):
         t.to = await utils.fetch_account(t.to)
     return transactions
 
-health
+app.include_router(user_router, prefix=route_prefix + "/users")
+
 if (is_production):
     app.mount("/assets", StaticFiles(directory="./dist/assets", html=False), name="assets")
     app.mount("/", SPAStaticFiles(directory="./dist", html=True), name="webapp")
