@@ -56,7 +56,6 @@ func New(config Config) fiber.Handler {
 		var user handlers.User
 
 		tx := cfg.DB.MustBegin()
-		defer tx.Commit()
 		err = tx.Get(&session, "select * from sessions where id=$1", keks)
 
 		if err != nil {
@@ -70,7 +69,7 @@ func New(config Config) fiber.Handler {
 		}
 
 		err = tx.Get(&user, "select * from users where id=$s", session.UserID)
-
+		tx.Commit()
 		if err != nil {
 			return c.Status(fiber.StatusNotFound).SendString(err.Error())
 		}
