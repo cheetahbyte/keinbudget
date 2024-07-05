@@ -25,6 +25,13 @@ func main() {
 		userGroup.Post("/", userHandler.NewUser)
 		userGroup.Post("/login", userHandler.LoginUser)
 	}
+
+	accountsHandler := handlers.AccountsHandler{DB: database.DB}
+	accountsGroup := app.Group("/accounts")
+	{
+		accountsGroup.Post("/", accountsHandler.NewAccount)
+	}
+
 	app.Get("/", func(c *fiber.Ctx) error {
 		var user handlers.User
 		user, ok := c.Locals("user").(handlers.User)
