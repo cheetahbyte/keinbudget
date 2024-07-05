@@ -12,7 +12,6 @@ var DB *sqlx.DB
 
 func SetupDatabase() {
 	database, err := sqlx.Connect("sqlite3", "test.db")
-	// database.MustExec(schema)
 	if err != nil {
 		log.Fatalln(err)
 	}
