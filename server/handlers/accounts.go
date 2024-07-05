@@ -16,7 +16,7 @@ type AccountsHandler struct {
 type Account struct {
 	ID        uuid.UUID `json:"id" db:"id"`
 	UserID    uuid.UUID `json:"user_id" db:"user_id"`
-	Name      string    `json:"name" db:"account_name"`
+	Name      string    `json:"name" db:"name"`
 	Balance   float32   `json:"balance" db:"balance"`
 	CreatedAt time.Time `json:"created_at" db:"created_at"`
 }
@@ -48,7 +48,7 @@ func (handler *AccountsHandler) NewAccount(c *fiber.Ctx) error {
 	}
 
 	tx := handler.DB.MustBegin()
-	_, err := tx.NamedExec("insert into accounts(id, user_id, name, balance) values(:id, :user_id, :account_name, :balance)", &account)
+	_, err := tx.NamedExec("insert into accounts(id, user_id, name, balance) values(:id, :user_id, :name, :balance)", &account)
 
 	if err != nil {
 		tx.Rollback()
