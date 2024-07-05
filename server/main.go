@@ -32,6 +32,12 @@ func main() {
 		accountsGroup.Post("/", accountsHandler.NewAccount)
 	}
 
+	externalAccountsHandler := handlers.ExternalAccountsHandler{DB: database.DB}
+	externalAccountsGroup := app.Group("/external-accounts")
+	{
+		externalAccountsGroup.Post("/", externalAccountsHandler.NewExternalAccount)
+	}
+
 	app.Get("/", func(c *fiber.Ctx) error {
 		var user handlers.User
 		user, ok := c.Locals("user").(handlers.User)
