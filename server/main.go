@@ -1,8 +1,10 @@
 package main
 
 import (
+	"fmt"
 	"log"
 
+	"github.com/cheetahybte/keinbudget-backend/config"
 	"github.com/cheetahybte/keinbudget-backend/database"
 	"github.com/cheetahybte/keinbudget-backend/handlers"
 	"github.com/cheetahybte/keinbudget-backend/middleware/sessions"
@@ -15,7 +17,12 @@ func main() {
 		DisableStartupMessage: true,
 	})
 
-	database.SetupDatabase()
+	config, err := config.GetConfig()
+	if err != nil {
+		log.Fatalf("Error loading config: %s", err.Error())
+	}
+
+	database.SetupDatabase(config)
 	defer database.DB.Close()
 
 	sessionMiddlewareConfig := sessions.Config{
@@ -50,17 +57,10 @@ func main() {
 	}
 
 	app.Get("/", func(c *fiber.Ctx) error {
-		var user handlers.User
-		user, ok := c.Locals("user").(handlers.User)
-
-		if !ok {
-			return c.Status(fiber.StatusInternalServerError).SendString("failed to retrieve user from session middleware")
-		}
-
-		return c.SendString(user.Username)
+		return c.SendString("hi")
 	})
 
-	if err := app.Listen(":3000"); err != nil {
+	if err := app.Listen(fmt.Sprintf(":%v", config.Port)); err != nil {
 		log.Fatalf("Failed to start server: %v", err)
 	}
 }

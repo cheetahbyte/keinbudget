@@ -3,15 +3,15 @@ package database
 import (
 	"log"
 
-	_ "github.com/mattn/go-sqlite3"
-
+	"github.com/cheetahybte/keinbudget-backend/config"
 	"github.com/jmoiron/sqlx"
+	_ "github.com/mattn/go-sqlite3"
 )
 
 var DB *sqlx.DB
 
-func SetupDatabase() {
-	database, err := sqlx.Connect("sqlite3", "test.db")
+func SetupDatabase(cfg *config.KeinbudgetConfig) {
+	database, err := sqlx.Connect(cfg.DBDriver, cfg.DBString)
 	if err != nil {
 		log.Fatalln(err)
 	}

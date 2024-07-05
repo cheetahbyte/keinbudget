@@ -15,7 +15,7 @@ type Config struct {
 }
 
 var ConfigDefault = Config{
-	ExcludedPaths: []string{"/users/", "/users/login"},
+	ExcludedPaths: []string{"/users/", "/users/login", "/"},
 }
 
 func createConfig(config ...Config) (Config, error) {

@@ -20,4 +20,5 @@ EXPOSE 3000
 COPY database/migrations ./database/migrations
 ENV DB_DRIVER sqlite3
 ENV DB_STRING database.db
+ENV PORT 3000
 ENTRYPOINT [ "./Entrypoint.sh" ]
