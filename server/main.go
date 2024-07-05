@@ -1,6 +1,8 @@
 package main
 
 import (
+	"log"
+
 	"github.com/cheetahybte/keinbudget-backend/database"
 	"github.com/cheetahybte/keinbudget-backend/handlers"
 	"github.com/cheetahybte/keinbudget-backend/middleware/sessions"
@@ -8,7 +10,10 @@ import (
 )
 
 func main() {
-	app := fiber.New()
+	log.Default().Println("Starting application")
+	app := fiber.New(fiber.Config{
+		DisableStartupMessage: true,
+	})
 
 	database.SetupDatabase()
 	defer database.DB.Close()
@@ -55,5 +60,7 @@ func main() {
 		return c.SendString(user.Username)
 	})
 
-	app.Listen(":3000")
+	if err := app.Listen(":3000"); err != nil {
+		log.Fatalf("Failed to start server: %v", err)
+	}
 }
