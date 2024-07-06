@@ -54,3 +54,29 @@ func (handler *ExternalAccountsHandler) NewExternalAccount(c *fiber.Ctx) error {
 
 	return c.JSON(extAccount)
 }
+
+func (handler *ExternalAccountsHandler) DeleteExternalAccount(c *fiber.Ctx) error {
+	user, ok := c.Locals("user").(User)
+
+	if !ok {
+		return c.Status(fiber.StatusInternalServerError).SendString("failed to retrieve user from session middleware")
+	}
+
+	externalAccountID, err := uuid.Parse(c.Params("id", ""))
+	if err != nil {
+		return c.Status(fiber.StatusUnprocessableEntity).SendString("no external account id")
+	}
+
+	tx := handler.DB.MustBegin()
+
+	_, err = tx.Exec("delete from external_accounts where user_id=$1 and id=$2", user.ID, externalAccountID)
+	if err != nil {
+		tx.Rollback()
+		return c.Status(fiber.StatusInternalServerError).SendString(err.Error())
+	}
+
+	tx.Commit()
+
+	return c.SendString("")
+
+}

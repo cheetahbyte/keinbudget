@@ -99,3 +99,29 @@ func (handler *TransactionsHandler) NewTransaction(c *fiber.Ctx) error {
 
 	return c.JSON(transaction)
 }
+
+func (handler *TransactionsHandler) DeleteTransaction(c *fiber.Ctx) error {
+	user, ok := c.Locals("user").(User)
+
+	if !ok {
+		return c.Status(fiber.StatusInternalServerError).SendString("failed to retrieve user from session middleware")
+	}
+
+	transactionID, err := uuid.Parse(c.Params("id", ""))
+	if err != nil {
+		return c.Status(fiber.StatusUnprocessableEntity).SendString("no transaction id")
+	}
+
+	tx := handler.DB.MustBegin()
+
+	_, err = tx.Exec("delete from transactions where user_id=$1 and id=$2", user.ID, transactionID)
+	if err != nil {
+		tx.Rollback()
+		return c.Status(fiber.StatusInternalServerError).SendString(err.Error())
+	}
+
+	tx.Commit()
+
+	return c.SendString("")
+
+}
