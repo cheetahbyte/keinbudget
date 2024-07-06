@@ -56,6 +56,12 @@ func main() {
 		transactionsGroup.Post("/", transactionsHandler.NewTransaction)
 	}
 
+	categoryHandler := handlers.CategoriesHandler{DB: database.DB}
+	categoryGroup := app.Group("/categories")
+	{
+		categoryGroup.Post("/", categoryHandler.NewCategory)
+	}
+
 	app.Get("/", func(c *fiber.Ctx) error {
 		return c.SendString("hi")
 	})

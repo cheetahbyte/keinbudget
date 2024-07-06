@@ -1,7 +1,7 @@
-.PHONY: database-migrate database-up database-down database-status
+.PHONY: database-migrate database-up database-down database-status start
 
 GOOSE_DRIVER ?= sqlite3
-GOOSE_DBSTRING ?= database.db
+GOOSE_DBSTRING ?= test.db
 
 database-migrate:
 	@echo "[DATABASE] Starting migration"
@@ -17,3 +17,6 @@ database-down:
 
 database-status:
 	@GOOSE_DRIVER=${GOOSE_DRIVER} GOOSE_DBSTRING=${GOOSE_DBSTRING} goose -dir database/migrations status
+
+start:
+	@DB_DRIVER=${GOOSE_DRIVER} DB_STRING=${GOOSE_DBSTRING} go run main.go
