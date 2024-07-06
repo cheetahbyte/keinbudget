@@ -61,3 +61,29 @@ func (handler *AccountsHandler) NewAccount(c *fiber.Ctx) error {
 
 	return c.JSON(account)
 }
+
+func (handler *AccountsHandler) DeleteAccount(c *fiber.Ctx) error {
+	user, ok := c.Locals("user").(User)
+
+	if !ok {
+		return c.Status(fiber.StatusInternalServerError).SendString("failed to retrieve user from session middleware")
+	}
+
+	accountID, err := uuid.Parse(c.Params("id", ""))
+	if err != nil {
+		return c.Status(fiber.StatusUnprocessableEntity).SendString("no account id")
+	}
+
+	tx := handler.DB.MustBegin()
+
+	_, err = tx.Exec("delete from accounts where user_id=$1 and id=$2", user.ID, accountID)
+	if err != nil {
+		tx.Rollback()
+		return c.Status(fiber.StatusInternalServerError).SendString(err.Error())
+	}
+
+	tx.Commit()
+
+	return c.SendString("")
+
+}

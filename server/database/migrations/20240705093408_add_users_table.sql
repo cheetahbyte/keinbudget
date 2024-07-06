@@ -2,6 +2,7 @@
 -- +goose StatementBegin
 SELECT 'up SQL query';
 -- +goose StatementEnd
+PRAGMA foreign_keys = ON;
 CREATE TABLE IF NOT EXISTS users(
 	id uuid primary key,
 	username text unique,

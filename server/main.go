@@ -42,24 +42,28 @@ func main() {
 	accountsGroup := app.Group("/accounts")
 	{
 		accountsGroup.Post("/", accountsHandler.NewAccount)
+		accountsGroup.Delete("/:id", accountsHandler.DeleteAccount)
 	}
 
 	externalAccountsHandler := handlers.ExternalAccountsHandler{DB: database.DB}
 	externalAccountsGroup := app.Group("/external-accounts")
 	{
 		externalAccountsGroup.Post("/", externalAccountsHandler.NewExternalAccount)
+		externalAccountsGroup.Delete("/:id", externalAccountsHandler.DeleteExternalAccount)
 	}
 
 	transactionsHandler := handlers.TransactionsHandler{DB: database.DB}
 	transactionsGroup := app.Group("/transactions")
 	{
 		transactionsGroup.Post("/", transactionsHandler.NewTransaction)
+		transactionsGroup.Delete("/:id", transactionsHandler.DeleteTransaction)
 	}
 
 	categoryHandler := handlers.CategoriesHandler{DB: database.DB}
 	categoryGroup := app.Group("/categories")
 	{
 		categoryGroup.Post("/", categoryHandler.NewCategory)
+		categoryGroup.Delete("/:id", categoryHandler.DeleteCategory)
 	}
 
 	app.Get("/", func(c *fiber.Ctx) error {
