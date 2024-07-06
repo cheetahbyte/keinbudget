@@ -15,7 +15,7 @@ type KeinbudgetConfig struct {
 func GetConfig() (*KeinbudgetConfig, error) {
 	portStr := os.Getenv("PORT")
 	if portStr == "" {
-		return nil, fmt.Errorf("PORT environment variable not set")
+		portStr = "3000"
 	}
 
 	port, err := strconv.Atoi(portStr)
