@@ -4,47 +4,49 @@ import (
 	"log"
 	"net/http"
 
+	"github.com/cheetahybte/keinbudget-backend/config"
+	"github.com/cheetahybte/keinbudget-backend/database"
+	"github.com/cheetahybte/keinbudget-backend/handlers"
 	"github.com/cheetahybte/keinbudget-backend/middleware"
+	"github.com/cheetahybte/keinbudget-backend/pkg/auth"
+	. "github.com/cheetahybte/keinbudget-backend/pkg/utils"
+	"github.com/cheetahybte/keinbudget-backend/types"
 	"github.com/gorilla/mux"
 )
 
-func LoggingMiddleware(next http.Handler) http.Handler {
-	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		log.Printf("%s %s%s", r.Method, r.Host, r.RequestURI)
-		next.ServeHTTP(w, r)
-	})
-}
-
-func BetaMiddleware(next http.Handler) http.Handler {
-	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		log.Println("BetaMiddleware")
-		next.ServeHTTP(w, r)
-	})
-}
-
-func AThirdMiddleware(next http.Handler) http.Handler {
-	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		log.Println("AThirdMiddleware")
-		next.ServeHTTP(w, r)
-	})
-}
-
-func homeHandler(w http.ResponseWriter, r *http.Request) {
-	w.Write([]byte("Hello World"))
+func testHandler(w http.ResponseWriter, r *http.Request) {
+	user, ok := r.Context().Value(middleware.UserTypeContextKeyString).(types.User)
+	if !ok {
+		problem := NewProblemDetails(
+			WithStatus(http.StatusInternalServerError),
+			WithDetail("The user provided by the auth middleware was malformed."),
+			WithTitle("User was not found"),
+			WithInstance(r.URL.Path),
+			WithType("https://keinbudget.dev/errors/user-not-found-middleware"),
+		)
+		WriteError(w, &problem)
+		return
+	}
+	WriteJSON(w, 200, types.Map{"ok": user.Username})
 }
 
 func main() {
 	r := mux.NewRouter()
-	r.Use(mux.MiddlewareFunc(middleware.Chain(LoggingMiddleware, BetaMiddleware)))
+	config, _ := config.GetConfig()
+	database.SetupDatabase(config)
+	mhandler := middleware.MiddlewareHandler{DB: database.DB, DecodeJWTFunc: auth.DecodeJWT}
 
 	protected := r.PathPrefix("/").Subrouter()
+	protected.Use(mhandler.AuthMiddleware)
 
-	api := protected.PathPrefix("/api").Subrouter()
-	protected.Use(AThirdMiddleware)
-	api.HandleFunc("/v1", func(w http.ResponseWriter, r *http.Request) {
-		w.Write([]byte("API v1"))
-	}).Methods(http.MethodGet)
+	userHandler := handlers.UserHandler{DB: database.DB}
+	userGroup := r.PathPrefix("/users").Subrouter()
+	{
+		userGroup.HandleFunc("/", userHandler.HandleAddUser).Methods(http.MethodPost)
+		userGroup.HandleFunc("/login", userHandler.HandleLoginUser).Methods(http.MethodPost)
+	}
 
-	r.HandleFunc("/", homeHandler).Methods(http.MethodGet)
+	protected.HandleFunc("/", testHandler)
+
 	log.Fatal(http.ListenAndServe(":8080", r))
 }
