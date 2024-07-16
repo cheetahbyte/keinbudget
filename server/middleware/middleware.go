@@ -3,11 +3,13 @@ package middleware
 import (
 	"net/http"
 
+	"github.com/cheetahybte/keinbudget-backend/pkg/auth"
 	"github.com/jmoiron/sqlx"
 )
 
-type MHandler struct {
-	DB *sqlx.DB
+type MiddlewareHandler struct {
+	DB            *sqlx.DB
+	DecodeJWTFunc func(string) (*auth.JWTClaims, error)
 }
 
 type Middleware func(http.Handler) http.Handler
