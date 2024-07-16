@@ -5,7 +5,32 @@
 
 version: 2
 updates:
-  - package-ecosystem: "" # See documentation for possible values
-    directory: "/" # Location of package manifests
+  # Configuration for Go modules
+  - package-ecosystem: "gomod"
+    directory: "/"
     schedule:
       interval: "daily"
+    assignees:
+      - "cheetahbyte"
+    reviewers:
+      - "cheetahbyte"
+  
+  # Configuration for npm (used by Svelte)
+  - package-ecosystem: "npm"
+    directory: "/"
+    schedule:
+      interval: "daily"
+    assignees:
+      - "cheetahbyte"
+    reviewers:
+      - "cheetahbyte"
+
+  # Configuration for Docker
+  - package-ecosystem: "docker"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    assignees:
+      - "cheetahbyte"
+    reviewers:
+      - "cheetahbyte"
