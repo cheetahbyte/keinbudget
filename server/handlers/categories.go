@@ -1,7 +1,11 @@
 package handlers
 
 import (
-	"github.com/gofiber/fiber/v2"
+	"net/http"
+
+	"github.com/cheetahybte/keinbudget-backend/middleware"
+	"github.com/cheetahybte/keinbudget-backend/pkg/utils"
+	"github.com/cheetahybte/keinbudget-backend/types"
 	"github.com/google/uuid"
 	"github.com/jmoiron/sqlx"
 )
@@ -10,83 +14,57 @@ type CategoriesHandler struct {
 	DB *sqlx.DB
 }
 
-type CategoryDTO struct {
-	Name   string     `json:"name"`
-	Parent *uuid.UUID `json:"parent_id"`
-}
+func (handler *CategoriesHandler) HandleAddCategory(w http.ResponseWriter, r *http.Request) {
+	user, _ := r.Context().Value(middleware.UserTypeContextKeyString).(types.User)
 
-type Category struct {
-	ID     uuid.UUID  `json:"id" db:"id"`
-	UserID uuid.UUID  `json:"user" db:"user_id"`
-	Parent *uuid.UUID `json:"parent" db:"parent_id"`
-	Name   string     `json:"name" db:"name"`
-}
-
-func (handler *CategoriesHandler) NewCategory(c *fiber.Ctx) error {
-	user, ok := c.Locals("user").(User)
-
-	if !ok {
-		return c.Status(fiber.StatusInternalServerError).SendString("failed to retrieve user from session middleware")
+	var data types.CategoryDTO
+	err := utils.ParseJSON(r, &data)
+	if err != nil {
+		problem := utils.NewProblemDetails(
+			utils.WithStatus(http.StatusUnprocessableEntity),
+			utils.WithDetail(err.Error()),
+			utils.WithTitle("Parsing error"),
+			utils.WithInstance(r.URL.Path),
+			utils.WithType("https://keinbudget.dev/errors/parsing-error"),
+		)
+		utils.WriteError(w, &problem)
+		return
 	}
 
-	var data CategoryDTO
-	if err := c.BodyParser(&data); err != nil {
-		return c.Status(fiber.StatusUnprocessableEntity).SendString(err.Error())
-	}
-
-	category := Category{
+	category := types.Category{
 		ID:     uuid.New(),
 		UserID: user.ID,
 		Name:   data.Name,
 	}
 
-	tx := handler.DB.MustBegin()
-
 	if data.Parent != nil {
-		var parent Category
-		err := tx.Get(&parent, "select * from categories where id = $1", data.Parent)
+		var parent types.Category
+		err = handler.DB.Get(&parent, "select * from categories where id = $1 and user_id = $2;", data.Parent)
 		if err != nil {
-			tx.Rollback()
-			return c.Status(404).SendString(err.Error())
+			problem := utils.NewProblemDetails(
+				utils.WithStatus(http.StatusNotFound),
+				utils.WithDetail(err.Error()),
+				utils.WithTitle("Parent category not found"),
+				utils.WithInstance(r.URL.Path),
+				utils.WithType("https://keinbudget.dev/errors/parent-category-not-found"),
+			)
+			utils.WriteError(w, &problem)
+			return
 		}
-		category.Parent = &parent.ID
+		category.Parent = parent.ID
 	}
 
-	_, err := tx.NamedExec("insert into categories(id, user_id, parent_id, name) values(:id, :user_id, :parent_id, :name)", &category)
+	_, err = handler.DB.NamedExec("insert into categories(id, user_id, parent_id, name) values(:id, :user_id, :parent_id, :name)", &category)
 	if err != nil {
-		tx.Rollback()
-		return c.Status(fiber.StatusInternalServerError).SendString(err.Error())
+		problem := utils.NewProblemDetails(
+			utils.WithStatus(http.StatusUnprocessableEntity),
+			utils.WithDetail(err.Error()),
+			utils.WithTitle("SQL Error"),
+			utils.WithInstance(r.URL.Path),
+			utils.WithType("https://keinbudget.dev/errors/sql-error"),
+		)
+		utils.WriteError(w, &problem)
+		return
 	}
-
-	if err = tx.Commit(); err != nil {
-		return c.Status(fiber.StatusInternalServerError).SendString(err.Error())
-	}
-
-	return c.JSON(category)
-}
-
-func (handler *CategoriesHandler) DeleteCategory(c *fiber.Ctx) error {
-	user, ok := c.Locals("user").(User)
-
-	if !ok {
-		return c.Status(fiber.StatusInternalServerError).SendString("failed to retrieve user from session middleware")
-	}
-
-	categoryID, err := uuid.Parse(c.Params("id", ""))
-	if err != nil {
-		return c.Status(fiber.StatusUnprocessableEntity).SendString("no category id")
-	}
-
-	tx := handler.DB.MustBegin()
-
-	_, err = tx.Exec("delete from categories where user_id=$1 and id=$2", user.ID, categoryID)
-	if err != nil {
-		tx.Rollback()
-		return c.Status(fiber.StatusInternalServerError).SendString(err.Error())
-	}
-
-	tx.Commit()
-
-	return c.SendString("")
-
+	utils.WriteJSON(w, 201, category)
 }
