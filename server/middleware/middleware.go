@@ -1,6 +1,14 @@
 package middleware
 
-import "net/http"
+import (
+	"net/http"
+
+	"github.com/jmoiron/sqlx"
+)
+
+type MHandler struct {
+	DB *sqlx.DB
+}
 
 type Middleware func(http.Handler) http.Handler
 
