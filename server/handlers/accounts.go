@@ -1,10 +1,11 @@
 package handlers
 
 import (
-	"math/big"
-	"time"
+	"net/http"
 
-	"github.com/gofiber/fiber/v2"
+	"github.com/cheetahybte/keinbudget-backend/middleware"
+	"github.com/cheetahybte/keinbudget-backend/pkg/utils"
+	"github.com/cheetahybte/keinbudget-backend/types"
 	"github.com/google/uuid"
 	"github.com/jmoiron/sqlx"
 )
@@ -13,77 +14,44 @@ type AccountsHandler struct {
 	DB *sqlx.DB
 }
 
-type Account struct {
-	ID        uuid.UUID `json:"id" db:"id"`
-	UserID    uuid.UUID `json:"user_id" db:"user_id"`
-	Name      string    `json:"name" db:"name"`
-	Balance   float32   `json:"balance" db:"balance"`
-	CreatedAt time.Time `json:"created_at" db:"created_at"`
-}
+func (handler *AccountsHandler) HandleAddAccount(w http.ResponseWriter, r *http.Request) {
+	user, _ := r.Context().Value(middleware.UserTypeContextKeyString).(types.User)
 
-type AccountDataDTO struct {
-	Name    string  `json:"name"`
-	Balance big.Rat `json:"balance"`
-}
-
-func (handler *AccountsHandler) NewAccount(c *fiber.Ctx) error {
-	user, ok := c.Locals("user").(User)
-
-	if !ok {
-		return c.Status(fiber.StatusInternalServerError).SendString("failed to retrieve user from session middleware")
-	}
-
-	var accountData AccountDataDTO
-	if err := c.BodyParser(&accountData); err != nil {
-		return c.Status(fiber.StatusUnprocessableEntity).SendString(err.Error())
-	}
-
-	balance, _ := accountData.Balance.Float32()
-	account := Account{
-		ID:        uuid.New(),
-		UserID:    user.ID,
-		Name:      accountData.Name,
-		Balance:   balance,
-		CreatedAt: time.Now(),
-	}
-
-	tx := handler.DB.MustBegin()
-	_, err := tx.NamedExec("insert into accounts(id, user_id, name, balance) values(:id, :user_id, :name, :balance)", &account)
-
+	var data types.AccountCreateDTO
+	err := utils.ParseJSON(r, &data)
 	if err != nil {
-		tx.Rollback()
-		return c.Status(fiber.StatusInternalServerError).SendString(err.Error())
+		problem := utils.NewProblemDetails(
+			utils.WithStatus(http.StatusUnprocessableEntity),
+			utils.WithDetail(err.Error()),
+			utils.WithTitle("Parsing error"),
+			utils.WithInstance(r.URL.Path),
+			utils.WithType("https://keinbudget.dev/errors/parsing-error"),
+		)
+		utils.WriteError(w, &problem)
+		return
 	}
 
-	if err = tx.Commit(); err != nil {
-		return c.Status(fiber.StatusInternalServerError).SendString(err.Error())
+	balance := data.Balance
+
+	acc := types.Account{
+		ID:      uuid.New(),
+		UserID:  user.ID,
+		Name:    data.Name,
+		Balance: balance,
 	}
 
-	return c.JSON(account)
-}
-
-func (handler *AccountsHandler) DeleteAccount(c *fiber.Ctx) error {
-	user, ok := c.Locals("user").(User)
-
-	if !ok {
-		return c.Status(fiber.StatusInternalServerError).SendString("failed to retrieve user from session middleware")
-	}
-
-	accountID, err := uuid.Parse(c.Params("id", ""))
+	_, err = handler.DB.NamedExec("insert into accounts(id, user_id, name, balance) values(:id, :user_id, :name, :balance)", &acc)
 	if err != nil {
-		return c.Status(fiber.StatusUnprocessableEntity).SendString("no account id")
+		problem := utils.NewProblemDetails(
+			utils.WithStatus(http.StatusUnprocessableEntity),
+			utils.WithDetail(err.Error()),
+			utils.WithTitle("Parsing error"),
+			utils.WithInstance(r.URL.Path),
+			utils.WithType("https://keinbudget.dev/errors/parsing-error"),
+		)
+		utils.WriteError(w, &problem)
+		return
 	}
 
-	tx := handler.DB.MustBegin()
-
-	_, err = tx.Exec("delete from accounts where user_id=$1 and id=$2", user.ID, accountID)
-	if err != nil {
-		tx.Rollback()
-		return c.Status(fiber.StatusInternalServerError).SendString(err.Error())
-	}
-
-	tx.Commit()
-
-	return c.SendString("")
-
+	utils.WriteJSON(w, 201, acc)
 }

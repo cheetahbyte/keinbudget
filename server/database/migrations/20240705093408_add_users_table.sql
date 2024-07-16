@@ -5,8 +5,9 @@ SELECT 'up SQL query';
 PRAGMA foreign_keys = ON;
 CREATE TABLE IF NOT EXISTS users(
 	id uuid primary key,
-	username text unique,
-	password text,
+	username varchar(255) unique,
+	email varchar(255) unique not null,
+	password varchar(255),
 	created_at datetime default current_timestamp
 );
 -- +goose Down

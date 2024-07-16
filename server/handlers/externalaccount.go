@@ -1,9 +1,12 @@
 package handlers
 
 import (
+	"net/http"
 	"time"
 
-	"github.com/gofiber/fiber/v2"
+	"github.com/cheetahybte/keinbudget-backend/middleware"
+	"github.com/cheetahybte/keinbudget-backend/pkg/utils"
+	"github.com/cheetahybte/keinbudget-backend/types"
 	"github.com/google/uuid"
 	"github.com/jmoiron/sqlx"
 )
@@ -12,71 +15,42 @@ type ExternalAccountsHandler struct {
 	DB *sqlx.DB
 }
 
-type ExternalAccount struct {
-	ID        uuid.UUID `json:"id" db:"id"`
-	UserID    uuid.UUID `json:"user_id" db:"user_id"`
-	Name      string    `json:"name" db:"name"`
-	CreatedAt time.Time `json:"created_at" db:"created_at"`
-}
+func (handler *ExternalAccountsHandler) HandleAddExternalAccount(w http.ResponseWriter, r *http.Request) {
+	user, _ := r.Context().Value(middleware.UserTypeContextKeyString).(types.User)
 
-type ExternalAccountDTO struct {
-	Name string `json:"name"`
-}
-
-func (handler *ExternalAccountsHandler) NewExternalAccount(c *fiber.Ctx) error {
-	user, ok := c.Locals("user").(User)
-
-	if !ok {
-		return c.Status(fiber.StatusInternalServerError).SendString("failed to retrieve user from session middleware")
-	}
-
-	var externalAccountData ExternalAccountDTO
-	if err := c.BodyParser(&externalAccountData); err != nil {
-		return c.Status(fiber.StatusUnprocessableEntity).SendString(err.Error())
-	}
-
-	extAccount := ExternalAccount{
-		ID:     uuid.New(),
-		UserID: user.ID,
-		Name:   externalAccountData.Name,
-	}
-
-	tx := handler.DB.MustBegin()
-	_, err := tx.NamedExec("insert into external_accounts(id, user_id, name) values(:id, :user_id, :name)", &extAccount)
+	var data types.ExternalAccountCreateDTO
+	err := utils.ParseJSON(r, &data)
 	if err != nil {
-		tx.Rollback()
-		return c.Status(fiber.StatusInternalServerError).SendString(err.Error())
+		problem := utils.NewProblemDetails(
+			utils.WithStatus(http.StatusUnprocessableEntity),
+			utils.WithDetail(err.Error()),
+			utils.WithTitle("Parsing error"),
+			utils.WithInstance(r.URL.Path),
+			utils.WithType("https://keinbudget.dev/errors/parsing-error"),
+		)
+		utils.WriteError(w, &problem)
+		return
 	}
 
-	if err = tx.Commit(); err != nil {
-		return c.Status(fiber.StatusInternalServerError).SendString(err.Error())
+	externalAccount := types.ExternalAccount{
+		ID:        uuid.New(),
+		UserID:    user.ID,
+		Name:      data.Name,
+		CreatedAt: time.Now(),
 	}
 
-	return c.JSON(extAccount)
-}
-
-func (handler *ExternalAccountsHandler) DeleteExternalAccount(c *fiber.Ctx) error {
-	user, ok := c.Locals("user").(User)
-
-	if !ok {
-		return c.Status(fiber.StatusInternalServerError).SendString("failed to retrieve user from session middleware")
-	}
-
-	externalAccountID, err := uuid.Parse(c.Params("id", ""))
+	_, err = handler.DB.NamedExec("insert into external_accounts(id, user_id, name) values(:id, :user_id, :name)", &externalAccount)
 	if err != nil {
-		return c.Status(fiber.StatusUnprocessableEntity).SendString("no external account id")
+		problem := utils.NewProblemDetails(
+			utils.WithStatus(http.StatusInternalServerError),
+			utils.WithDetail("missing information"),
+			utils.WithTitle("needs work"),
+			utils.WithInstance(r.URL.Path),
+			utils.WithType("https://keinbudget.dev/errors/unknown"),
+		)
+		utils.WriteError(w, &problem)
+		return
 	}
 
-	tx := handler.DB.MustBegin()
-
-	_, err = tx.Exec("delete from external_accounts where user_id=$1 and id=$2", user.ID, externalAccountID)
-	if err != nil {
-		tx.Rollback()
-		return c.Status(fiber.StatusInternalServerError).SendString(err.Error())
-	}
-
-	tx.Commit()
-
-	return c.SendString("")
-
+	utils.WriteJSON(w, 201, externalAccount)
 }

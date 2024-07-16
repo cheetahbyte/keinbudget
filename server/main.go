@@ -1,76 +1,52 @@
 package main
 
 import (
-	"fmt"
 	"log"
+	"net/http"
 
 	"github.com/cheetahybte/keinbudget-backend/config"
 	"github.com/cheetahybte/keinbudget-backend/database"
 	"github.com/cheetahybte/keinbudget-backend/handlers"
-	"github.com/cheetahybte/keinbudget-backend/middleware/sessions"
-	"github.com/gofiber/fiber/v2"
+	"github.com/cheetahybte/keinbudget-backend/middleware"
+	"github.com/cheetahybte/keinbudget-backend/pkg/auth"
+	. "github.com/cheetahybte/keinbudget-backend/pkg/utils"
+	"github.com/cheetahybte/keinbudget-backend/types"
+	"github.com/gorilla/mux"
 )
 
+func testHandler(w http.ResponseWriter, r *http.Request) {
+	user, ok := r.Context().Value(middleware.UserTypeContextKeyString).(types.User)
+	if !ok {
+		problem := NewProblemDetails(
+			WithStatus(http.StatusInternalServerError),
+			WithDetail("The user provided by the auth middleware was malformed."),
+			WithTitle("User was not found"),
+			WithInstance(r.URL.Path),
+			WithType("https://keinbudget.dev/errors/user-not-found-middleware"),
+		)
+		WriteError(w, &problem)
+		return
+	}
+	WriteJSON(w, 200, types.Map{"ok": user.Username})
+}
+
 func main() {
-	log.Default().Println("Starting application")
-	app := fiber.New(fiber.Config{
-		DisableStartupMessage: true,
-	})
-
-	config, err := config.GetConfig()
-	if err != nil {
-		log.Fatalf("Error loading config: %s", err.Error())
-	}
-
+	r := mux.NewRouter()
+	config, _ := config.GetConfig()
 	database.SetupDatabase(config)
-	defer database.DB.Close()
+	mhandler := middleware.MiddlewareHandler{DB: database.DB, DecodeJWTFunc: auth.DecodeJWT}
 
-	sessionMiddlewareConfig := sessions.Config{
-		DB: database.DB,
-	}
-
-	app.Use(sessions.New(sessionMiddlewareConfig))
+	protected := r.PathPrefix("/").Subrouter()
+	protected.Use(mhandler.AuthMiddleware)
 
 	userHandler := handlers.UserHandler{DB: database.DB}
-	userGroup := app.Group("/users")
+	userGroup := r.PathPrefix("/users").Subrouter()
 	{
-		userGroup.Post("/", userHandler.NewUser)
-		userGroup.Post("/login", userHandler.LoginUser)
+		userGroup.HandleFunc("/", userHandler.HandleAddUser).Methods(http.MethodPost)
+		userGroup.HandleFunc("/login", userHandler.HandleLoginUser).Methods(http.MethodPost)
 	}
 
-	accountsHandler := handlers.AccountsHandler{DB: database.DB}
-	accountsGroup := app.Group("/accounts")
-	{
-		accountsGroup.Post("/", accountsHandler.NewAccount)
-		accountsGroup.Delete("/:id", accountsHandler.DeleteAccount)
-	}
+	protected.HandleFunc("/", testHandler)
 
-	externalAccountsHandler := handlers.ExternalAccountsHandler{DB: database.DB}
-	externalAccountsGroup := app.Group("/external-accounts")
-	{
-		externalAccountsGroup.Post("/", externalAccountsHandler.NewExternalAccount)
-		externalAccountsGroup.Delete("/:id", externalAccountsHandler.DeleteExternalAccount)
-	}
-
-	transactionsHandler := handlers.TransactionsHandler{DB: database.DB}
-	transactionsGroup := app.Group("/transactions")
-	{
-		transactionsGroup.Post("/", transactionsHandler.NewTransaction)
-		transactionsGroup.Delete("/:id", transactionsHandler.DeleteTransaction)
-	}
-
-	categoryHandler := handlers.CategoriesHandler{DB: database.DB}
-	categoryGroup := app.Group("/categories")
-	{
-		categoryGroup.Post("/", categoryHandler.NewCategory)
-		categoryGroup.Delete("/:id", categoryHandler.DeleteCategory)
-	}
-
-	app.Get("/", func(c *fiber.Ctx) error {
-		return c.SendString("hi")
-	})
-
-	if err := app.Listen(fmt.Sprintf(":%v", config.Port)); err != nil {
-		log.Fatalf("Failed to start server: %v", err)
-	}
+	log.Fatal(http.ListenAndServe(":8080", r))
 }

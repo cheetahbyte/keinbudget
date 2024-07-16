@@ -2,10 +2,12 @@ package handlers
 
 import (
 	"fmt"
-	"math/big"
+	"net/http"
 	"time"
 
-	"github.com/gofiber/fiber/v2"
+	"github.com/cheetahybte/keinbudget-backend/middleware"
+	"github.com/cheetahybte/keinbudget-backend/pkg/utils"
+	"github.com/cheetahybte/keinbudget-backend/types"
 	"github.com/google/uuid"
 	"github.com/jmoiron/sqlx"
 )
@@ -14,64 +16,50 @@ type TransactionsHandler struct {
 	DB *sqlx.DB
 }
 
-type Transaction struct {
-	ID        uuid.UUID `json:"id" db:"id"`
-	From      uuid.UUID `json:"from" db:"from"`
-	To        uuid.UUID `json:"to" db:"to"`
-	Balance   float32   `json:"balance" db:"balance"`
-	Message   string    `json:"message" db:"message"`
-	UserID    uuid.UUID `json:"user_id" db:"user_id"`
-	CreatedAt time.Time `json:"created_at" db:"created_at"`
-}
+func (handler *TransactionsHandler) HandleAddTransaction(w http.ResponseWriter, r *http.Request) {
+	user, _ := r.Context().Value(middleware.UserTypeContextKeyString).(types.User)
 
-type TransactionDTO struct {
-	From    uuid.UUID `json:"from"`
-	To      uuid.UUID `json:"to"`
-	Message string    `json:"message"`
-	Balance big.Rat   `json:"balance"`
-}
-
-func (handler *TransactionsHandler) NewTransaction(c *fiber.Ctx) error {
-	user, ok := c.Locals("user").(User)
-
-	if !ok {
-		return c.Status(fiber.StatusInternalServerError).SendString("failed to retrieve user from session middleware")
-	}
-
-	var transactionData TransactionDTO
-	if err := c.BodyParser(&transactionData); err != nil {
-		return c.Status(fiber.StatusUnprocessableEntity).SendString(err.Error())
+	var transactionData types.TransactionCreateDTO
+	err := utils.ParseJSON(r, &transactionData)
+	if err != nil {
+		problem := utils.NewProblemDetails(
+			utils.WithStatus(http.StatusUnprocessableEntity),
+			utils.WithDetail(err.Error()),
+			utils.WithTitle("Parsing error"),
+			utils.WithInstance(r.URL.Path),
+			utils.WithType("https://keinbudget.dev/errors/parsing-error"),
+		)
+		utils.WriteError(w, &problem)
+		return
 	}
 
 	balance, _ := transactionData.Balance.Float32()
-
-	transaction := Transaction{
+	transaction := types.Transaction{
 		ID:        uuid.New(),
-		UserID:    user.ID,
 		From:      transactionData.From,
 		To:        transactionData.To,
-		Message:   transactionData.Message,
 		Balance:   balance,
+		Message:   transactionData.Message,
+		UserID:    user.ID,
 		CreatedAt: time.Now(),
 	}
-
 	tx := handler.DB.MustBegin()
 	// get both accounts
-	var acc Account
-	var extAcc ExternalAccount
+	var acc types.Account
+	var extAcc types.ExternalAccount
 
 	query := "select * from %s where user_id= $1 and id in ($2, $3);"
 
-	err := tx.Get(&acc, fmt.Sprintf(query, "accounts"), user.ID, transaction.From, transaction.To)
+	err = tx.Get(&acc, fmt.Sprintf(query, "accounts"), user.ID, transaction.From, transaction.To)
 	if err != nil {
 		tx.Rollback()
-		return c.Status(fiber.StatusNotFound).SendString(err.Error())
+		return
 	}
 
 	err = tx.Get(&extAcc, fmt.Sprintf(query, "external_accounts"), user.ID, transaction.From, transaction.To)
 	if err != nil {
 		tx.Rollback()
-		return c.Status(fiber.StatusNotFound).SendString(err.Error())
+		return
 	}
 
 	if transaction.From == acc.ID {
@@ -83,45 +71,20 @@ func (handler *TransactionsHandler) NewTransaction(c *fiber.Ctx) error {
 	_, err = tx.Exec("update accounts set balance = $1 where id = $2", acc.Balance, acc.ID)
 	if err != nil {
 		tx.Rollback()
-		return c.Status(fiber.StatusInternalServerError).SendString(err.Error())
+		return
 	}
 
 	_, err = tx.NamedExec("insert into transactions(id, user_id, fr_acc, to_acc, message, balance) values(:id, :user_id, :from, :to, :message, :balance)", &transaction)
 
 	if err != nil {
 		tx.Rollback()
-		return c.Status(fiber.StatusInternalServerError).SendString(err.Error())
+		return
 	}
 
 	if err = tx.Commit(); err != nil {
-		return c.Status(fiber.StatusInternalServerError).SendString(err.Error())
+		return
 	}
 
-	return c.JSON(transaction)
-}
-
-func (handler *TransactionsHandler) DeleteTransaction(c *fiber.Ctx) error {
-	user, ok := c.Locals("user").(User)
-
-	if !ok {
-		return c.Status(fiber.StatusInternalServerError).SendString("failed to retrieve user from session middleware")
-	}
-
-	transactionID, err := uuid.Parse(c.Params("id", ""))
-	if err != nil {
-		return c.Status(fiber.StatusUnprocessableEntity).SendString("no transaction id")
-	}
-
-	tx := handler.DB.MustBegin()
-
-	_, err = tx.Exec("delete from transactions where user_id=$1 and id=$2", user.ID, transactionID)
-	if err != nil {
-		tx.Rollback()
-		return c.Status(fiber.StatusInternalServerError).SendString(err.Error())
-	}
-
-	tx.Commit()
-
-	return c.SendString("")
+	utils.WriteJSON(w, 201, transaction)
 
 }

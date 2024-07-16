@@ -18,5 +18,9 @@ database-down:
 database-status:
 	@GOOSE_DRIVER=${GOOSE_DRIVER} GOOSE_DBSTRING=${GOOSE_DBSTRING} goose -dir database/migrations status
 
+
+database-create-migration:
+	goose -dir database/migrations create ${MIGRATION_NAME} sql
+
 start:
 	@DB_DRIVER=${GOOSE_DRIVER} DB_STRING=${GOOSE_DBSTRING} go run main.go
