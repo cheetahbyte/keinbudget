@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"log"
 	"net/http"
 
@@ -48,5 +49,5 @@ func main() {
 
 	protected.HandleFunc("/", testHandler)
 
-	log.Fatal(http.ListenAndServe(":8080", r))
+	log.Fatal(http.ListenAndServe(fmt.Sprintf("%s:%v", config.Addr, config.Port), r))
 }
