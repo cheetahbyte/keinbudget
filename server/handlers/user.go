@@ -4,6 +4,7 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/cheetahybte/keinbudget-backend/middleware"
 	"github.com/cheetahybte/keinbudget-backend/pkg/auth"
 	. "github.com/cheetahybte/keinbudget-backend/pkg/utils"
 	"github.com/cheetahybte/keinbudget-backend/types"
@@ -55,7 +56,7 @@ func (handler *UserHandler) HandleAddUser(w http.ResponseWriter, r *http.Request
 	if err != nil {
 		problem := NewProblemDetails(
 			WithStatus(http.StatusInternalServerError),
-			WithDetail("missing information"),
+			WithDetail(err.Error()),
 			WithTitle("needs work"),
 			WithInstance(r.URL.Path),
 			WithType("https://keinbudget.dev/errors/unknown"),
@@ -134,4 +135,21 @@ func (handler *UserHandler) HandleLoginUser(w http.ResponseWriter, r *http.Reque
 	}
 	http.SetCookie(w, cookie)
 	WriteJSON(w, 200, types.Map{"ok": 1})
+}
+
+func (handler *UserHandler) HandleGetOwnUser(w http.ResponseWriter, r *http.Request) {
+	user, ok := r.Context().Value(middleware.UserTypeContextKeyString).(types.User)
+	if !ok {
+		problem := NewProblemDetails(
+			WithStatus(http.StatusInternalServerError),
+			WithDetail("The user provided by the auth middleware was malformed."),
+			WithTitle("User was not found"),
+			WithInstance(r.URL.Path),
+			WithType("https://keinbudget.dev/errors/user-not-found-middleware"),
+		)
+		WriteError(w, &problem)
+		return
+	}
+
+	WriteJSON(w, 200, user)
 }

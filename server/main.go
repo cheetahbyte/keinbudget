@@ -12,6 +12,7 @@ import (
 	"github.com/cheetahybte/keinbudget-backend/pkg/auth"
 	. "github.com/cheetahybte/keinbudget-backend/pkg/utils"
 	"github.com/cheetahybte/keinbudget-backend/types"
+	gorillaHandlers "github.com/gorilla/handlers"
 	"github.com/gorilla/mux"
 )
 
@@ -28,26 +29,34 @@ func testHandler(w http.ResponseWriter, r *http.Request) {
 		WriteError(w, &problem)
 		return
 	}
-	WriteJSON(w, 200, types.Map{"ok": user.Username})
+	WriteJSON(w, 200, user)
 }
 
 func main() {
 	r := mux.NewRouter()
 	config, _ := config.GetConfig()
 	database.SetupDatabase(config)
-	mhandler := middleware.MiddlewareHandler{DB: database.DB, DecodeJWTFunc: auth.DecodeJWT}
-
+	mhandler := middleware.MiddlewareHandler{DB: database.DB, DecodeJWTFunc: auth.DecodeJWT, Config: config}
 	protected := r.PathPrefix("/").Subrouter()
 	protected.Use(mhandler.AuthMiddleware)
 
 	userHandler := handlers.UserHandler{DB: database.DB}
+	protectedUserGroup := protected.PathPrefix("/users").Subrouter()
+	protectedUserGroup.Use(mhandler.AuthMiddleware)
 	userGroup := r.PathPrefix("/users").Subrouter()
 	{
 		userGroup.HandleFunc("/", userHandler.HandleAddUser).Methods(http.MethodPost)
+		protectedUserGroup.HandleFunc("/me", userHandler.HandleGetOwnUser).Methods(http.MethodGet)
 		userGroup.HandleFunc("/login", userHandler.HandleLoginUser).Methods(http.MethodPost)
 	}
 
 	protected.HandleFunc("/", testHandler)
 
-	log.Fatal(http.ListenAndServe(fmt.Sprintf("%s:%v", config.Addr, config.Port), r))
+	allowedOrigins := gorillaHandlers.AllowedOrigins(config.Cors.Origins)
+	allowedMethods := gorillaHandlers.AllowedMethods(config.Cors.Methods)
+	allowedHeaders := gorillaHandlers.AllowedHeaders(config.Cors.Headers)
+	allowCredentials := gorillaHandlers.AllowCredentials()
+	cors := gorillaHandlers.CORS(allowedOrigins, allowedHeaders, allowedMethods, allowCredentials)
+
+	log.Fatal(http.ListenAndServe(fmt.Sprintf("%s:%v", config.Addr, config.Port), cors(r)))
 }

@@ -3,11 +3,13 @@ package middleware
 import (
 	"net/http"
 
+	"github.com/cheetahybte/keinbudget-backend/config"
 	"github.com/cheetahybte/keinbudget-backend/pkg/auth"
 	"github.com/jmoiron/sqlx"
 )
 
 type MiddlewareHandler struct {
+	Config        *config.KeinbudgetConfig
 	DB            *sqlx.DB
 	DecodeJWTFunc func(string) (*auth.JWTClaims, error)
 }

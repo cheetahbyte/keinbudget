@@ -22,5 +22,5 @@ database-status:
 database-create-migration:
 	goose -dir database/migrations create ${MIGRATION_NAME} sql
 
-start:
+start: database-migrate
 	@DB_DRIVER=${GOOSE_DRIVER} DB_STRING=${GOOSE_DBSTRING} go run main.go

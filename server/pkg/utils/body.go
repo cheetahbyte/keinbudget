@@ -36,6 +36,8 @@ func ParseJSON(r *http.Request, payload any) error {
 
 func WriteJSON(w http.ResponseWriter, status int, payload interface{}) error {
 	w.Header().Add("Content-Type", "application/json")
-	w.WriteHeader(status)
+	if status != 200 {
+		w.WriteHeader(status)
+	}
 	return json.NewEncoder(w).Encode(payload)
 }

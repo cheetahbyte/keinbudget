@@ -2,13 +2,13 @@ package middleware
 
 import (
 	"context"
+	"fmt"
 	"net/http"
 	"strings"
 	"time"
 
 	"github.com/cheetahybte/keinbudget-backend/pkg/utils"
 	"github.com/cheetahybte/keinbudget-backend/types"
-	"github.com/google/uuid"
 )
 
 type contextKey string
@@ -46,25 +46,23 @@ func (handler *MiddlewareHandler) AuthMiddleware(next http.Handler) http.Handler
 			utils.WriteError(w, &problem)
 			return
 		}
-
 		if token.ExpiresAt.Unix() < time.Now().Unix() {
 			problem := utils.NewProblemDetails(
 				utils.WithStatus(http.StatusUnauthorized),
-				utils.WithDetail("The token submitted to the server is invalid"),
-				utils.WithTitle("Invalid token"),
+				utils.WithDetail("The token submitted to the server is expired"),
+				utils.WithTitle("Expired token"),
 				utils.WithInstance(r.URL.Path),
-				utils.WithType("https://keinbudget.dev/errors/invalid-token"),
+				utils.WithType("https://keinbudget.dev/errors/expired-token"),
 			)
 			utils.WriteError(w, &problem)
 			return
 		}
-
 		var user types.User
-		err = handler.DB.Get(&user, "select id, username, email, created_at from users where id = $1", uuid.New())
+		err = handler.DB.Get(&user, "select id, username, email, created_at from users where id = $1", token.Subject)
 		if err != nil {
 			problem := utils.NewProblemDetails(
 				utils.WithStatus(http.StatusNotFound),
-				utils.WithDetail("The user mentioned in token is not found"),
+				utils.WithDetail(fmt.Sprintf("The user mentioned in token is not found: %s", err.Error())),
 				utils.WithTitle("User not found"),
 				utils.WithInstance(r.URL.Path),
 				utils.WithType("https://keinbudget.dev/errors/user-not-found"),
