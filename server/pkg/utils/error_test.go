@@ -6,8 +6,8 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"github.com/cheetahybte/keinbudget-backend/pkg/utils"
-	"github.com/cheetahybte/keinbudget-backend/types"
+	"github.com/cheetahybte/keinbudget/pkg/utils"
+	"github.com/cheetahybte/keinbudget/types"
 )
 
 func TestWriteProblem(t *testing.T) {

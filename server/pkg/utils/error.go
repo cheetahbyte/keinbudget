@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"net/http"
 
-	"github.com/cheetahybte/keinbudget-backend/types"
+	"github.com/cheetahybte/keinbudget/types"
 )
 
 func WriteError(w http.ResponseWriter, problem *types.ProblemDetails) {

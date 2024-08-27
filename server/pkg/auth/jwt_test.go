@@ -4,8 +4,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/cheetahybte/keinbudget-backend/pkg/auth"
-	"github.com/cheetahybte/keinbudget-backend/types"
+	"github.com/cheetahybte/keinbudget/pkg/auth"
+	"github.com/cheetahybte/keinbudget/types"
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"

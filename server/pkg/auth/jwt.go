@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/cheetahybte/keinbudget-backend/types"
+	"github.com/cheetahybte/keinbudget/types"
 	"github.com/golang-jwt/jwt/v5"
 )
 

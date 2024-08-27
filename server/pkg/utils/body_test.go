@@ -7,7 +7,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/cheetahybte/keinbudget-backend/pkg/utils"
+	"github.com/cheetahybte/keinbudget/pkg/utils"
 )
 
 type SamplePayload struct {

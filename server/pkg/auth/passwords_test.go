@@ -3,7 +3,7 @@ package auth_test
 import (
 	"testing"
 
-	"github.com/cheetahybte/keinbudget-backend/pkg/auth"
+	"github.com/cheetahybte/keinbudget/pkg/auth"
 	"golang.org/x/crypto/bcrypt"
 )
 
