@@ -40,7 +40,7 @@ func (r *UserRepository) CreateUser(email, password, name string) (*types.User, 
 		Password:  hash,
 		CreatedAt: time.Now(),
 	}
-	_, err = r.db.NamedExec("insert into users(id, email, name, password) values(:id, :email, :name, :password)", &user)
+	_, err = r.db.NamedExec("insert into users(id, email, username, password) values(:id, :email, :username, :password)", &user)
 
 	if err != nil {
 		return nil, err

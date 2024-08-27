@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"net/http"
+	"time"
 
 	"github.com/cheetahybte/keinbudget/repositories"
 	"github.com/cheetahybte/keinbudget/types"
@@ -20,143 +21,38 @@ func (handler *UserHandler) HandleAddUser(ctx echo.Context) error {
 		return ctx.String(http.StatusBadRequest, "bad request")
 	}
 
-	return ctx.JSON(200, data)
+	user, err := handler.UserRepository.CreateUser(data.Email, data.Password, data.Username)
+
+	if err != nil {
+		return err
+	}
+
+	return ctx.JSON(200, user)
 }
 
-// func (handler *UserHandler) HandleAddUser(w http.ResponseWriter, r *http.Request) {
-// 	var userData types.UserDataDTO
+func (handler *UserHandler) HandleLoginUser(ctx echo.Context) error {
+	var data types.UserLoginDTO
 
-// 	err := ParseJSON(r, &userData)
-// 	if err != nil {
-// 		problem := NewProblemDetails(
-// 			WithStatus(http.StatusBadRequest),
-// 			WithDetail(err.Error()),
-// 			WithTitle("Parsing error"),
-// 			WithInstance(r.URL.Path),
-// 			WithType("https://keinbudget.dev/errors/parsing-error"),
-// 		)
-// 		WriteError(w, &problem)
-// 		return
-// 	}
+	err := ctx.Bind(&data)
+	if err != nil {
+		return ctx.String(http.StatusUnprocessableEntity, "bad request")
+	}
 
-// 	hashedPassword, err := auth.HashPassword(userData.Password)
-// 	if err != nil {
-// 		problem := NewProblemDetails(
-// 			WithStatus(http.StatusInternalServerError),
-// 			WithDetail("error during password encryption"),
-// 			WithTitle("something went wrong during the encryption of the password."),
-// 			WithInstance(r.URL.Path),
-// 			WithType("https://keinbudget.dev/errors/password-encryption-error"),
-// 		)
-// 		WriteError(w, &problem)
-// 		return
-// 	}
+	token, err := handler.UserRepository.Login(data.Email, data.Password)
 
-// 	user := types.User{
-// 		ID:       uuid.New(),
-// 		Username: userData.Username,
-// 		Email:    userData.Email,
-// 		Password: hashedPassword,
-// 	}
+	if err != nil {
+		return err
+	}
 
-// 	_, err = handler.DB.NamedExec("insert into users (id, email, username, password) values(:id, :email, :username, :password);", &user)
-// 	if err != nil {
-// 		problem := NewProblemDetails(
-// 			WithStatus(http.StatusInternalServerError),
-// 			WithDetail(err.Error()),
-// 			WithTitle("needs work"),
-// 			WithInstance(r.URL.Path),
-// 			WithType("https://keinbudget.dev/errors/unknown"),
-// 		)
-// 		WriteError(w, &problem)
-// 		return
-// 	}
-// 	WriteJSON(w, 201, types.Map{
-// 		"message": "test",
-// 	})
-// }
+	cookie := new(http.Cookie)
+	cookie.Path = "/"
+	cookie.Expires = time.Now().Add(time.Hour * 72)
+	cookie.HttpOnly = true
+	cookie.Value = token
+	cookie.Name = "getrich"
 
-// func (handler *UserHandler) HandleLoginUser(w http.ResponseWriter, r *http.Request) {
-// 	var userLoginData types.UserLoginDTO
+	ctx.SetCookie(cookie)
+	ctx.Response().Header().Add("X-JWT", token)
 
-// 	err := ParseJSON(r, &userLoginData)
-// 	if err != nil {
-// 		problem := NewProblemDetails(
-// 			WithStatus(http.StatusUnprocessableEntity),
-// 			WithDetail(err.Error()),
-// 			WithTitle("Parsing error"),
-// 			WithInstance(r.URL.Path),
-// 			WithType("https://keinbudget.dev/errors/parsing-error-error"),
-// 		)
-// 		WriteError(w, &problem)
-// 		return
-// 	}
-
-// 	var user types.User
-
-// 	err = handler.DB.Get(&user, "select * from users where email = $1", userLoginData.Email)
-// 	if err != nil {
-// 		problem := NewProblemDetails(
-// 			WithStatus(http.StatusNotFound),
-// 			WithDetail(err.Error()),
-// 			WithTitle("User not found"),
-// 			WithInstance(r.URL.Path),
-// 			WithType("https://keinbudget.dev/errors/user-not-found-error"),
-// 		)
-// 		WriteError(w, &problem)
-// 		return
-// 	}
-
-// 	if err := auth.CheckPasswords(userLoginData.Password, user.Password); err != nil {
-// 		problem := NewProblemDetails(
-// 			WithStatus(http.StatusUnauthorized),
-// 			WithDetail(err.Error()),
-// 			WithTitle("Invalid Password"),
-// 			WithInstance(r.URL.Path),
-// 			WithType("https://keinbudget.dev/errors/invalid-password-error"),
-// 		)
-// 		WriteError(w, &problem)
-// 		return
-// 	}
-
-// 	token, err := auth.MakeJWT(user)
-// 	if err != nil {
-// 		problem := NewProblemDetails(
-// 			WithStatus(http.StatusInternalServerError),
-// 			WithDetail(err.Error()),
-// 			WithTitle("Error during Token Creation"),
-// 			WithInstance(r.URL.Path),
-// 			WithType("https://keinbudget.dev/errors/token-error"),
-// 		)
-// 		WriteError(w, &problem)
-// 		return
-// 	}
-
-// 	w.Header().Add("X-JWT", token)
-// 	cookie := &http.Cookie{
-// 		Name:     "auth",
-// 		Value:    token,
-// 		Expires:  time.Now().Add(time.Hour * 24),
-// 		Path:     "/",
-// 		HttpOnly: true,
-// 	}
-// 	http.SetCookie(w, cookie)
-// 	WriteJSON(w, 200, types.Map{"ok": 1})
-// }
-
-// func (handler *UserHandler) HandleGetOwnUser(w http.ResponseWriter, r *http.Request) {
-// 	user, ok := r.Context().Value(middleware.UserTypeContextKeyString).(types.User)
-// 	if !ok {
-// 		problem := NewProblemDetails(
-// 			WithStatus(http.StatusInternalServerError),
-// 			WithDetail("The user provided by the auth middleware was malformed."),
-// 			WithTitle("User was not found"),
-// 			WithInstance(r.URL.Path),
-// 			WithType("https://keinbudget.dev/errors/user-not-found-middleware"),
-// 		)
-// 		WriteError(w, &problem)
-// 		return
-// 	}
-
-// 	WriteJSON(w, 200, user)
-// }
+	return ctx.JSON(200, map[string]int{"ok": 1})
+}
