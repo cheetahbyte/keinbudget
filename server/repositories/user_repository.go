@@ -17,17 +17,19 @@ type CustomJWTClaims struct {
 }
 
 type UserRepository struct {
-	db *sqlx.DB
+	db                   *sqlx.DB
+	HashPasswordFunction func(password string) (string, error)
 }
 
 func NewUserRepository(db *sqlx.DB) *UserRepository {
 	return &UserRepository{
-		db: db,
+		db:                   db,
+		HashPasswordFunction: auth.HashPassword,
 	}
 }
 
 func (r *UserRepository) CreateUser(email, password, name string) (*types.User, error) {
-	hash, err := auth.HashPassword(password)
+	hash, err := r.HashPasswordFunction(password)
 
 	if err != nil {
 		return nil, err
@@ -50,14 +52,14 @@ func (r *UserRepository) CreateUser(email, password, name string) (*types.User, 
 }
 
 func (r *UserRepository) GetUserById(id uuid.UUID) (*types.User, error) {
-	var user *types.User
-	err := r.db.Get(user, "select * from users where id = $1", id)
+	var user types.User
+	err := r.db.Get(&user, "select * from users where id = $1", id)
 
 	if err != nil {
 		return nil, err
 	}
 
-	return user, nil
+	return &user, nil
 }
 
 func (r *UserRepository) GetUserByEmail(email string) (*types.User, error) {
