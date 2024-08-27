@@ -3,7 +3,7 @@ module github.com/cheetahybte/keinbudget
 go 1.22.4
 
 require (
-	github.com/go-playground/validator/v10 v10.22.0
+	github.com/DATA-DOG/go-sqlmock v1.5.2
 	github.com/golang-jwt/jwt/v5 v5.2.1
 	github.com/google/uuid v1.6.0
 	github.com/jmoiron/sqlx v1.4.0
@@ -11,7 +11,7 @@ require (
 	github.com/mattn/go-sqlite3 v1.14.22
 	github.com/pressly/goose v2.7.0+incompatible
 	github.com/stretchr/testify v1.9.0
-	golang.org/x/crypto v0.25.0
+	golang.org/x/crypto v0.26.0
 )
 
 require (
