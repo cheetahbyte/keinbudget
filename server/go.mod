@@ -11,7 +11,7 @@ require (
 	github.com/mattn/go-sqlite3 v1.14.22
 	github.com/pressly/goose v2.7.0+incompatible
 	github.com/stretchr/testify v1.9.0
-	golang.org/x/crypto v0.25.0
+	golang.org/x/crypto v0.26.0
 )
 
 require (
