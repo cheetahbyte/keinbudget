@@ -3,7 +3,7 @@ package database
 import (
 	"log"
 
-	"github.com/cheetahybte/keinbudget-backend/config"
+	"github.com/cheetahybte/keinbudget/config"
 	"github.com/jmoiron/sqlx"
 	_ "github.com/mattn/go-sqlite3"
 	"github.com/pressly/goose"

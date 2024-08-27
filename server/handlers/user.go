@@ -4,134 +4,55 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/cheetahybte/keinbudget-backend/pkg/auth"
-	. "github.com/cheetahybte/keinbudget-backend/pkg/utils"
-	"github.com/cheetahybte/keinbudget-backend/types"
-	"github.com/google/uuid"
-	"github.com/jmoiron/sqlx"
+	"github.com/cheetahybte/keinbudget/repositories"
+	"github.com/cheetahybte/keinbudget/types"
+	"github.com/labstack/echo/v4"
 )
 
 type UserHandler struct {
-	DB *sqlx.DB
+	UserRepository *repositories.UserRepository
 }
 
-func (handler *UserHandler) HandleAddUser(w http.ResponseWriter, r *http.Request) {
-	var userData types.UserDataDTO
+func (handler *UserHandler) HandleAddUser(ctx echo.Context) error {
+	var data types.UserDataDTO
 
-	err := ParseJSON(r, &userData)
+	err := ctx.Bind(&data)
 	if err != nil {
-		problem := NewProblemDetails(
-			WithStatus(http.StatusBadRequest),
-			WithDetail(err.Error()),
-			WithTitle("Parsing error"),
-			WithInstance(r.URL.Path),
-			WithType("https://keinbudget.dev/errors/parsing-error"),
-		)
-		WriteError(w, &problem)
-		return
+		return ctx.String(http.StatusBadRequest, "bad request")
 	}
 
-	hashedPassword, err := auth.HashPassword(userData.Password)
+	user, err := handler.UserRepository.CreateUser(data.Email, data.Password, data.Username)
+
 	if err != nil {
-		problem := NewProblemDetails(
-			WithStatus(http.StatusInternalServerError),
-			WithDetail("error during password encryption"),
-			WithTitle("something went wrong during the encryption of the password."),
-			WithInstance(r.URL.Path),
-			WithType("https://keinbudget.dev/errors/password-encryption-error"),
-		)
-		WriteError(w, &problem)
-		return
+		return err
 	}
 
-	user := types.User{
-		ID:       uuid.New(),
-		Username: userData.Username,
-		Email:    userData.Email,
-		Password: hashedPassword,
-	}
-
-	_, err = handler.DB.NamedExec("insert into users (id, email, username, password) values(:id, :email, :username, :password);", &user)
-	if err != nil {
-		problem := NewProblemDetails(
-			WithStatus(http.StatusInternalServerError),
-			WithDetail("missing information"),
-			WithTitle("needs work"),
-			WithInstance(r.URL.Path),
-			WithType("https://keinbudget.dev/errors/unknown"),
-		)
-		WriteError(w, &problem)
-		return
-	}
-	WriteJSON(w, 201, types.Map{
-		"message": "test",
-	})
+	return ctx.JSON(200, user)
 }
 
-func (handler *UserHandler) HandleLoginUser(w http.ResponseWriter, r *http.Request) {
-	var userLoginData types.UserLoginDTO
+func (handler *UserHandler) HandleLoginUser(ctx echo.Context) error {
+	var data types.UserLoginDTO
 
-	err := ParseJSON(r, &userLoginData)
+	err := ctx.Bind(&data)
 	if err != nil {
-		problem := NewProblemDetails(
-			WithStatus(http.StatusUnprocessableEntity),
-			WithDetail(err.Error()),
-			WithTitle("Parsing error"),
-			WithInstance(r.URL.Path),
-			WithType("https://keinbudget.dev/errors/parsing-error-error"),
-		)
-		WriteError(w, &problem)
-		return
+		return ctx.String(http.StatusUnprocessableEntity, "bad request")
 	}
 
-	var user types.User
+	token, err := handler.UserRepository.Login(data.Email, data.Password)
 
-	err = handler.DB.Get(&user, "select * from users where email = $1", userLoginData.Email)
 	if err != nil {
-		problem := NewProblemDetails(
-			WithStatus(http.StatusNotFound),
-			WithDetail(err.Error()),
-			WithTitle("User not found"),
-			WithInstance(r.URL.Path),
-			WithType("https://keinbudget.dev/errors/user-not-found-error"),
-		)
-		WriteError(w, &problem)
-		return
+		return err
 	}
 
-	if err := auth.CheckPasswords(userLoginData.Password, user.Password); err != nil {
-		problem := NewProblemDetails(
-			WithStatus(http.StatusUnauthorized),
-			WithDetail(err.Error()),
-			WithTitle("Invalid Password"),
-			WithInstance(r.URL.Path),
-			WithType("https://keinbudget.dev/errors/invalid-password-error"),
-		)
-		WriteError(w, &problem)
-		return
-	}
+	cookie := new(http.Cookie)
+	cookie.Path = "/"
+	cookie.Expires = time.Now().Add(time.Hour * 72)
+	cookie.HttpOnly = true
+	cookie.Value = token
+	cookie.Name = "getrich"
 
-	token, err := auth.MakeJWT(user)
-	if err != nil {
-		problem := NewProblemDetails(
-			WithStatus(http.StatusInternalServerError),
-			WithDetail(err.Error()),
-			WithTitle("Error during Token Creation"),
-			WithInstance(r.URL.Path),
-			WithType("https://keinbudget.dev/errors/token-error"),
-		)
-		WriteError(w, &problem)
-		return
-	}
+	ctx.SetCookie(cookie)
+	ctx.Response().Header().Add("X-JWT", token)
 
-	w.Header().Add("X-JWT", token)
-	cookie := &http.Cookie{
-		Name:     "auth",
-		Value:    token,
-		Expires:  time.Now().Add(time.Hour * 24),
-		Path:     "/",
-		HttpOnly: true,
-	}
-	http.SetCookie(w, cookie)
-	WriteJSON(w, 200, types.Map{"ok": 1})
+	return ctx.JSON(200, map[string]int{"ok": 1})
 }
