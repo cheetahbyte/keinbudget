@@ -10,10 +10,10 @@ migrate:
 database-status:
 	@GOOSE_DRIVER=${GOOSE_DRIVER} GOOSE_DBSTRING=${GOOSE_DBSTRING} goose -dir database/migrations status
 
-start: database-migrate
+start:
 	@DB_DRIVER=${GOOSE_DRIVER} DB_STRING=${GOOSE_DBSTRING} go run cmd/main.go
 
-build:
+build: test
 	@CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -ldflags="-s -w" -o bin/app cmd/main.go
 
 test:
