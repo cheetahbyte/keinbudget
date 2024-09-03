@@ -11,7 +11,7 @@
             "mode": "auto",
             "program": "${fileDirname}",
             "env": {
-                "GOOSE_DRIVER": "sqlite3",
+                "GOOSE_DRIVER": "sqlite",
                 "GOOSE_DBSTRING": "test.db"
             }
         }

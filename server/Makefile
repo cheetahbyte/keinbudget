@@ -1,6 +1,6 @@
 .PHONY: database-migrate database-up database-down database-status start
 
-GOOSE_DRIVER ?= sqlite3
+GOOSE_DRIVER ?= sqlite
 GOOSE_DBSTRING ?= test.db
 
 migrate:
