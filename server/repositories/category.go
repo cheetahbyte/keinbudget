@@ -47,4 +47,14 @@ func (r *CategoryRepository) CreateCategoryWithParent(user uuid.UUID, parent uui
 	return category, nil
 }
 
-func (r *)
+func (r *CategoryRepository) GetCategory(catId uuid.UUID) (*types.Category, error) {
+	var category types.Category
+
+	err := r.db.Get(&category, "select * from categories where id = ?", catId)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return &category, nil
+}

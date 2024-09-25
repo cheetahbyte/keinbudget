@@ -17,4 +17,8 @@ build: test
 	@CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -ldflags="-s -w" -o bin/app cmd/main.go
 
 test:
-	go test ./...
+	@go test ./...
+
+cover:
+	@go test -v -coverprofile cover.out ./...
+	go tool cover -html cover.out -o cover.html

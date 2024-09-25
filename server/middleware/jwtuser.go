@@ -21,7 +21,6 @@ func JWTUserMiddleware(userRepo *repositories.UserRepository) echo.MiddlewareFun
 		return func(c echo.Context) error {
 			rawUser := c.Get("user").(*jwt.Token)
 			claims := rawUser.Claims.(*repositories.CustomJWTClaims)
-
 			user, err := userRepo.GetUserByEmail(claims.Email)
 			if err != nil {
 				return err
