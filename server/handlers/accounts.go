@@ -22,7 +22,7 @@ func (h *AccountsHandler) HandleAddAccount(ctx echo.Context) error {
 
 	err := ctx.Bind(&data)
 	if err != nil {
-		return ctx.String(http.StatusBadRequest, "bad request")
+		return ctx.String(http.StatusUnprocessableEntity, "cannot process entity")
 	}
 
 	acc, err := h.AccountRepository.CreateAccount(user.ID, data.Name, data.Balance)
