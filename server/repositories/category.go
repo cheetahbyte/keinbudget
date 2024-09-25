@@ -58,3 +58,20 @@ func (r *CategoryRepository) GetCategory(catId uuid.UUID) (*types.Category, erro
 
 	return &category, nil
 }
+
+func (r *CategoryRepository) GetCategories(user uuid.UUID) ([]*types.Category, error) {
+	var categories []*types.Category
+	err := r.db.Select(&categories, "select * from categories where user_id = ?", user)
+	if err != nil {
+		return []*types.Category{}, err
+	}
+	return categories, nil
+}
+
+func (r *CategoryRepository) DeleteCategory(user, id uuid.UUID) error {
+	_, err := r.db.Exec("delete from categories where id = ? and user_id = ?", id, user)
+	if err != nil {
+		return err
+	}
+	return nil
+}
