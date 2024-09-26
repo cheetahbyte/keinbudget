@@ -1,0 +1,18 @@
+meta {
+  name: create account
+  type: http
+  seq: 2
+}
+
+post {
+  url: {{base_url}}/accounts/
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "accountName": "test",
+    "startBalance": 19.0
+  }
+}

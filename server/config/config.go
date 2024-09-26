@@ -14,11 +14,12 @@ type CorsConfig struct {
 }
 
 type KeinbudgetConfig struct {
-	Addr     string
-	Port     int
-	DBDriver string
-	DBString string
-	Cors     *CorsConfig
+	Addr              string
+	Port              int
+	DBDriver          string
+	DBString          string
+	Cors              *CorsConfig
+	UnprotectedRoutes []string
 }
 
 func GetConfig() (*KeinbudgetConfig, error) {
@@ -52,11 +53,12 @@ func GetConfig() (*KeinbudgetConfig, error) {
 	}
 
 	config := &KeinbudgetConfig{
-		Addr:     addr,
-		Port:     port,
-		DBDriver: dbDriver,
-		DBString: dbString,
-		Cors:     corsConfig,
+		Addr:              addr,
+		Port:              port,
+		DBDriver:          dbDriver,
+		DBString:          dbString,
+		Cors:              corsConfig,
+		UnprotectedRoutes: []string{"/users/login", "/users/register"},
 	}
 
 	return config, nil

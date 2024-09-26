@@ -1,6 +1,6 @@
 .PHONY: database-migrate database-up database-down database-status start
 
-GOOSE_DRIVER ?= sqlite3
+GOOSE_DRIVER ?= sqlite
 GOOSE_DBSTRING ?= test.db
 
 migrate:
@@ -10,11 +10,15 @@ migrate:
 database-status:
 	@GOOSE_DRIVER=${GOOSE_DRIVER} GOOSE_DBSTRING=${GOOSE_DBSTRING} goose -dir database/migrations status
 
-start: database-migrate
+start:
 	@DB_DRIVER=${GOOSE_DRIVER} DB_STRING=${GOOSE_DBSTRING} go run cmd/main.go
 
-build:
+build: test
 	@CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -ldflags="-s -w" -o bin/app cmd/main.go
 
 test:
-	go test ./...
+	@go test ./...
+
+cover:
+	@go test -v -coverprofile cover.out ./...
+	go tool cover -html cover.out -o cover.html

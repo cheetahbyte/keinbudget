@@ -4,6 +4,7 @@ import (
 	"net/http"
 	"time"
 
+	m "github.com/cheetahybte/keinbudget/middleware"
 	"github.com/cheetahybte/keinbudget/repositories"
 	"github.com/cheetahybte/keinbudget/types"
 	"github.com/labstack/echo/v4"
@@ -45,6 +46,7 @@ func (handler *UserHandler) HandleLoginUser(ctx echo.Context) error {
 	}
 
 	cookie := new(http.Cookie)
+	cookie.Domain = "localhost"
 	cookie.Path = "/"
 	cookie.Expires = time.Now().Add(time.Hour * 72)
 	cookie.HttpOnly = true
@@ -55,4 +57,9 @@ func (handler *UserHandler) HandleLoginUser(ctx echo.Context) error {
 	ctx.Response().Header().Add("X-JWT", token)
 
 	return ctx.JSON(200, map[string]int{"ok": 1})
+}
+
+func (handler *UserHandler) HandleGetMe(ctx echo.Context) error {
+	user := ctx.(*m.CustomContext).User
+	return ctx.JSON(http.StatusOK, user)
 }

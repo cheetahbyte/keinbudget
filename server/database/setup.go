@@ -5,8 +5,8 @@ import (
 
 	"github.com/cheetahybte/keinbudget/config"
 	"github.com/jmoiron/sqlx"
-	_ "github.com/mattn/go-sqlite3"
 	"github.com/pressly/goose"
+	_ "modernc.org/sqlite"
 )
 
 var DB *sqlx.DB
