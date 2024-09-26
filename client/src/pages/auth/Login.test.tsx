@@ -1,9 +1,9 @@
 import { render, fireEvent, waitFor } from '@solidjs/testing-library';
 import { LoginPage } from './Login';
-import Requestor from '../../utils/requestor'; // Mock this
+import Requestor from '../../common/requestor'; // Mock this
 import { vi } from 'vitest';
 
-vi.mock('../../utils/requestor'); // Mock Requestor
+vi.mock('../../common/requestor'); // Mock Requestor
 
 describe("<LoginPage />", () => {
     test("it will render the form correctly", () => {

@@ -1,6 +1,6 @@
 
 import { createSignal } from "solid-js";
-import Requestor from "../../utils/requestor";
+import Requestor from "../../common/requestor";
 
 export const LoginPage = () => {
     const [email, setEmail] = createSignal("");
