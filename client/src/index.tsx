@@ -1,6 +1,8 @@
 import { render } from 'solid-js/web';
-
-import { TodoList } from './todo-list';
+import { Router, Route } from "@solidjs/router";
+import App from './App';
+import { LoginPage } from './pages/auth/Login';
+import { AccountsPage } from './pages/Accounts';
 
 const root = document.getElementById('root');
 
@@ -10,4 +12,9 @@ if (import.meta.env.DEV && !(root instanceof HTMLElement)) {
   );
 }
 
-render(() => <TodoList />, root!);
+render(() => (
+  <Router root={App}>
+    <Route path="/login" component={LoginPage}/>
+    <Route path="/accounts" component={AccountsPage}/>
+  </Router>
+), root!);

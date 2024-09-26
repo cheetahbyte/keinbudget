@@ -8,7 +8,7 @@
     "dev": "vite",
     "build": "vite build",
     "serve": "vite preview",
-    "test": "vitest"
+    "test": "vitest",
   },
   "license": "MIT",
   "devDependencies": {
@@ -23,6 +23,7 @@
     "vitest": "^1.2.1"
   },
   "dependencies": {
+    "@solidjs/router": "^0.14.5",
     "solid-js": "^1.8.11"
   }
 }
