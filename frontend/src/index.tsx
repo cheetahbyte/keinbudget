@@ -7,6 +7,7 @@ import About from "./pages/About";
 import "./index.css";
 import App from "./App";
 import Login from "./pages/auth/Login";
+import Accounts from "./pages/accounts/Account"
 
 const root = document.getElementById("root");
 
@@ -22,6 +23,7 @@ render(
       <Route path="/" component={Home} />
       <Route path="/about" component={About} />
       <Route path="/login" component={Login} />
+      <Route path="/accounts" component={Accounts}/>
     </Router>
   ),
   root!

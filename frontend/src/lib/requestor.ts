@@ -16,7 +16,7 @@ class Requestor {
     slug: string,
     data?: any
   ): Promise<T> {
-    const response = await fetch(`${import.meta.env.VITE_BASE_URL}${slug}`, {
+    const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}${slug}`, {
       method,
       body: JSON.stringify(data),
       headers: {
