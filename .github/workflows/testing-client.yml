@@ -1,0 +1,36 @@
+name: Client Testing
+
+on:
+  push:
+    branches: [ main ]
+    paths:
+      - 'client/**'
+  pull_request:
+    branches: [ main ]
+    paths:
+      - 'client/**'
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+    # Checkout the code from the repository
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    # Set up Node.js environment (this assumes your project uses Node.js, adjust the version if needed)
+    - name: Set up Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: '20' # Adjust this to match your project requirements
+
+    # Install dependencies
+    - name: Install dependencies
+      run: npm install
+      working-directory: ./client # Specify the directory where your `package.json` is located (adjust if necessary)
+
+    # Run tests
+    - name: Run tests
+      run: npm test
+      working-directory: ./client # Ensure the correct directory is specified where tests should run
