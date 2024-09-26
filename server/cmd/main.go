@@ -25,21 +25,27 @@ func main() {
 	accountsRepo := repositories.NewAccountRepository(database.DB)
 
 	// middlewares
+	reset := "\033[0m"
+	green := "\033[32m"
+	yellow := "\033[33m"
+	blue := "\033[34m"
 	e.Use(middleware.Recover())
 	e.Use(middleware.RequestID())
-	e.Use(middleware.Logger())
+	e.Use(middleware.LoggerWithConfig(middleware.LoggerConfig{
+		Format: "⇨ " + yellow + "${remote_ip} " + green + "| " + blue + "${status} " + green + "| ${method} ${uri}" + reset + "\n",
+	}))
 	e.Use(middleware.AddTrailingSlash())
 	e.Use(middleware.CORSWithConfig(middleware.CORSConfig{
-		AllowOrigins:     []string{"localhost:5173"},
+		AllowOrigins:     []string{"http://localhost:5173"},
 		AllowCredentials: true,
 		AllowMethods:     []string{"GET", "POST"},
-		AllowHeaders:     []string{"*"},
+		AllowHeaders:     []string{"Origin", "Content-Type", "Authorization", "X-Requested-With", "Accept"},
 	}))
 
 	protectedGroup := e.Group("")
 	protectedGroup.Use(echojwt.WithConfig(echojwt.Config{
 		SigningKey:  []byte("secret"),
-		TokenLookup: "header:Authorization:Bearer ,cookie:getrich",
+		TokenLookup: "header:Authorization:Bearer,cookie:getrich",
 		NewClaimsFunc: func(c echo.Context) jwt.Claims {
 			return new(repositories.CustomJWTClaims)
 		},
