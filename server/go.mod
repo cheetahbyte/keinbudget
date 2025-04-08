@@ -1,11 +1,11 @@
 module github.com/cheetahybte/keinbudget
 
 go 1.22.4
-toolchain go1.23.7
+toolchain go1.24.1
 
 require (
 	github.com/DATA-DOG/go-sqlmock v1.5.2
-	github.com/golang-jwt/jwt/v5 v5.2.1
+	github.com/golang-jwt/jwt/v5 v5.2.2
 	github.com/google/uuid v1.6.0
 	github.com/jmoiron/sqlx v1.4.0
 	github.com/labstack/echo-jwt/v4 v4.2.0
