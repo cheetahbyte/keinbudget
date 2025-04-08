@@ -5,7 +5,9 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"time"
 
+	"github.com/golang-jwt/jwt/v5"
 	"github.com/gorilla/mux"
 )
 
@@ -26,6 +28,20 @@ type UserSafe struct {
 }
 
 var users []User
+var sampleSecretKey = []byte("secret")
+
+func generateJWT(username string) (string, error) {
+	token := jwt.New(jwt.SigningMethodHS256)
+	claims := token.Claims.(jwt.MapClaims)
+	claims["exp"] = time.Now().Add(1 * time.Minute)
+	claims["user"] = username
+
+	tokenString, err := token.SignedString(sampleSecretKey)
+	if err != nil {
+		return "", err
+	}
+	return tokenString, nil
+}
 
 func HomeHandler(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusOK)
@@ -39,16 +55,21 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
-	for _, user := range users {
+	var user User
+	for _, iuser := range users {
 		if user.Email == data.Email && user.Password == data.Password {
-			w.WriteHeader(http.StatusOK)
-			json.NewEncoder(w).Encode(&UserSafe{ID: user.ID, Email: user.Email})
-			return
+			user = iuser
 		}
 	}
-	fmt.Println(data)
-	w.WriteHeader(http.StatusUnauthorized)
-	w.Write([]byte("Received"))
+
+	w.Header().Set("Content-Type", "application/json")
+
+	token, err := generateJWT(user.Email)
+	if err != nil {
+		fmt.Println(err.Error())
+	}
+
+	json.NewEncoder(w).Encode(map[string]string{"token": token})
 }
 
 func main() {
