@@ -1,0 +1,58 @@
+[
+  {
+    "iterationIndex": 0,
+    "summary": {
+      "totalRequests": 1,
+      "passedRequests": 1,
+      "failedRequests": 0,
+      "skippedRequests": 0,
+      "totalAssertions": 0,
+      "passedAssertions": 0,
+      "failedAssertions": 0,
+      "totalTests": 1,
+      "passedTests": 1,
+      "failedTests": 0
+    },
+    "results": [
+      {
+        "test": {
+          "filename": "auth/login.bru"
+        },
+        "request": {
+          "method": "POST",
+          "url": "http://localhost:3000/login",
+          "headers": {
+            "content-type": "application/json"
+          },
+          "data": "{\n  \"email\": \"leo@test.de\",\n  \"password\": \"password\"\n}"
+        },
+        "response": {
+          "status": 200,
+          "statusText": "OK",
+          "headers": {
+            "content-type": "application/json",
+            "date": "Fri, 18 Apr 2025 17:53:48 GMT",
+            "content-length": "146"
+          },
+          "data": {
+            "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3NDUzNTg4MjgsInVzZXIiOiJsZW9AdGVzdC5kZSJ9.U_f7NLUMxbfriMA0JbE8paAoKMKLtWP26u2-faMal9k"
+          },
+          "responseTime": 63
+        },
+        "error": null,
+        "assertionResults": [],
+        "testResults": [
+          {
+            "description": "should be able to login",
+            "status": "pass",
+            "uid": "fHMiBU2P4FIG1CA8HudGQ"
+          }
+        ],
+        "shouldStopRunnerExecution": false,
+        "runtime": 0.08048382,
+        "suitename": "auth/login",
+        "iterationIndex": 0
+      }
+    ]
+  }
+]

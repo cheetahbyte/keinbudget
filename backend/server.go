@@ -8,6 +8,9 @@ import (
 	"strings"
 	"time"
 
+	"github.com/cheetahbyte/keinbudget/backend/internal/config"
+	"github.com/cheetahbyte/keinbudget/backend/internal/database"
+	"github.com/cheetahbyte/keinbudget/backend/internal/handlers"
 	"github.com/cheetahbyte/keinbudget/backend/pkg/auth"
 	"github.com/gorilla/mux"
 )
@@ -48,7 +51,6 @@ type Account struct {
 	Payments       []Payment `json:"payments"`
 }
 
-var users []User
 var accounts = []Account{
 	{
 		ID:             "abc",
@@ -110,11 +112,27 @@ func AccountsHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func main() {
-	users = append(users, User{ID: 1, Email: "test@test.de", Password: "password", LastName: "Breuer", FirstName: "Leonhard"})
 	r := mux.NewRouter()
+	cfg := config.New()
+
+	ctx := context.Background()
+
+	dbConn, err := database.NewPGXConn(ctx, cfg.DatabaseUrl)
+	if err != nil {
+		log.Fatalf("Failed to establish a database connection: %v", err)
+	}
+	defer dbConn.Close(ctx)
+	err = database.RunMigrations(cfg)
+	if err != nil {
+		log.Fatalf("failed to run migrations: %v", err)
+	}
+
+	queries := database.New(dbConn)
+
 	r.HandleFunc("/", HomeHandler).Methods("GET")
-	r.HandleFunc("/login", LoginHandler).Methods("POST")
+	r.HandleFunc("/login", handlers.LoginHandler(cfg, queries)).Methods("POST")
+	r.HandleFunc("/users/", handlers.CreateUserHandler(cfg, queries)).Methods("POST")
 	r.HandleFunc("/validate", ValidateTokenHandler).Methods("GET")
 	r.Handle("/accounts", AuthMiddleware(http.HandlerFunc(AccountsHandler)))
-	log.Fatal(http.ListenAndServe(":8080", r))
+	log.Fatal(http.ListenAndServe(":3000", r))
 }
