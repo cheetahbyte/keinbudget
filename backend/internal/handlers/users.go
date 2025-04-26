@@ -8,6 +8,7 @@ import (
 	"github.com/cheetahbyte/keinbudget/backend/internal/config"
 	"github.com/cheetahbyte/keinbudget/backend/internal/database"
 	"github.com/cheetahbyte/keinbudget/backend/internal/typings"
+	"github.com/golang-jwt/jwt/v5"
 	"golang.org/x/crypto/bcrypt"
 )
 
@@ -45,6 +46,22 @@ func CreateUserHandler(config *config.Config, db *database.Queries) http.Handler
 			log.Printf("Something went wrong: %v", err)
 		}
 
+		json.NewEncoder(w).Encode(&typings.UserSafe{ID: user.ID, Email: user.Email})
+	}
+}
+
+func GetMeUserHandler(config *config.Config, db *database.Queries) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		ctx := r.Context()
+		userData := ctx.Value("user").(jwt.MapClaims)
+		if userData == nil {
+			http.Error(w, "user data not provided", http.StatusNotAcceptable)
+		}
+		user, err := db.GetUserByEmail(ctx, userData["user"].(string))
+		if err != nil {
+			http.Error(w, "user not found", 404)
+			return
+		}
 		json.NewEncoder(w).Encode(&typings.UserSafe{ID: user.ID, Email: user.Email})
 	}
 }

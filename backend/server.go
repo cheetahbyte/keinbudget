@@ -131,8 +131,10 @@ func main() {
 
 	r.HandleFunc("/", HomeHandler).Methods("GET")
 	r.HandleFunc("/login", handlers.LoginHandler(cfg, queries)).Methods("POST")
-	r.HandleFunc("/users/", handlers.CreateUserHandler(cfg, queries)).Methods("POST")
+	r.HandleFunc("/users", handlers.CreateUserHandler(cfg, queries)).Methods("POST")
 	r.HandleFunc("/validate", ValidateTokenHandler).Methods("GET")
+	r.Handle("/users/me", AuthMiddleware(handlers.GetMeUserHandler(cfg, queries))).Methods("GET")
 	r.Handle("/accounts", AuthMiddleware(http.HandlerFunc(AccountsHandler)))
+	log.Print("Running on 3000")
 	log.Fatal(http.ListenAndServe(":3000", r))
 }
