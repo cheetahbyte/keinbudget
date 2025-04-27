@@ -11,7 +11,9 @@ import (
 	"github.com/cheetahbyte/keinbudget/backend/internal/config"
 	"github.com/cheetahbyte/keinbudget/backend/internal/database"
 	"github.com/cheetahbyte/keinbudget/backend/internal/handlers"
+	"github.com/cheetahbyte/keinbudget/backend/internal/middleware"
 	"github.com/cheetahbyte/keinbudget/backend/pkg/auth"
+	h "github.com/gorilla/handlers"
 	"github.com/gorilla/mux"
 )
 
@@ -117,7 +119,7 @@ func main() {
 
 	ctx := context.Background()
 
-	dbConn, err := database.NewPGXConn(ctx, cfg.DatabaseUrl)
+	dbConn, err := database.NewPGXPool(ctx, cfg.DatabaseUrl)
 	if err != nil {
 		log.Fatalf("Failed to establish a database connection: %v", err)
 	}
@@ -129,12 +131,21 @@ func main() {
 
 	queries := database.New(dbConn)
 
+	r.Use(middleware.LoggingMiddleware)
+
 	r.HandleFunc("/", HomeHandler).Methods("GET")
 	r.HandleFunc("/login", handlers.LoginHandler(cfg, queries)).Methods("POST")
 	r.HandleFunc("/users", handlers.CreateUserHandler(cfg, queries)).Methods("POST")
 	r.HandleFunc("/validate", ValidateTokenHandler).Methods("GET")
-	r.Handle("/users/me", AuthMiddleware(handlers.GetMeUserHandler(cfg, queries))).Methods("GET")
+	r.Handle("/users/me", AuthMiddleware(handlers.GetMeUserHandler(cfg, queries))).Methods("GET", "OPTIONS")
 	r.Handle("/accounts", AuthMiddleware(http.HandlerFunc(AccountsHandler)))
+
+	corsHandler := h.CORS(
+		h.AllowedOrigins([]string{"http://localhost:5173"}),                   // Erlaube nur bestimmte Origin(s)
+		h.AllowedMethods([]string{"GET", "POST", "PUT", "DELETE", "OPTIONS"}), // Erlaube Methoden
+		h.AllowedHeaders([]string{"Content-Type", "Authorization"}),           // Erlaube Header
+	)(r)
+
 	log.Print("Running on 3000")
-	log.Fatal(http.ListenAndServe(":3000", r))
+	log.Fatal(http.ListenAndServe(":3000", corsHandler))
 }

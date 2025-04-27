@@ -11,32 +11,42 @@ import (
 	_ "github.com/golang-migrate/migrate/v4/source/file"
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgconn"
+	"github.com/jackc/pgx/v5/pgxpool"
 	_ "github.com/jackc/pgx/v5/stdlib"
 )
 
-type PGXConn struct {
-	*pgx.Conn
+type PGXPool struct {
+	*pgxpool.Pool
 }
 
-func NewPGXConn(ctx context.Context, connStr string) (*PGXConn, error) {
-	conn, err := pgx.Connect(ctx, connStr)
+func NewPGXPool(ctx context.Context, connStr string) (*PGXPool, error) {
+	pool, err := pgxpool.New(ctx, connStr)
 	if err != nil {
-		log.Printf("Failed to connect to database")
+		log.Printf("Failed to create connection pool")
 		return nil, err
 	}
-	return &PGXConn{Conn: conn}, nil
+	err = pool.Ping(ctx)
+	if err != nil {
+		log.Printf("Failed to ping database")
+		return nil, err
+	}
+	return &PGXPool{Pool: pool}, nil
 }
 
-func (p *PGXConn) Exec(ctx context.Context, sql string, arguments ...interface{}) (pgconn.CommandTag, error) {
-	return p.Conn.Exec(ctx, sql, arguments...)
+func (p *PGXPool) Exec(ctx context.Context, sql string, arguments ...interface{}) (pgconn.CommandTag, error) {
+	return p.Pool.Exec(ctx, sql, arguments...)
 }
 
-func (p *PGXConn) Query(ctx context.Context, sql string, args ...interface{}) (pgx.Rows, error) {
-	return p.Conn.Query(ctx, sql, args...)
+func (p *PGXPool) Query(ctx context.Context, sql string, args ...interface{}) (pgx.Rows, error) {
+	return p.Pool.Query(ctx, sql, args...)
 }
 
-func (p *PGXConn) QueryRow(ctx context.Context, sql string, args ...interface{}) pgx.Row {
-	return p.Conn.QueryRow(ctx, sql, args...)
+func (p *PGXPool) QueryRow(ctx context.Context, sql string, args ...interface{}) pgx.Row {
+	return p.Pool.QueryRow(ctx, sql, args...)
+}
+
+func (p *PGXPool) Close(ctx context.Context) {
+	p.Pool.Close()
 }
 
 func RunMigrations(cfg *config.Config) error {
