@@ -9,6 +9,8 @@ import {
 
 import type { Route } from "./+types/root";
 import "./app.css";
+import { UserServiceProvider } from "./api/services/user.provider";
+import { useToken } from "./api/hooks";
 
 export const links: Route.LinksFunction = () => [
   { rel: "preconnect", href: "https://fonts.googleapis.com" },
@@ -42,7 +44,24 @@ export function Layout({ children }: { children: React.ReactNode }) {
 }
 
 export default function App() {
-  return <Outlet />;
+  const token = useToken()
+
+  if (token === null) {
+    // Noch kein Token geladen
+    return <div>Loading...</div>;
+  }
+
+  if (!token) {
+    // Token existiert nicht
+    return <div>No token found. Please login.</div>;
+  }
+  return (
+    <UserServiceProvider token={token}>
+      <Layout>
+        <Outlet />
+      </Layout>
+    </UserServiceProvider>
+  );
 }
 
 export function ErrorBoundary({ error }: Route.ErrorBoundaryProps) {
