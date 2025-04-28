@@ -11,6 +11,8 @@ import type { Route } from "./+types/root";
 import "./app.css";
 import { UserServiceProvider } from "./api/services/user.provider";
 import { useToken } from "./api/hooks";
+import { AccountsService } from "./api/services/accounts.service";
+import { AccountsServiceProvider } from "./api/services/accounts.provider";
 
 export const links: Route.LinksFunction = () => [
   { rel: "preconnect", href: "https://fonts.googleapis.com" },
@@ -57,9 +59,11 @@ export default function App() {
   }
   return (
     <UserServiceProvider token={token}>
+      <AccountsServiceProvider token={token}>
       <Layout>
         <Outlet />
       </Layout>
+      </AccountsServiceProvider>
     </UserServiceProvider>
   );
 }
