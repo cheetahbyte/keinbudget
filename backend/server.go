@@ -107,12 +107,6 @@ func ValidateTokenHandler(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(map[string]any{"valid": true})
 }
 
-func AccountsHandler(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "application/json")
-
-	json.NewEncoder(w).Encode(accounts)
-}
-
 func main() {
 	r := mux.NewRouter()
 	cfg := config.New()
@@ -138,7 +132,8 @@ func main() {
 	r.HandleFunc("/users", handlers.CreateUserHandler(cfg, queries)).Methods("POST")
 	r.HandleFunc("/validate", ValidateTokenHandler).Methods("GET")
 	r.Handle("/users/me", AuthMiddleware(handlers.GetMeUserHandler(cfg, queries))).Methods("GET", "OPTIONS")
-	r.Handle("/accounts", AuthMiddleware(http.HandlerFunc(AccountsHandler)))
+	r.Handle("/accounts", AuthMiddleware(handlers.GetAccountsHandler(cfg, queries))).Methods("GET")
+	r.Handle("/accounts", AuthMiddleware(handlers.CreateAccountHandler(cfg, queries))).Methods("POST")
 
 	corsHandler := h.CORS(
 		h.AllowedOrigins([]string{"http://localhost:5173"}),                   // Erlaube nur bestimmte Origin(s)

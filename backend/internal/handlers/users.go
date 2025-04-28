@@ -56,6 +56,7 @@ func GetMeUserHandler(config *config.Config, db *database.Queries) http.HandlerF
 		userData := ctx.Value("user").(jwt.MapClaims)
 		if userData == nil {
 			http.Error(w, "user data not provided", http.StatusNotAcceptable)
+			return
 		}
 		user, err := db.GetUserByEmail(ctx, userData["user"].(string))
 		if err != nil {
