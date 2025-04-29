@@ -1,1 +1,0 @@
-migrate create -dir ./internal/database/migrations/  -ext sql -seq $1

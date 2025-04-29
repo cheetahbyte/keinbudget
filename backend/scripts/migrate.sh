@@ -1,1 +1,0 @@
-migrate -path internal/database/migrations/ -database $DATABASE_URL $1 $2 $3
