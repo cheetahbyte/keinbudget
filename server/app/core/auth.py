@@ -5,6 +5,8 @@ from app.core.config import SECRET_KEY, ALGORITHM
 from app.database.models import User
 from uuid import UUID, uuid4
 
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="auth/login")
+
 async def get_current_user(token: str) -> User:
     try:
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
