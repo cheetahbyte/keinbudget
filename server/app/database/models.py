@@ -45,6 +45,7 @@ class Transaction(models.Model):
 class Account(models.Model):
     id = fields.UUIDField(primary_key=True)
     name = fields.CharField(max_length=128)
+    user = fields.ForeignKeyField("models.User", related_name="accounts")
     start_balance = fields.FloatField(max_digits=10, decimal_places=2)
     created_at = fields.DatetimeField(auto_now_add=True)
     class Meta:
