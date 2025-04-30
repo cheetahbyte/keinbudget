@@ -1,4 +1,5 @@
 from tortoise import models, fields
+import pyotp
 
 class User(models.Model):
     id = fields.UUIDField(primary_key=True)
@@ -6,6 +7,8 @@ class User(models.Model):
     first_name = fields.CharField(max_length=25)
     last_name = fields.CharField(max_length=25, null=True)
     password_hash = fields.CharField(max_length=128, null=True)
+    twofa_enabled = fields.BooleanField(default=False)
+    twofa: fields.ReverseRelation["User2fa"]
     created_at = fields.DatetimeField(auto_now_add=True)
     modified_at = fields.DatetimeField(auto_now=True)
 
@@ -19,6 +22,12 @@ class User(models.Model):
     class PydanticMeta:
         computed = ["full_name"]
         exclude = ["password_hash"]
+
+class User2fa(models.Model):
+    id = fields.UUIDField(primary_key=True)
+    user = fields.OneToOneField("models.User", related_name="twofa")
+    created_at = fields.DatetimeField(auto_now_add=True)
+    twofa_secret = fields.CharField(max_length=32, default=pyotp.random_base32())
         
 class Transaction(models.Model):
     id = fields.UUIDField(primary_key=True)
