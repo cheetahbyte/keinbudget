@@ -1,6 +1,9 @@
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Depends
+from fastapi.responses import JSONResponse
 from app.api.v1.endpoints.users.schemas import UserSchema, UserCreateSchema
 from app.api.v1.endpoints.users import crud
+from app.database.models import User
+from app.core.auth import get_current_user
 from uuid import UUID
 
 router = APIRouter()
@@ -8,8 +11,11 @@ router = APIRouter()
 @router.post("/", response_model=UserSchema)
 async def create(user: UserCreateSchema):
     user_obj = await crud.create_user(user.dict())
-    return await UserSchema.from_tortoise_orm(user_obj)
+    return JSONResponse(UserSchema.model_validate(user_obj))
 
+@router.get("/me", response_model=UserSchema)
+async def get_my_user(user: User = Depends(get_current_user)):
+    return user
 
 @router.get("/{user_id}", response_model=UserSchema)
 async def get_user(user_id: UUID):

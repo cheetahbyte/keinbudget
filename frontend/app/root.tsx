@@ -13,6 +13,8 @@ import { UserServiceProvider } from "./api/services/user.provider";
 import { useToken } from "./api/hooks";
 import { AccountsService } from "./api/services/accounts.service";
 import { AccountsServiceProvider } from "./api/services/accounts.provider";
+import { AuthService } from "./api/services/login.service";
+import { AuthServiceProvider } from "./api/services/login.provider";
 
 export const links: Route.LinksFunction = () => [
   { rel: "preconnect", href: "https://fonts.googleapis.com" },
@@ -46,25 +48,25 @@ export function Layout({ children }: { children: React.ReactNode }) {
 }
 
 export default function App() {
-  const token = useToken()
+  const token = useToken();
 
   if (token === null) {
-    // Noch kein Token geladen
-    return <div>Loading...</div>;
+    return <div>No token.</div>;
   }
 
   if (!token) {
-    // Token existiert nicht
     return <div>No token found. Please login.</div>;
   }
   return (
-    <UserServiceProvider token={token}>
-      <AccountsServiceProvider token={token}>
-      <Layout>
-        <Outlet />
-      </Layout>
-      </AccountsServiceProvider>
-    </UserServiceProvider>
+    <AuthServiceProvider token={token}>
+      <UserServiceProvider token={token}>
+        <AccountsServiceProvider token={token}>
+          <Layout>
+            <Outlet />
+          </Layout>
+        </AccountsServiceProvider>
+      </UserServiceProvider>
+    </AuthServiceProvider>
   );
 }
 

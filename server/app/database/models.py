@@ -12,6 +12,8 @@ class User(models.Model):
     created_at = fields.DatetimeField(auto_now_add=True)
     modified_at = fields.DatetimeField(auto_now=True)
 
+
+    @property
     def full_name(self) -> str:
         """
         Returns the full name

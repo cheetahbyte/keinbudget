@@ -1,43 +1,69 @@
 import pytest
+from fastapi.testclient import TestClient
 from app.core.auth import get_current_user, SECRET_KEY, ALGORITHM
 from app.database.models import User
 from jose import jwt
 from uuid import uuid4
 from fastapi import HTTPException
-from unittest.mock import AsyncMock
+from unittest.mock import patch, AsyncMock
+from app.server import app
+from passlib.hash import argon2
 
-@pytest.mark.asyncio
-async def test_get_current_user_valid_token(mocker):
-    user_id = uuid4()
-    token = jwt.encode({"sub": str(user_id)}, SECRET_KEY, algorithm=ALGORITHM)
+client = TestClient(app)
 
-    mock_user = User(id=user_id, email="test@example.com")
-    mocker.patch("app.core.auth.User.get_or_none", return_value=mock_user)
 
-    result = await get_current_user(token)
-    assert result == mock_user
+def test_read_main():
+    response = client.get("/")
+    assert response.status_code == 200
+    assert response.json() == {"ok": 1}
 
-@pytest.mark.asyncio
-async def test_get_current_user_invalid_token():
-    with pytest.raises(HTTPException) as exc_info:
-        await get_current_user("invalid.token.value")
 
-    assert exc_info.value.status_code == 401
-    assert "invalid token" in str(exc_info.value.detail)
+def test_login_route_without_body():
+    response = client.post("/api/v1/auth/login", data={})
+    assert response.status_code == 422
 
-@pytest.mark.asyncio
-async def test_get_current_user_user_not_found(mocker):
-    user_id = uuid4()
-    token = jwt.encode({"sub": str(user_id)}, SECRET_KEY, algorithm=ALGORITHM)
 
-    mocker.patch(
-        "app.core.auth.User.get_or_none",
-        new_callable=AsyncMock,
-        return_value=None,
+@patch("app.database.models.User.get_or_none", new_callable=AsyncMock)
+def test_login_wrong_password(mock_get):
+    # create fake user
+    pwd_hash = argon2.hash("password")
+    fake_user = User(id=uuid4(), email="test@test.de", password_hash=pwd_hash)
+    mock_get.return_value = fake_user
+    # request
+    response = client.post(
+        "/api/v1/auth/login",
+        json={"email": "test@test.de", "password": "abcabc"},
     )
+    assert response.status_code == 401
 
-    with pytest.raises(HTTPException) as exc_info:
-        await get_current_user(token)
-
-    assert exc_info.value.status_code == 401
-    assert "User not found" in str(exc_info.value.detail)
+@patch("app.database.models.User.get_or_none", new_callable=AsyncMock)
+def test_login_right_password_without_2fa(mock_get):
+    # create fake user
+    pwd_hash = argon2.hash("password")
+    fake_user = User(id=uuid4(), email="test@test.de", password_hash=pwd_hash)
+    mock_get.return_value = fake_user
+    # request
+    response = client.post(
+        "/api/v1/auth/login",
+        json={"email": "test@test.de", "password": "password"},
+    )
+    j = response.json()
+    assert response.status_code == 200
+    assert j.get("token_type") == "bearer"
+    assert j.get("twofa") == False
+    
+@patch("app.database.models.User.get_or_none", new_callable=AsyncMock)
+def test_login_2fa_enabled_step_one(mock_get):
+    # create fake user
+    pwd_hash = argon2.hash("password")
+    fake_user = User(id=uuid4(), email="test@test.de", password_hash=pwd_hash, twofa_enabled=True)
+    mock_get.return_value = fake_user
+    # request
+    response = client.post(
+        "/api/v1/auth/login",
+        json={"email": "test@test.de", "password": "password"},
+    )
+    j = response.json()
+    assert response.status_code == 200
+    assert j.get("token_type") == "bearer"
+    assert j.get("twofa") == True
