@@ -11,7 +11,7 @@ router = APIRouter()
 @router.post("/", response_model=UserSchema)
 async def create(user: UserCreateSchema):
     user_obj = await crud.create_user(user.dict())
-    return JSONResponse(UserSchema.model_validate(user_obj))
+    return user_obj
 
 @router.get("/me", response_model=UserSchema)
 async def get_my_user(user: User = Depends(get_current_user)):

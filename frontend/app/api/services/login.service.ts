@@ -6,10 +6,10 @@ interface AuthServiceContextProps {
 }
 type tokenType = "Bearer";
 
-type AuthServiceTokenRequest = {
+export type AuthServiceTokenRequest = {
   token: string;
   tokenType: tokenType;
-  twofa: boolean;
+  intermediate: boolean;
 };
 
 export const AuthServiceContext = createContext<
@@ -30,9 +30,9 @@ export class AuthService {
     this.apiClient = apiClient;
   }
 
-  public async login(email: string, password: string): Promise<AuthServiceTokenRequest> {
+  public async login(username: string, password: string): Promise<AuthServiceTokenRequest> {
     const response = await this.apiClient.post<AuthServiceTokenRequest>("/auth/login", {
-        email,
+        username,
         password,
       })
     return response;

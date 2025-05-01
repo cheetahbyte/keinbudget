@@ -1,6 +1,6 @@
-from pydantic import BaseModel, EmailStr, StringConstraints
+from pydantic import BaseModel, EmailStr, StringConstraints, Field
 from typing import Annotated
 
 class LoginData(BaseModel):
-    email: EmailStr
-    password: Annotated[str, StringConstraints(min_length=6)]
+    email: EmailStr = Field(alias="username")
+    password: Annotated[str, StringConstraints(min_length=6)] 

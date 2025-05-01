@@ -10,7 +10,8 @@ auth_router = APIRouter()
 
 @auth_router.post("/login")
 async def login(login_data: LoginData):
-    token = await crud.login(login_data.model_dump())
+    token = await crud.login(login_data.model_dump(by_alias=False))
+    
     if not token:
         raise HTTPException(status_code=401, detail="Invalid credentials")
     return token

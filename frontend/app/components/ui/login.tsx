@@ -4,7 +4,8 @@ import { useRef, useState } from "react";
 import { Input } from "~/components/lib/input";
 import { Button } from "~/components/lib/button";
 import { CardContent, CardFooter } from "~/components/lib/card";
-import { useAuth } from "~/api/services/login.service";
+import { useAuth, type AuthServiceTokenRequest } from "~/api/services/login.service";
+import { useNavigate } from "react-router";
 
 type LoginCardProps = {
   on2FARequired: (token: string) => void
@@ -17,12 +18,11 @@ export function LoginCardContent(props: LoginCardProps) {
 
   const handleLogin = async () => {
     const result = await authService.login(email, password)
-    if (result.twofa) {
+    if (result.intermediate) {
       props.on2FARequired(result.token)
       return
     }
     authService.storeToken(result.token)
-    
   }
 
   return (
@@ -67,6 +67,7 @@ type TwoFaCardContentProps = {
 export function TwoFACardContent(props: TwoFaCardContentProps) {
   const auth = useAuth()
   const [otp, setOtp] = useState(["", "", "", "", "", ""]);
+  const navigate = useNavigate()
   const inputsRef = useRef<Array<HTMLInputElement | null>>([]);
 
   const handleChange = (index: number, value: string) => {
@@ -80,9 +81,10 @@ export function TwoFACardContent(props: TwoFaCardContentProps) {
     }
   };
 
-  const verifyOtp = () => {
-    const res = auth.getApiClient.post<>("/auth/validate-2fa", {"code": otp}, props.token)
-
+  const verifyOtp = async () => {
+    const res = await auth.getApiClient.post<AuthServiceTokenRequest>(`/auth/validate-2fa?code=${otp.join("")}`, {}, props.token)
+    auth.storeToken(res.token)
+    navigate("/")
   }
 
   const handleKeyDown = (index: number, e: React.KeyboardEvent) => {

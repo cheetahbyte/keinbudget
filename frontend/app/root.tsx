@@ -48,15 +48,9 @@ export function Layout({ children }: { children: React.ReactNode }) {
 }
 
 export default function App() {
-  const token = useToken();
+  const token = useToken() ?? "";
 
-  if (token === null) {
-    return <div>No token.</div>;
-  }
-
-  if (!token) {
-    return <div>No token found. Please login.</div>;
-  }
+  
   return (
     <AuthServiceProvider token={token}>
       <UserServiceProvider token={token}>

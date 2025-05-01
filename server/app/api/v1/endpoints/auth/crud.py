@@ -16,7 +16,7 @@ async def login(data: dict) -> dict | None:
     else:
         token = create_access_token({"sub": str(user.id)})
         
-    return {"token": token, "token_type": "bearer", "twofa": user.twofa_enabled}
+    return {"token": token, "token_type": "bearer", "intermediate": user.twofa_enabled}
    
 async def enable_2fa(user: User):
     await User2fa.create(user = user)
@@ -24,11 +24,11 @@ async def enable_2fa(user: User):
     await user.save()
     return await prepare_token(user)
 
-async def validate_2fa(user: User, code: int) -> str | None:
+async def validate_2fa(user: User, code: int) -> dict | None:
     result = await validate_otp(user, code)
     token = create_access_token({"sub": str(user.id)})
     if result:
-        return token
+        return {"token": token, "token_type": "bearer", "intermediate": False}
     return None
 
 async def disable_2fa(user: User):
