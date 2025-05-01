@@ -5,15 +5,15 @@ meta {
 }
 
 post {
-  url: http://localhost:3000/login
+  url: http://localhost:8000/api/v1/auth/login
   body: json
   auth: inherit
 }
 
 body:json {
   {
-    "email": "leo@test.de",
-    "password": "password"
+    "username": "user@example.com",
+    "password": "string"
   }
 }
 
