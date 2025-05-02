@@ -15,6 +15,7 @@ export function LoginCardContent(props: LoginCardProps) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const authService = useAuth()
+  const navigate = useNavigate()
 
   const handleLogin = async () => {
     const result = await authService.login(email, password)
@@ -23,6 +24,7 @@ export function LoginCardContent(props: LoginCardProps) {
       return
     }
     authService.storeToken(result.token)
+    navigate("/")
   }
 
   return (
