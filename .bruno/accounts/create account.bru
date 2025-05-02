@@ -1,0 +1,22 @@
+meta {
+  name: create account
+  type: http
+  seq: 2
+}
+
+post {
+  url: http://localhost:3000/accounts
+  body: json
+  auth: inherit
+}
+
+headers {
+  Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3NDYyMjQ4NDYsInVzZXIiOiJsZW9AdGVzdC5kZSJ9.VxBfOY6gWQ25y8vQ7DQivo4SC8QGt5IGAKLMcsyRm2s
+}
+
+body:json {
+  {
+    "name": "Sparkasse Aachen",
+    "startBalance": 120
+  }
+}
