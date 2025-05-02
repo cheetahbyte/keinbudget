@@ -37,5 +37,5 @@ jobs:
           path: coverage.xml
       - name: Lint with Ruff
         run: |
-          ruff server --output-format=github
+          ruff check server/
       
