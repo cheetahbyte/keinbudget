@@ -6,6 +6,7 @@ name: Python Testing
   pull_request:
     branches:
       - main
+      - development
 jobs:
   test:
     runs-on: ubuntu-latest
