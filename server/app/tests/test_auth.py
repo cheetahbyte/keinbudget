@@ -32,7 +32,7 @@ def test_login_wrong_password(mock_get):
     # request
     response = client.post(
         "/api/v1/auth/login",
-        json={"email": "test@test.de", "password": "abcabc"},
+        json={"username": "test@test.de", "password": "abcabc"},
     )
     assert response.status_code == 401
 
@@ -45,12 +45,12 @@ def test_login_right_password_without_2fa(mock_get):
     # request
     response = client.post(
         "/api/v1/auth/login",
-        json={"email": "test@test.de", "password": "password"},
+        json={"username": "test@test.de", "password": "password"},
     )
     j = response.json()
     assert response.status_code == 200
     assert j.get("token_type") == "bearer"
-    assert j.get("twofa") == False
+    assert j.get("intermediate") == False
     
 @patch("app.database.models.User.get_or_none", new_callable=AsyncMock)
 def test_login_2fa_enabled_step_one(mock_get):
@@ -61,9 +61,9 @@ def test_login_2fa_enabled_step_one(mock_get):
     # request
     response = client.post(
         "/api/v1/auth/login",
-        json={"email": "test@test.de", "password": "password"},
+        json={"username": "test@test.de", "password": "password"},
     )
     j = response.json()
     assert response.status_code == 200
     assert j.get("token_type") == "bearer"
-    assert j.get("twofa") == True
+    assert j.get("intermediate") == True
