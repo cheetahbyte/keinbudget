@@ -1,5 +1,5 @@
 import pyotp
-from app.database.models import User, User2fa
+from app.database.models import User
 from app.core.config import TOTP_ISSUER
 
 async def get_otp(user: User) -> pyotp.TOTP:

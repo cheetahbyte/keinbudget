@@ -1,5 +1,4 @@
-from app.database.models import Account, Transaction
-from app.api.v1.endpoints.accounts.schemas import AccountResponse
+from app.database.models import Transaction
 from tortoise.contrib.pydantic import pydantic_model_creator
 from pydantic import BaseModel
 from typing import Optional

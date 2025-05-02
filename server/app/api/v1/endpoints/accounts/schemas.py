@@ -1,6 +1,6 @@
 from app.database.models import Account
 from tortoise.contrib.pydantic import pydantic_model_creator
-from pydantic import BaseModel, Field
+from pydantic import BaseModel
 from uuid import UUID
 from datetime import datetime
 

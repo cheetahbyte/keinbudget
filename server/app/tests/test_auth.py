@@ -1,10 +1,6 @@
-import pytest
 from fastapi.testclient import TestClient
-from app.core.auth import get_current_user, SECRET_KEY, ALGORITHM
 from app.database.models import User
-from jose import jwt
 from uuid import uuid4
-from fastapi import HTTPException
 from unittest.mock import patch, AsyncMock
 from app.server import app
 from passlib.hash import argon2
@@ -50,7 +46,7 @@ def test_login_right_password_without_2fa(mock_get):
     j = response.json()
     assert response.status_code == 200
     assert j.get("token_type") == "bearer"
-    assert j.get("intermediate") == False
+    assert not j.get("intermediate")
     
 @patch("app.database.models.User.get_or_none", new_callable=AsyncMock)
 def test_login_2fa_enabled_step_one(mock_get):
@@ -66,4 +62,4 @@ def test_login_2fa_enabled_step_one(mock_get):
     j = response.json()
     assert response.status_code == 200
     assert j.get("token_type") == "bearer"
-    assert j.get("intermediate") == True
+    assert j.get("intermediate")
