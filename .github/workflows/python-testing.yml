@@ -1,4 +1,5 @@
 name: Python Testing
+
 'on':
   push:
     branches:
@@ -13,30 +14,41 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
-      - name: setup
+
+      - name: Install uv
+        run: curl -Ls https://astral.sh/uv/install.sh | bash
+
+      - name: Set up Python
         uses: actions/setup-python@v4
         with:
           python-version: '3.11'
-      - name: Cache pip dependencies
-        uses: actions/cache@v3
+
+      - name: Add uv to PATH
+        run: echo "$HOME/.local/bin" >> $GITHUB_PATH
+
+      - name: Define a cache dependency glob
+        uses: astral-sh/setup-uv@v5
         with:
-          path: ~/.cache/pip
-          key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}-${{ matrix.python-version }}
-          restore-keys: |
-            ${{ runner.os }}-pip-
-      - name: Install dependencies
+          enable-cache: true
+          cache-dependency-glob: "uv.lock"
+
+      - name: Install dependencies with uv (incl. dev)
         run: |
-          python -m pip install --upgrade pip
-          pip install -r server/requirements.txt pytest pytest-cov ruff
+          cd server
+          uv sync --locked --all-extras --dev
+
       - name: Run tests with coverage
         run: |
-          pytest server --cov=server --cov-report=term --cov-report=xml
+          cd server
+          uv run pytest --cov=server --cov-report=term --cov-report=xml
+
       - name: Upload coverage report
         uses: actions/upload-artifact@v4
         with:
           name: coverage-report
-          path: coverage.xml
+          path: server/coverage.xml
+
       - name: Lint with Ruff
         run: |
-          ruff check server/
-      
+          cd server
+          uv run ruff check .
