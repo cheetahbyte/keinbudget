@@ -26,23 +26,21 @@ jobs:
       - name: Add uv to PATH
         run: echo "$HOME/.local/bin" >> $GITHUB_PATH
 
-      - name: Cache uv dependencies
-        uses: actions/cache@v3
+      - name: Define a cache dependency glob
+        uses: astral-sh/setup-uv@v5
         with:
-          path: ~/.cache/uv
-          key: ${{ runner.os }}-uv-${{ hashFiles('server/pyproject.toml') }}
-          restore-keys: |
-            ${{ runner.os }}-uv-
+          enable-cache: true
+          cache-dependency-glob: "uv.lock"
 
       - name: Install dependencies with uv (incl. dev)
         run: |
           cd server
-          uv pip install -e '.[dev]'
+          uv sync --locked --all-extras --dev
 
       - name: Run tests with coverage
         run: |
           cd server
-          pytest --cov=server --cov-report=term --cov-report=xml
+          uv run pytest --cov=server --cov-report=term --cov-report=xml
 
       - name: Upload coverage report
         uses: actions/upload-artifact@v4
@@ -53,4 +51,4 @@ jobs:
       - name: Lint with Ruff
         run: |
           cd server
-          ruff check server/
+          ruff check .
