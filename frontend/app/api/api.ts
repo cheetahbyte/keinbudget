@@ -1,52 +1,50 @@
+import { useToken } from "./hooks";
+
 function toCamelCase(str: string): string {
-  return str.replace(/_([a-z])/g, (_, g) => g.toUpperCase());
+	return str.replace(/_([a-z])/g, (_, g) => g.toUpperCase());
 }
 
-function camelize(obj: any): any {
-  if (Array.isArray(obj)) {
-    return obj.map(camelize);
-  } else if (obj !== null && typeof obj === "object") {
-    return Object.fromEntries(
-      Object.entries(obj).map(([k, v]) => [toCamelCase(k), camelize(v)])
-    );
-  }
-  return obj;
+function camelize(obj: object): object {
+	if (Array.isArray(obj)) {
+		return obj.map(camelize);
+	}
+	if (obj !== null && typeof obj === "object") {
+		return Object.fromEntries(
+			Object.entries(obj).map(([k, v]) => [toCamelCase(k), camelize(v)]),
+		);
+	}
+	return obj;
 }
 
 export class ApiClient {
   private baseUrl: string = import.meta.env.VITE_BACKEND_URL;
-  private token: string;
-
-  constructor(token: string) {
-    this.token = token;
-  }
 
   private async request<T>(
     url: string,
     options: RequestInit,
-    overrideToken?: string
+    token?: string
   ): Promise<T> {
     const headers = new Headers(options.headers);
     headers.set("Accept-Casing", "camel");
-    headers.set("Authorization", `Bearer ${overrideToken ?? this.token}`);
+    headers.set("Authorization", `Bearer ${token}`);
     headers.set("Content-Type", "application/json");
     const response = await fetch(`${this.baseUrl}${url}`, {
       ...options,
       headers,
     });
 
-    if (!response.ok) {
-      throw new Error(`Error: ${response.statusText}`);
-    }
+		if (!response.ok) {
+			throw new Error(`Error: ${response.statusText}`);
+		}
 
-    const data = await response.json();
-    return camelize(data) as Promise<T>;
-  }
+		const data = await response.json();
+		return camelize(data) as Promise<T>;
+	}
 
   public async get<T>(
     endpoint: string,
     queryParams?: Record<string, string>,
-    overrideToken?: string
+    token?: string
   ): Promise<T> {
     const queryString = queryParams
       ? new URLSearchParams(queryParams).toString()
@@ -58,14 +56,14 @@ export class ApiClient {
       {
         method: "GET",
       },
-      overrideToken
+      token
     );
   }
 
   public async post<T>(
     endpoint: string,
     body: any,
-    overrideToken?: string
+    token?: string
   ): Promise<T> {
     return this.request<T>(
       endpoint,
@@ -73,7 +71,7 @@ export class ApiClient {
         method: "POST",
         body: JSON.stringify(body),
       },
-      overrideToken
+      token
     );
   }
 }

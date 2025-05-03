@@ -24,7 +24,7 @@ async def get_transactions(user: User = Depends(get_current_user)):
                 from_account=t.from_account.id if t.from_account else None,
                 amount=t.amount,
                 description=t.description,
-                created_at=t.created_at
+                created_at=t.created_at,
             )
         )
     return result
@@ -34,9 +34,42 @@ async def get_transactions(user: User = Depends(get_current_user)):
 async def create_transaction(
     data: CreateTransactionSchema, user: User = Depends(get_current_user)
 ):
-    return await crud.create_transaction(data.model_dump(), user)
+    transaction = await crud.create_transaction(data.model_dump(), user)
+    return TransactionResponse(
+        id=transaction.id,
+        amount=transaction.amount,
+        description=transaction.description,
+        to_account=transaction.to_account.id if transaction.to_account else None,
+        from_account=transaction.from_account.id if transaction.from_account else None,
+        created_at=transaction.created_at,
+    )
 
+@router.get("/last")
+async def get_last_transactions(user: User = Depends(get_current_user), limit: int = 5):
+    transactions = await crud.get_last_transaction(limit, user)
+    result = []
+    for t in transactions:
+        result.append(
+            TransactionResponse(
+                id=t.id,
+                to_account=t.to_account.id if t.to_account else None,
+                from_account=t.from_account.id if t.from_account else None,
+                amount=t.amount,
+                description=t.description,
+                created_at=t.created_at,
+            )
+        )
+    return result
 
 @router.get("/{id}", response_model=TransactionResponse)
 async def get_transaction_by_id(id: UUID, user: User = Depends(get_current_user)):
-    return await crud.get_transaction_by_id(id, user)
+    transaction = crud.get_transaction_by_id(id, user)
+    return TransactionResponse(
+        id=transaction.id,
+        amount=transaction.amount,
+        description=transaction.description,
+        to_account=transaction.to_account.id if transaction.to_account else None,
+        from_account=transaction.from_account.id if transaction.from_account else None,
+        created_at=transaction.created_at,
+    )
+    
