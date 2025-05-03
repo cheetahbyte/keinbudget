@@ -6,6 +6,7 @@ name: Frontend Lint & Test
       - 'frontend/**'
     branches:
       - main
+      - development
   pull_request:
     paths:
       - 'frontend/**'
