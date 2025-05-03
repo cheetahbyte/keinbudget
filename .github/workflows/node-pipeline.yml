@@ -1,6 +1,6 @@
 name: Frontend Lint & Test
 
-'on':
+on:
   push:
     paths:
       - 'frontend/**'
