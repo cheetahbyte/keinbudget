@@ -1,5 +1,4 @@
 from fastapi import APIRouter, HTTPException, Depends
-from fastapi.responses import JSONResponse
 from app.api.v1.endpoints.users.schemas import UserSchema, UserCreateSchema
 from app.api.v1.endpoints.users import crud
 from app.database.models import User

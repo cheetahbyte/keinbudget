@@ -7,7 +7,7 @@ name: Python Testing
   pull_request:
     branches:
       - main
-
+      - development
 jobs:
   test:
     runs-on: ubuntu-latest
@@ -53,4 +53,4 @@ jobs:
       - name: Lint with Ruff
         run: |
           cd server
-          ruff check .
+          ruff check server/

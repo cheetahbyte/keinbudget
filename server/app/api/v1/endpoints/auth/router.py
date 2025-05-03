@@ -1,4 +1,4 @@
-from fastapi import APIRouter, HTTPException, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException
 from app.api.v1.endpoints.auth import crud
 from app.api.v1.endpoints.auth.schemas import LoginData
 from app.core.auth import get_current_user, get_user_from_entermediate_token

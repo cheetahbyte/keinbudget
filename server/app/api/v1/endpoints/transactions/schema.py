@@ -1,9 +1,10 @@
-from app.database.models import Account, Transaction
-from app.api.v1.endpoints.accounts.schemas import AccountResponse
+from app.database.models import Transaction
 from tortoise.contrib.pydantic import pydantic_model_creator
 from pydantic import BaseModel
 from typing import Optional
 from uuid import UUID
+from pydantic import ConfigDict
+from datetime import datetime
 
 TransactionSchema = pydantic_model_creator(Transaction, name="Transaction")
 
@@ -13,10 +14,7 @@ class CreateTransactionSchema(BaseModel):
     from_account: Optional[UUID] = None
     to_account: Optional[UUID] = None
     
-from pydantic import BaseModel, ConfigDict
-from typing import Optional
-from uuid import UUID
-from datetime import datetime
+
 
 class TransactionResponse(BaseModel):
     id: UUID

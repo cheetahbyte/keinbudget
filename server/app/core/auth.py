@@ -4,7 +4,7 @@ from jose import jwt, JWTError
 from fastapi.security import OAuth2PasswordBearer
 from app.core.config import SECRET_KEY, ALGORITHM
 from app.database.models import User
-from uuid import UUID, uuid4
+from uuid import UUID
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="api/v1/auth/login")
 
