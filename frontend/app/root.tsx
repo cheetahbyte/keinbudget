@@ -6,16 +6,15 @@ import {
 	ScrollRestoration,
 	isRouteErrorResponse,
 } from "react-router";
-
 import type { Route } from "./+types/root";
 import "./app.css";
-import { useEffect, useState } from "react";
-import { useToken } from "./api/hooks";
-import { AccountsServiceProvider } from "./api/services/accounts.provider";
-import { AccountsService } from "./api/services/accounts.service";
-import { AuthServiceProvider } from "./api/services/login.provider";
-import { AuthService } from "./api/services/login.service";
 import { UserServiceProvider } from "./api/services/user.provider";
+import { AccountsServiceProvider } from "./api/services/accounts.provider";
+import { AuthServiceProvider } from "./api/services/login.provider";
+import { FinanceServiceProvider } from "./api/services/finance.provider";
+import { TransactionServiceProvider } from "./api/services/transactions.provider";
+import Header from "./components/ui/HeaderBar";
+import { ThemeProvider } from "./components/theme";
 
 export const links: Route.LinksFunction = () => [
 	{ rel: "preconnect", href: "https://fonts.googleapis.com" },
@@ -31,42 +30,48 @@ export const links: Route.LinksFunction = () => [
 ];
 
 export function Layout({ children }: { children: React.ReactNode }) {
-	return (
-		<html lang="en">
-			<head>
-				<meta charSet="utf-8" />
-				<meta name="viewport" content="width=device-width, initial-scale=1" />
-				<Meta />
-				<Links />
-			</head>
-			<body>
-				{children}
-				<ScrollRestoration />
-				<Scripts />
-			</body>
-		</html>
-	);
+  return (
+    <html lang="en">
+      <head>
+        <meta charSet="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <Meta />
+        <Links />
+      </head>
+      <body>
+        <ServiceProviders>{children}</ServiceProviders>
+        <ScrollRestoration />
+        <Scripts />
+      </body>
+    </html>
+  );
+}
+
+function ServiceProviders({ children }: { children: React.ReactNode }) {
+  return (
+    <ThemeProvider>
+      <AuthServiceProvider>
+        <UserServiceProvider>
+          <FinanceServiceProvider>
+            <AccountsServiceProvider>
+              <TransactionServiceProvider>
+                {children}
+              </TransactionServiceProvider>
+            </AccountsServiceProvider>
+          </FinanceServiceProvider>
+        </UserServiceProvider>
+      </AuthServiceProvider>
+    </ThemeProvider>
+  );
 }
 
 export default function App() {
-	const rawToken = useToken();
-	const [token, setToken] = useState("");
-
-	useEffect(() => {
-		if (rawToken) setToken(rawToken);
-	}, [rawToken]);
-
-	return (
-		<AuthServiceProvider token={token}>
-			<UserServiceProvider token={token}>
-				<AccountsServiceProvider token={token}>
-					<Layout>
-						<Outlet />
-					</Layout>
-				</AccountsServiceProvider>
-			</UserServiceProvider>
-		</AuthServiceProvider>
-	);
+  return (
+    <>
+      <Header />
+      <Outlet />
+    </>
+  );
 }
 
 export function ErrorBoundary({ error }: Route.ErrorBoundaryProps) {

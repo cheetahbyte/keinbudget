@@ -1,22 +1,26 @@
 import type { ReactNode } from "react";
 import { ApiClient } from "../api";
 import { UserService, UserServiceContext } from "./user.service";
+import { useToken } from "../hooks";
+import { apiClientWithToken } from "../utils";
 
 interface UserServiceProviderProps {
-	token: string;
-	children: ReactNode;
+  children: ReactNode;
 }
 
 export const UserServiceProvider: React.FC<UserServiceProviderProps> = ({
-	token,
-	children,
+  children,
 }) => {
-	const apiClient = new ApiClient(token);
-	const userService = new UserService(apiClient);
+  const token = useToken();
 
-	return (
-		<UserServiceContext.Provider value={{ userService }}>
-			{children}
-		</UserServiceContext.Provider>
-	);
+  if (!token) return null;
+
+  const apiClient = new ApiClient();
+  const userService = new UserService(apiClientWithToken(apiClient, token));
+
+  return (
+    <UserServiceContext.Provider value={{ userService }}>
+      {children}
+    </UserServiceContext.Provider>
+  );
 };

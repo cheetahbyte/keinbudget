@@ -1,3 +1,5 @@
+import { useToken } from "./hooks";
+
 function toCamelCase(str: string): string {
 	return str.replace(/_([a-z])/g, (_, g) => g.toUpperCase());
 }
@@ -15,26 +17,21 @@ function camelize(obj: object): object {
 }
 
 export class ApiClient {
-	private baseUrl: string = import.meta.env.VITE_BACKEND_URL;
-	private token: string;
+  private baseUrl: string = import.meta.env.VITE_BACKEND_URL;
 
-	constructor(token: string) {
-		this.token = token;
-	}
-
-	private async request<T>(
-		url: string,
-		options: RequestInit,
-		overrideToken?: string,
-	): Promise<T> {
-		const headers = new Headers(options.headers);
-		headers.set("Accept-Casing", "camel");
-		headers.set("Authorization", `Bearer ${overrideToken ?? this.token}`);
-		headers.set("Content-Type", "application/json");
-		const response = await fetch(`${this.baseUrl}${url}`, {
-			...options,
-			headers,
-		});
+  private async request<T>(
+    url: string,
+    options: RequestInit,
+    token?: string
+  ): Promise<T> {
+    const headers = new Headers(options.headers);
+    headers.set("Accept-Casing", "camel");
+    headers.set("Authorization", `Bearer ${token}`);
+    headers.set("Content-Type", "application/json");
+    const response = await fetch(`${this.baseUrl}${url}`, {
+      ...options,
+      headers,
+    });
 
 		if (!response.ok) {
 			throw new Error(`Error: ${response.statusText}`);
@@ -44,37 +41,37 @@ export class ApiClient {
 		return camelize(data) as Promise<T>;
 	}
 
-	public async get<T>(
-		endpoint: string,
-		queryParams?: Record<string, string>,
-		overrideToken?: string,
-	): Promise<T> {
-		const queryString = queryParams
-			? new URLSearchParams(queryParams).toString()
-			: "";
-		const url = `${endpoint}${queryString ? `?${queryString}` : ""}`;
+  public async get<T>(
+    endpoint: string,
+    queryParams?: Record<string, string>,
+    token?: string
+  ): Promise<T> {
+    const queryString = queryParams
+      ? new URLSearchParams(queryParams).toString()
+      : "";
+    const url = `${endpoint}${queryString ? `?${queryString}` : ""}`;
 
-		return this.request<T>(
-			url,
-			{
-				method: "GET",
-			},
-			overrideToken,
-		);
-	}
+    return this.request<T>(
+      url,
+      {
+        method: "GET",
+      },
+      token
+    );
+  }
 
-	public async post<T>(
-		endpoint: string,
-		body: object,
-		overrideToken?: string,
-	): Promise<T> {
-		return this.request<T>(
-			endpoint,
-			{
-				method: "POST",
-				body: JSON.stringify(body),
-			},
-			overrideToken,
-		);
-	}
+  public async post<T>(
+    endpoint: string,
+    body: any,
+    token?: string
+  ): Promise<T> {
+    return this.request<T>(
+      endpoint,
+      {
+        method: "POST",
+        body: JSON.stringify(body),
+      },
+      token
+    );
+  }
 }
