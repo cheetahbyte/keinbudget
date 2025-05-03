@@ -26,9 +26,7 @@ app.add_middleware(
 async def home():
     return {"ok": 1}
 
-
 app.include_router(api_router, prefix="/api/v1")
-
 
 if __name__ == "__main__":
     uvicorn.run("server:app", reload=True)

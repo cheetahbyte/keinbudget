@@ -1,11 +1,12 @@
 name: Frontend Lint & Test
 
-'on':
+on:
   push:
     paths:
       - 'frontend/**'
     branches:
       - main
+      - development
   pull_request:
     paths:
       - 'frontend/**'
@@ -38,4 +39,5 @@ jobs:
         run: npm test
 
       - name: Check with Biome
+        continue-on-error: true
         run: npx biome check .

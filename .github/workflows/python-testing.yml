@@ -1,11 +1,12 @@
 name: Python Testing
 
-'on':
+on:
   push:
     paths:
       - 'server/**'
     branches:
       - main
+      - development
   pull_request:
     paths:
       - 'server/**'

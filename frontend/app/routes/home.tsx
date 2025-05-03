@@ -1,14 +1,13 @@
-import { useEffect, useState } from "react";
-import { Navigate, redirect } from "react-router";
+import type { Route } from "./+types/home";
+import { Button } from "~/components/lib/button";
+import AccountCard from "~/components/ui/account";
 import { useUser } from "~/api/hooks";
 import { useAccountsService } from "~/api/services/accounts.service";
 import { useAuth } from "~/api/services/login.service";
-import { useUserService } from "~/api/services/user.service";
-import type { Account } from "~/api/types/account";
-import type { User } from "~/api/types/user";
-import { Button } from "~/components/lib/button";
-import { Input } from "~/components/lib/input";
-import type { Route } from "./+types/home";
+import FinanceOverview from "~/components/ui/home/FinanceOverview";
+import FinanceGraph from "~/components/ui/home/FinanceGraph";
+import RecentTransactions from "~/components/ui/home/RecentTransactions";
+import { useState } from "react";
 
 export function meta(obj: Route.MetaArgs) {
 	return [
@@ -18,19 +17,21 @@ export function meta(obj: Route.MetaArgs) {
 }
 
 export default function Home() {
-	const user = useUser();
-	const auth = useAuth();
+  const user = useUser();
 
-	const logout = async () => auth.logout();
-
-	if (!user) {
-		return <Navigate to="/login" replace />;
-	}
-
-	return (
-		<div className="flex flex-col items-center justify-center min-h-svh">
-			<p>Hello {user.firstName}</p>
-			<Button onClick={logout}>Abmelden</Button>
-		</div>
-	);
+  if (!user) {
+    return <div>no.</div>
+  }
+  
+  return (
+    <div className="flex flex-col items-center justify-start min-h-svh px-4 py-8">
+      <div className="w-full max-w-6xl space-y-6">
+        <FinanceOverview />
+        <div className="grid grid-cols-1 lg:grid-cols-[3fr_2fr] gap-6 w-full">
+          <FinanceGraph />
+          <RecentTransactions />
+        </div>
+      </div>
+    </div>
+  );
 }
