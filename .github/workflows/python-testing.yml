@@ -51,4 +51,4 @@ jobs:
       - name: Lint with Ruff
         run: |
           cd server
-          ruff check .
+          uv run ruff check .
