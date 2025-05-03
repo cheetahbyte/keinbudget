@@ -6,16 +6,15 @@ import {
   Scripts,
   ScrollRestoration,
 } from "react-router";
-
 import type { Route } from "./+types/root";
 import "./app.css";
 import { UserServiceProvider } from "./api/services/user.provider";
-import { useToken } from "./api/hooks";
-import { AccountsService } from "./api/services/accounts.service";
 import { AccountsServiceProvider } from "./api/services/accounts.provider";
-import { AuthService } from "./api/services/login.service";
 import { AuthServiceProvider } from "./api/services/login.provider";
-import { useEffect, useState } from "react";
+import { FinanceServiceProvider } from "./api/services/finance.provider";
+import { TransactionServiceProvider } from "./api/services/transactions.provider";
+import Header from "./components/ui/HeaderBar";
+import { ThemeProvider } from "./components/theme";
 
 export const links: Route.LinksFunction = () => [
   { rel: "preconnect", href: "https://fonts.googleapis.com" },
@@ -40,7 +39,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
         <Links />
       </head>
       <body>
-        {children}
+        <ServiceProviders>{children}</ServiceProviders>
         <ScrollRestoration />
         <Scripts />
       </body>
@@ -48,25 +47,30 @@ export function Layout({ children }: { children: React.ReactNode }) {
   );
 }
 
-export default function App() {
-  const rawToken = useToken();
-  const [token, setToken] = useState("");
-
-  useEffect(() => {
-    if (rawToken) setToken(rawToken);
-  }, [rawToken])
-
-  
+function ServiceProviders({ children }: { children: React.ReactNode }) {
   return (
-    <AuthServiceProvider token={token}>
-      <UserServiceProvider token={token}>
-        <AccountsServiceProvider token={token}>
-          <Layout>
-            <Outlet />
-          </Layout>
-        </AccountsServiceProvider>
-      </UserServiceProvider>
-    </AuthServiceProvider>
+    <ThemeProvider>
+      <AuthServiceProvider>
+        <UserServiceProvider>
+          <FinanceServiceProvider>
+            <AccountsServiceProvider>
+              <TransactionServiceProvider>
+                {children}
+              </TransactionServiceProvider>
+            </AccountsServiceProvider>
+          </FinanceServiceProvider>
+        </UserServiceProvider>
+      </AuthServiceProvider>
+    </ThemeProvider>
+  );
+}
+
+export default function App() {
+  return (
+    <>
+      <Header />
+      <Outlet />
+    </>
   );
 }
 

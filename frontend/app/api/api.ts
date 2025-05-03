@@ -1,3 +1,5 @@
+import { useToken } from "./hooks";
+
 function toCamelCase(str: string): string {
   return str.replace(/_([a-z])/g, (_, g) => g.toUpperCase());
 }
@@ -15,20 +17,15 @@ function camelize(obj: any): any {
 
 export class ApiClient {
   private baseUrl: string = import.meta.env.VITE_BACKEND_URL;
-  private token: string;
-
-  constructor(token: string) {
-    this.token = token;
-  }
 
   private async request<T>(
     url: string,
     options: RequestInit,
-    overrideToken?: string
+    token?: string
   ): Promise<T> {
     const headers = new Headers(options.headers);
     headers.set("Accept-Casing", "camel");
-    headers.set("Authorization", `Bearer ${overrideToken ?? this.token}`);
+    headers.set("Authorization", `Bearer ${token}`);
     headers.set("Content-Type", "application/json");
     const response = await fetch(`${this.baseUrl}${url}`, {
       ...options,
@@ -46,7 +43,7 @@ export class ApiClient {
   public async get<T>(
     endpoint: string,
     queryParams?: Record<string, string>,
-    overrideToken?: string
+    token?: string
   ): Promise<T> {
     const queryString = queryParams
       ? new URLSearchParams(queryParams).toString()
@@ -58,14 +55,14 @@ export class ApiClient {
       {
         method: "GET",
       },
-      overrideToken
+      token
     );
   }
 
   public async post<T>(
     endpoint: string,
     body: any,
-    overrideToken?: string
+    token?: string
   ): Promise<T> {
     return this.request<T>(
       endpoint,
@@ -73,7 +70,7 @@ export class ApiClient {
         method: "POST",
         body: JSON.stringify(body),
       },
-      overrideToken
+      token
     );
   }
 }
