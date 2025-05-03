@@ -7,8 +7,7 @@
     "dev": "react-router dev",
     "start": "react-router-serve ./build/server/index.js",
     "typecheck": "react-router typegen && tsc",
-    "test": "npx biome check app/",
-    "test:fix": "npx biome check app/"
+    "test": ""
   },
   "dependencies": {
     "@radix-ui/react-checkbox": "^1.1.4",

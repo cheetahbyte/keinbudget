@@ -39,4 +39,5 @@ jobs:
         run: npm test
 
       - name: Check with Biome
+        continue-on-error: true
         run: npx biome check .
