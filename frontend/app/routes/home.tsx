@@ -18,10 +18,6 @@ export function meta(obj: Route.MetaArgs) {
 
 export default function Home() {
   const user = useUser();
-  const auth = useAuth()
-  const [createNewTransactionModal, setCreateNewTransactionModal] = useState(false)
-
-	const logout = async () => auth.logout();
 
   if (!user) {
     return <div>no.</div>
