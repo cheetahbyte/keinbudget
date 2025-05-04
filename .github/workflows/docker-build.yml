@@ -2,13 +2,9 @@ name: Build and Push Docker Image
 
 on:
   push:
-    branches:
-      - main
-      - development
+    branches: [ main, development ]
   pull_request:
-    branches:
-      - main
-      - development
+    branches: [ main, development ]
 
 jobs:
   docker:
@@ -21,6 +17,14 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Generate version.txt
+        run: python scripts/version.py
 
       - name: Set up QEMU (for ARM64 builds)
         uses: docker/setup-qemu-action@v3
