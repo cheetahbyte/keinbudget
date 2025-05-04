@@ -27,7 +27,7 @@ export default function AccountsPage() {
   };
 
   const handleDelete = (id: string) => {
-    // TODO
+    alert(id)
   };
 
   return (
