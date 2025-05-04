@@ -34,13 +34,13 @@ export default function AccountsPage() {
     <div className="p-6 max-w-5xl mx-auto space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight">Accounts</h1>
+          <h1 className="text-2xl font-bold tracking-tight">Transactions</h1>
           <p className="text-muted-foreground">
-            Manage your accounts.
+            Manage your transactions
           </p>
         </div>
         <Button onClick={handleAddAccount} className="gap-2">
-          <PlusCircle className="w-4 h-4" /> New Account
+          <PlusCircle className="w-4 h-4" /> New Transaction
         </Button>
       </div>
 
@@ -48,8 +48,8 @@ export default function AccountsPage() {
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead>Name</TableHead>
-              <TableHead className="text-right">Balance</TableHead>
+              <TableHead>Description</TableHead>
+              <TableHead className="text-right">Amount</TableHead>
               <TableHead className="text-right">Actions</TableHead>
             </TableRow>
           </TableHeader>
@@ -80,7 +80,7 @@ export default function AccountsPage() {
                   colSpan={3}
                   className="text-center text-muted-foreground"
                 >
-                  No accounts found.
+                  No transactions found.
                 </TableCell>
               </TableRow>
             )}
