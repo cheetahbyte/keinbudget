@@ -14,6 +14,10 @@ function camelize(obj: object): object {
 	return obj;
 }
 
+export interface DeleteResponse {
+  deleted: string
+}
+
 export class ApiClient {
   private baseUrl: string = import.meta.env.VITE_BACKEND_URL;
 
@@ -53,6 +57,25 @@ export class ApiClient {
       url,
       {
         method: "GET",
+      },
+      token
+    );
+  }
+
+  public async delete<T>(
+    endpoint: string,
+    queryParams?: Record<string, string>,
+    token?: string
+  ): Promise<T> {
+    const queryString = queryParams
+      ? new URLSearchParams(queryParams).toString()
+      : "";
+    const url = `${endpoint}${queryString ? `?${queryString}` : ""}`;
+
+    return this.request<T>(
+      url,
+      {
+        method: "DELETE",
       },
       token
     );
