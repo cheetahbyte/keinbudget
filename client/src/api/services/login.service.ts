@@ -1,5 +1,6 @@
 import { createContext, useContext } from "react";
 import type { ApiClient } from "../api";
+import { User } from "../types/user";
 
 interface AuthServiceContextProps {
 	authService: AuthService;
@@ -42,6 +43,17 @@ export class AuthService {
 			},
 		);
 		return response;
+	}
+
+	public async signUp(email: string, password: string, firstName: string, lastName: string): Promise<User> {
+		const response = await this.apiClient.post<User>("/users", {
+			email,
+			password,
+			"first_name": firstName,
+			"last_name": lastName
+
+		})
+		return response
 	}
 
 	public storeToken(token: string, key = "token") {

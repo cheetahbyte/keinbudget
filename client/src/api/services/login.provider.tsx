@@ -11,8 +11,8 @@ interface AccountsServiceProviderProps {
 export const AuthServiceProvider: React.FC<AccountsServiceProviderProps> = ({children}) => {
     const token = useToken();
     if (!token) 
-        if (window.location.pathname != "/login")
-            return null;
+        if (!(window.location.pathname == "/login" || window.location.pathname == "/register"))
+            return null
 
     const apiClient = new ApiClient();
     const authService = new AuthService(apiClientWithToken(apiClient, token!));

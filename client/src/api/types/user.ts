@@ -3,4 +3,8 @@ export type User = {
 	firstName: string;
 	email: string;
 	id: string;
+	twofaEnabled: boolean;
+	createdAt: Date;
+	modifiedAt: Date;
+	fullName: string
 };
