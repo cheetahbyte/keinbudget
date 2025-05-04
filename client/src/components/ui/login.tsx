@@ -6,7 +6,6 @@ import {
 } from "~/api/services/login.service";
 import { Button } from "~/components/lib/button";
 import { CardContent, CardFooter } from "~/components/lib/card";
-import { Checkbox } from "~/components/lib/checkbox";
 import { Input } from "~/components/lib/input";
 import { Label } from "~/components/lib/label";
 

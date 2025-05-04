@@ -1,5 +1,3 @@
-import { useToken } from "./hooks";
-
 function toCamelCase(str: string): string {
 	return str.replace(/_([a-z])/g, (_, g) => g.toUpperCase());
 }
@@ -62,7 +60,7 @@ export class ApiClient {
 
   public async post<T>(
     endpoint: string,
-    body: any,
+    body: object,
     token?: string
   ): Promise<T> {
     return this.request<T>(

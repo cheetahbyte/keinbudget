@@ -1,20 +1,7 @@
-import type { Route } from "./+types/home";
-import { Button } from "~/components/lib/button";
-import AccountCard from "~/components/ui/account";
 import { useUser } from "~/api/hooks";
-import { useAccountsService } from "~/api/services/accounts.service";
-import { useAuth } from "~/api/services/login.service";
 import FinanceOverview from "~/components/ui/home/FinanceOverview";
 import FinanceGraph from "~/components/ui/home/FinanceGraph";
 import RecentTransactions from "~/components/ui/home/RecentTransactions";
-import { useState } from "react";
-
-export function meta(obj: Route.MetaArgs) {
-	return [
-		{ title: "Keinbudget" },
-		{ name: "description", content: "expense manager." },
-	];
-}
 
 export default function Home() {
   const user = useUser();

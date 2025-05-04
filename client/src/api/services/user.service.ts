@@ -1,4 +1,4 @@
-import { type ReactNode, createContext, useContext } from "react";
+import { createContext, useContext } from "react";
 import type { ApiClient } from "../api";
 import type { User } from "../types/user";
 

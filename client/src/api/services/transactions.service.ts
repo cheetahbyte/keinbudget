@@ -1,6 +1,5 @@
 import { createContext, useContext } from "react"
 import { ApiClient } from "../api";
-import type { Account } from "../types/account";
 import type { Transaction } from "../types/transaction";
 
 interface TransactionServiceContextProps {

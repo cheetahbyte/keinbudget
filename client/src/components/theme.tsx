@@ -21,12 +21,6 @@ export const ThemeProvider = ({ children }: { children: React.ReactNode }) => {
     localStorage.setItem("theme", newTheme);
   };
 
-  const cycleTheme = () => {
-    const index = themes.indexOf(theme);
-    const next = themes[(index + 1) % themes.length];
-    setTheme(next);
-  };
-
   useEffect(() => {
     const saved = localStorage.getItem("theme") as Theme | null;
     if (saved && themes.includes(saved)) {
@@ -45,5 +39,5 @@ export const ThemeProvider = ({ children }: { children: React.ReactNode }) => {
     </ThemeContext.Provider>
   );
 }
-
+// eslint-ignore
 export const useTheme = () => useContext(ThemeContext);

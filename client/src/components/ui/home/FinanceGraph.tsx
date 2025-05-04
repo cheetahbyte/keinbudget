@@ -40,7 +40,7 @@ export default function FinanceGraph() {
     }
 
     fetchData();
-  }, [relevantOnly]);
+  }, [relevantOnly, financeService]);
 
   return (
     <Card className="h-full">
