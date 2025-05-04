@@ -13,7 +13,17 @@ export const UserServiceProvider: React.FC<UserServiceProviderProps> = ({
 }) => {
   const token = useToken();
 
-  if (!token) return null;
+  if (token === undefined) {
+    return null;
+  }
+
+  if (!token) {
+    return (
+      <UserServiceContext.Provider value={undefined}>
+        {children}
+      </UserServiceContext.Provider>
+    );
+  }
 
   const apiClient = new ApiClient();
   const userService = new UserService(apiClientWithToken(apiClient, token));

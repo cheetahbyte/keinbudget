@@ -3,7 +3,7 @@ import { useUserService } from "./services/user.service";
 import type { User } from "./types/user";
 
 export function useToken() {
-	const [token, setToken] = useState<string | null>(null);
+	const [token, setToken] = useState<string | null | undefined>(undefined);
 
 	useEffect(() => {
 		const fetchedToken = localStorage.getItem("token");

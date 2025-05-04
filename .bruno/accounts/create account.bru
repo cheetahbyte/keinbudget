@@ -5,18 +5,18 @@ meta {
 }
 
 post {
-  url: http://localhost:3000/accounts
+  url: http://localhost:8000/api/v1/accounts
   body: json
   auth: inherit
 }
 
 headers {
-  Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3NDYyMjQ4NDYsInVzZXIiOiJsZW9AdGVzdC5kZSJ9.VxBfOY6gWQ25y8vQ7DQivo4SC8QGt5IGAKLMcsyRm2s
+  Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJjYjUwMzA3NC04Y2Q2LTQzMjktOWI4OC1jODk0ZDQ1ZjlmZjkiLCJhdWQiOiJhdXRoIiwiZXhwIjoxNzQ2MzUzMDE5fQ.4SLwloUjoMUaeId45SHJJ2pdeRti6eIYyos_sqAjsLU
 }
 
 body:json {
   {
     "name": "Sparkasse Aachen",
-    "startBalance": 120
+    "start_balance": 120
   }
 }

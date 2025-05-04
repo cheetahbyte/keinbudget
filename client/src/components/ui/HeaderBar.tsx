@@ -1,5 +1,5 @@
 import { Button } from "~/components/lib/button";
-import { Download, Upload, Plus, User } from "lucide-react";
+import { Plus, User } from "lucide-react";
 import { useNavigate, useLocation } from "react-router";
 import { useEffect, useState } from "react";
 import CreateTransactionModal from "./modals/CreateTransaction";
@@ -23,20 +23,23 @@ import { useTheme, type Theme } from "../theme";
 
 const tabs = [
   { name: "Overview", path: "/" },
+  { name: "Accounts", path: "/accounts" },
   { name: "Transactions", path: "/transactions" },
-  { name: "Budgets", path: "/budgets" },
-  { name: "Savings", path: "/savings" },
+  // { name: "Budgets", path: "/budgets" },
+  // { name: "Savings", path: "/savings" },
 ];
 
 export default function Header() {
   const userService = useUserService();
-  const {theme, setTheme} = useTheme()
+  const { theme, setTheme } = useTheme();
   const [user, setUser] = useState<UserType | undefined>(undefined);
-  const [version, setVersion] = useState<string>("")
+  const [version, setVersion] = useState<string>("");
 
   useEffect(() => {
     userService.getMe().then(setUser);
-    fetch(`${import.meta.env.VITE_BACKEND_URL}/version`).then(r => r.json().then(d => setVersion(d.version)))
+    fetch(`${import.meta.env.VITE_BACKEND_URL}/version`).then((r) =>
+      r.json().then((d) => setVersion(d.version))
+    );
   }, [userService]);
 
   const navigate = useNavigate();
@@ -109,6 +112,7 @@ export default function Header() {
         </div>
 
         <div className="flex items-center gap-2">
+          {/** 
           <Button variant="outline" className="flex items-center gap-1 text-sm">
             <Download className="w-4 h-4" />
             Export
@@ -117,6 +121,7 @@ export default function Header() {
             <Upload className="w-4 h-4" />
             Import
           </Button>
+          */}
           <Button
             className="flex items-center gap-1 text-sm"
             onClick={() => setCreateNewTransactionModal(true)}
