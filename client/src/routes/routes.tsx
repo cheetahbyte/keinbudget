@@ -20,6 +20,10 @@ export const appRoutes: RouteObject[] = [
       {
         element: <AccountsPage/>,
         path: "/accounts"
+      },
+      {
+        element: <TransactionPage/>,
+        path: "/transactions"
       }
     ],
   },
