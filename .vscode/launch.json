@@ -5,15 +5,12 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "Launch Package",
-            "type": "go",
+            "name": "Vite Debugger (Firefox)",
+            "type": "firefox",
             "request": "launch",
-            "mode": "auto",
-            "program": "${fileDirname}",
-            "env": {
-                "GOOSE_DRIVER": "sqlite3",
-                "GOOSE_DBSTRING": "test.db"
-            }
-        }
+            "url": "http://localhost:5173",
+            "webRoot": "${workspaceFolder}/client",
+            "reAttach": true
+          }
     ]
 }

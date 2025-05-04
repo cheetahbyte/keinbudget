@@ -61,7 +61,10 @@ export default function RecentTransactions() {
                     }`}
                   >
                     {!tx.toAccount && tx.fromAccount ? "-" : "+"}$
-                    {tx.amount.toFixed(2)}
+                    {new Intl.NumberFormat("de-DE", {
+                      style: "currency",
+                      currency: "EUR",
+                    }).format(tx.amount)}
                   </span>
                 </li>
               );

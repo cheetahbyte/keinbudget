@@ -1,5 +1,4 @@
-import { useEffect, useState } from "react";
-import { useAccountsService } from "~/api/services/accounts.service";
+import { useAccountContext } from "~/api/services/accounts.service";
 import { Button } from "~/components/lib/button";
 import {
   Table,
@@ -9,25 +8,20 @@ import {
   TableHeader,
   TableRow,
 } from "~/components/lib/table";
-import { PlusCircle, Trash2 } from "lucide-react";
-import { Account } from "~/api/types/account";
+import { Trash2 } from "lucide-react";
 import { AccountDetailsDrawer } from "~/components/ui/accounts/AccountDrawer";
+import { AccountCreateSheet } from "~/components/ui/accounts/AccountSheet";
+import { useTransactionContext } from "~/api/services/transactions.service";
 
 
 export default function AccountsPage() {
-  const accountsService = useAccountsService();
-  const [accounts, setAccounts] = useState<Account[]>([]);
+  const {accounts, accountsService, refetchAccounts } = useAccountContext();
+  const {refetchTransactions} = useTransactionContext();
 
-  useEffect(() => {
-    accountsService.getAccounts().then(setAccounts);
-  }, [accountsService]);
-
-  const handleAddAccount = () => {
-    // TODO
-  };
-
-  const handleDelete = (id: string) => {
-    alert(id)
+  const handleDelete = async (id: string) => {
+    await accountsService.deleteAccount(id)
+    await refetchAccounts()
+    await refetchTransactions()
   };
 
   return (
@@ -36,12 +30,10 @@ export default function AccountsPage() {
         <div>
           <h1 className="text-2xl font-bold tracking-tight">Accounts</h1>
           <p className="text-muted-foreground">
-            Verwalte deine verknüpften Konten
+            Manage your accounts.
           </p>
         </div>
-        <Button onClick={handleAddAccount} className="gap-2">
-          <PlusCircle className="w-4 h-4" /> Neuer Account
-        </Button>
+        <AccountCreateSheet/>
       </div>
 
       <div className="border rounded-md">
@@ -49,8 +41,8 @@ export default function AccountsPage() {
           <TableHeader>
             <TableRow>
               <TableHead>Name</TableHead>
-              <TableHead className="text-right">Balance</TableHead>
-              <TableHead className="text-right">Aktionen</TableHead>
+              <TableHead className="text-center">Balance</TableHead>
+              <TableHead className="text-right">Actions</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -58,12 +50,15 @@ export default function AccountsPage() {
               accounts.map((account) => (
                 <TableRow key={account.id}>
                   <TableCell>{account.name}</TableCell>
-                  <TableCell className="text-right">
-                    ${account.currentBalance.toFixed(2)}
+                  <TableCell className="text-center">
+                    
+                    {new Intl.NumberFormat("de-DE", {
+                      style: "currency",
+                      currency: "EUR",
+                    }).format(account.currentBalance)}
                   </TableCell>
                   <TableCell className="text-right flex justify-end gap-2">
                     <AccountDetailsDrawer account={account}/>
-
                     <Button
                       variant="ghost"
                       size="icon"
@@ -80,7 +75,7 @@ export default function AccountsPage() {
                   colSpan={3}
                   className="text-center text-muted-foreground"
                 >
-                  Keine Accounts gefunden.
+                  No accounts found.
                 </TableCell>
               </TableRow>
             )}

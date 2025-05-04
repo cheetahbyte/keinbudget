@@ -8,9 +8,12 @@ router = APIRouter()
 
 @router.get("/version")
 async def get_version() -> dict:
-    with open("./version.txt") as e:
-        version = e.read()
-    return {"version": version}
+    try:
+        with open("./version.txt") as e:
+            version = e.read()
+        return {"version": version}
+    except FileNotFoundError:
+        return {"version": "development"}
 
 router.include_router(users_router, prefix="/users", tags=["users"])
 router.include_router(auth_router, prefix="/auth", tags=["auth"])

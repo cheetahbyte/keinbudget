@@ -57,7 +57,7 @@ export default function Header() {
   return (
     <div className="border-b bg-background sticky top-0 z-50">
       <div className="flex items-center justify-between px-6 py-4">
-        <h1 className="text-2xl font-bold tracking-tight">Keinbudget</h1>
+        <h1 className="text-2xl font-bold tracking-tight">keinbudget.</h1>
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button variant="ghost" size="icon">
