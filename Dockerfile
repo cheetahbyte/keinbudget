@@ -4,7 +4,7 @@ COPY client/ ./
 ENV VITE_BACKEND_URL=/api/v1
 RUN npm install && npm run build
 
-FROM python:3.13-alpine
+FROM python:3.13-slim
 RUN pip install --no-cache-dir uv
 WORKDIR /app
 COPY server/pyproject.toml ./pyproject.toml
