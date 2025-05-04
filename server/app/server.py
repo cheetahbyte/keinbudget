@@ -1,7 +1,5 @@
 from fastapi import FastAPI
-from pathlib import Path
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
 import uvicorn
 from tortoise.contrib.fastapi import register_tortoise
