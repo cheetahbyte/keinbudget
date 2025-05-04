@@ -20,6 +20,7 @@ import {
 import { useUserService } from "~/api/services/user.service";
 import type { User as UserType } from "~/api/types/user";
 import { useTheme, type Theme } from "../theme";
+import { useAuth } from "~/api/services/login.service";
 
 const tabs = [
   { name: "Overview", path: "/" },
@@ -34,13 +35,15 @@ export default function Header() {
   const { theme, setTheme } = useTheme();
   const [user, setUser] = useState<UserType | undefined>(undefined);
   const [version, setVersion] = useState<string>("");
-
+  const authService = useAuth()
   useEffect(() => {
     userService.getMe().then(setUser);
     fetch(`${import.meta.env.VITE_BACKEND_URL}/version`).then((r) =>
       r.json().then((d) => setVersion(d.version))
     );
   }, [userService]);
+
+  const logout = () => {authService.logout(); navigate("/login")};
 
   const navigate = useNavigate();
   const location = useLocation();
@@ -90,7 +93,9 @@ export default function Header() {
               </DropdownMenuPortal>
             </DropdownMenuSub>
             <DropdownMenuSeparator />
-            <DropdownMenuItem>version: {version}</DropdownMenuItem>
+            <DropdownMenuItem className="text-muted-foreground">version: {version}</DropdownMenuItem>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem onClick={logout} variant="destructive">Log Out</DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
       </div>

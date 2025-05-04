@@ -3,7 +3,9 @@ import { ProtectedLayout } from "~/ProtectedLayout";
 import LoginPage from "./Login";
 import HomePage from "~/routes/home/Dashboard"
 import { ErrorPage } from "./ErrorPage";
-import AccountsPage from "./home/AccountsPage";
+import AccountsPage from "~/routes/home/AccountsPage";
+import RegisterPage from "./RegisterPage";
+import TransactionPage from "~/routes/home/TransactionsPage";
 
 export const appRoutes: RouteObject[] = [
   {
@@ -25,4 +27,8 @@ export const appRoutes: RouteObject[] = [
     path: "/login",
     element: <LoginPage />,
   },
+  {
+    path: "/register",
+    element: <RegisterPage/>
+  }
 ];
