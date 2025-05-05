@@ -32,6 +32,6 @@ export class FinanceService {
   }
 
   public async getMonthlyReports(months: number, relevantOnly: boolean): Promise<MonthlyReportEntry[]> {
-    return await this.apiClient.get<MonthlyReportEntry[]>(`/finance/report/?months=${months}&relevant_only=${relevantOnly}`)
+    return await this.apiClient.get<MonthlyReportEntry[]>(`/finance/report?months=${months}&relevant_only=${relevantOnly}`)
   }
 }

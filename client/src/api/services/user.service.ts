@@ -26,6 +26,6 @@ export class UserService {
 	}
 
 	public async getMe(): Promise<User> {
-		return await this.apiClient.get<User>("/users/me/");
+		return await this.apiClient.get<User>("/users/me");
 	}
 }

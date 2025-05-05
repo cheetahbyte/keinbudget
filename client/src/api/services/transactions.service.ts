@@ -38,7 +38,7 @@ export class TransactionService {
     }
 
     public async getLastTransactions(): Promise<Transaction[]> {
-        return await this.apiClient.get<Transaction[]>("/transactions/last/")
+        return await this.apiClient.get<Transaction[]>("/transactions/last")
     }
 
     public async createTransaction(type: string, accountId: string, date: Date, amount: number, description: string): Promise<Transaction> {
@@ -51,7 +51,7 @@ export class TransactionService {
     }
 
     public async deleteTransaction(id: string) {
-        await this.apiClient.delete<DeleteResponse>(`/transactions/${id}/`)
+        await this.apiClient.delete<DeleteResponse>(`/transactions/${id}`)
     }
 
     public async getTransactionsForAccount(id: string): Promise<Transaction[]> {

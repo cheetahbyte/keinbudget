@@ -36,7 +36,7 @@ export class AuthService {
 		password: string,
 	): Promise<AuthServiceTokenRequest> {
 		const response = await this.apiClient.post<AuthServiceTokenRequest>(
-			"/auth/login/",
+			"/auth/login",
 			{
 				username,
 				password,

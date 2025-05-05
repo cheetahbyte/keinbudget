@@ -48,6 +48,6 @@ export class AccountsService {
 	}
 
 	public async deleteAccount(id: string) {
-		return await this.apiClient.delete<DeleteResponse>(`/accounts/${id}/`)
+		return await this.apiClient.delete<DeleteResponse>(`/accounts/${id}`)
 	}
 }
