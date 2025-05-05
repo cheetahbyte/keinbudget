@@ -27,14 +27,17 @@ app.add_middleware(
 
 app.include_router(api_router, prefix="/api/v1")
 
-if os.getenv("ENVIRONMENT") == "production":
-    app.mount("/", StaticFiles(directory="/app/server/static", html=True), name="static")
-
 @app.get("/{full_path:path}")
 async def spa_handler(full_path: str):
+    print(full_path)
     if not full_path.startswith("api/"):
         return FileResponse("/app/server/static/index.html")
     raise HTTPException(status_code=404, detail="Not found")
+
+if os.getenv("ENVIRONMENT") == "production":
+    app.mount("/", StaticFiles(directory="/app/server/static", html=True), name="static")
+
+
 
 
 if __name__ == "__main__":
