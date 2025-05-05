@@ -1,4 +1,4 @@
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
@@ -28,14 +28,18 @@ app.add_middleware(
 app.include_router(api_router, prefix="/api/v1")
 
 @app.get("/{full_path:path}")
-async def spa_handler(full_path: str):
-    print(full_path)
-    if not full_path.startswith("api/"):
-        return FileResponse("/app/server/static/index.html")
-    raise HTTPException(status_code=404, detail="Not found")
+async def spa_handler(request: Request, full_path: str):
+    if full_path.startswith("api/"):
+        raise HTTPException(status_code=404, detail="Not found")
 
-if os.getenv("ENVIRONMENT") == "production":
-    app.mount("/", StaticFiles(directory="/app/server/static", html=True), name="static")
+    static_path = f"/app/server/static/{full_path}"
+    if os.path.exists(static_path) and os.path.isfile(static_path):
+        return FileResponse(static_path)
+
+    return FileResponse("/app/server/static/index.html")
+
+#if os.getenv("ENVIRONMENT") == "production":
+#    app.mount("/", StaticFiles(directory="/app/server/static", html=True), name="static")
 
 
 
