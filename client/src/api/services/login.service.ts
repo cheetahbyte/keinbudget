@@ -36,7 +36,7 @@ export class AuthService {
 		password: string,
 	): Promise<AuthServiceTokenRequest> {
 		const response = await this.apiClient.post<AuthServiceTokenRequest>(
-			"/auth/login",
+			"/auth/login/",
 			{
 				username,
 				password,
@@ -46,7 +46,7 @@ export class AuthService {
 	}
 
 	public async signUp(email: string, password: string, firstName: string, lastName: string): Promise<User> {
-		const response = await this.apiClient.post<User>("/users", {
+		const response = await this.apiClient.post<User>("/users/", {
 			email,
 			password,
 			"first_name": firstName,

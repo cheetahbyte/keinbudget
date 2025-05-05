@@ -28,10 +28,10 @@ export class FinanceService {
   }
 
   public async getOverview(): Promise<FinanceOverview> {
-    return await this.apiClient.get<FinanceOverview>("/finance");
+    return await this.apiClient.get<FinanceOverview>("/finance/");
   }
 
   public async getMonthlyReports(months: number, relevantOnly: boolean): Promise<MonthlyReportEntry[]> {
-    return await this.apiClient.get<MonthlyReportEntry[]>(`/finance/report?months=${months}&relevant_only=${relevantOnly}`)
+    return await this.apiClient.get<MonthlyReportEntry[]>(`/finance/report/?months=${months}&relevant_only=${relevantOnly}`)
   }
 }
