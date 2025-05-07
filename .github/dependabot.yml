@@ -8,6 +8,7 @@ updates:
       - "cheetahbyte"
     reviewers:
       - "cheetahbyte"
+    target-branch: "development"
 
   - package-ecosystem: "npm"
     directory: "/frontend"
@@ -17,6 +18,7 @@ updates:
       - "cheetahbyte"
     reviewers:
       - "cheetahbyte"
+    target-branch: "development"
 
   - package-ecosystem: "docker"
     directory: "/server"
@@ -26,3 +28,4 @@ updates:
       - "cheetahbyte"
     reviewers:
       - "cheetahbyte"
+    target-branch: "development"
