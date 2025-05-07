@@ -60,7 +60,7 @@ export default function RecentTransactions() {
                         : "text-green-600"
                     }`}
                   >
-                    {!tx.toAccount && tx.fromAccount ? "-" : "+"}$
+                    {!tx.toAccount && tx.fromAccount ? "-" : "+"}
                     {new Intl.NumberFormat("de-DE", {
                       style: "currency",
                       currency: "EUR",
