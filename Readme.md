@@ -12,5 +12,5 @@
 
 ## Tech Stack
 
-- **Frontend**: React (TypeScript)  
-- **Backend**: FastAPI (Python)  
+- **Frontend**: React (TypeScript) 
+- **Backend**: FastAPI (Python) 

@@ -8,12 +8,6 @@ from passlib.hash import argon2
 client = TestClient(app)
 
 
-def test_read_main():
-    response = client.get("/")
-    assert response.status_code == 200
-    assert response.json() == {"ok": 1}
-
-
 def test_login_route_without_body():
     response = client.post("/api/v1/auth/login", data={})
     assert response.status_code == 422

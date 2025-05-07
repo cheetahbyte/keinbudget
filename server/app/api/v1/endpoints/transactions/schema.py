@@ -13,6 +13,7 @@ class CreateTransactionSchema(BaseModel):
     amount: float
     from_account: Optional[UUID] = None
     to_account: Optional[UUID] = None
+    created_at: datetime
     
 
 

@@ -13,7 +13,7 @@ router = APIRouter()
 
 
 @router.get("/", response_model=List[TransactionResponse])
-async def get_transactions(user: User = Depends(get_current_user)):
+async def get_transactions(account_id: UUID = None, user: User = Depends(get_current_user)):
     transactions = await crud.get_transactions(user)
     result = []
     for t in transactions:
@@ -73,3 +73,7 @@ async def get_transaction_by_id(id: UUID, user: User = Depends(get_current_user)
         created_at=transaction.created_at,
     )
     
+@router.delete("/{id}")
+async def delete_transaction_by_id(id: UUID, user: User = Depends(get_current_user)):
+    await crud.delete_transaction_by_id(id, user)
+    return {"deleted": str(id)}

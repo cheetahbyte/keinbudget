@@ -40,15 +40,15 @@ class Transaction(models.Model):
         "models.Account",
         related_name="incoming_transactions",
         null=True,
-        on_delete=fields.SET_NULL
+        on_delete=fields.CASCADE
     )
     to_account = fields.ForeignKeyField(
         "models.Account",
         related_name="outgoing_transactions",
         null=True,
-        on_delete=fields.SET_NULL
+        on_delete=fields.CASCADE
     )
-    created_at = fields.DatetimeField(auto_now_add=True)
+    created_at = fields.DatetimeField()
     class Meta:
         table = "transactions"
         

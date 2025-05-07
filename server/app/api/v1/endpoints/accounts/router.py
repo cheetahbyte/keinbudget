@@ -43,3 +43,9 @@ async def get_account_by_id(id: UUID, user: User = Depends(get_current_user)):
         created_at=account.created_at,
         current_balance=current_balance
     )
+    
+    
+@router.delete("/{id}")
+async def delete_account_by_id(id: UUID, user: User = Depends(get_current_user)):
+    await crud.delete_account_by_id(id, user)
+    return {"deleted": str(id)}

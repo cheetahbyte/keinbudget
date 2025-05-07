@@ -9,3 +9,7 @@ async def get_account_by_id(account_id: UUID, user: User) -> Account | None:
 
 async def get_accounts(user: User) -> list[Account]:
     return await Account.all().filter(user=user)
+
+async def delete_account_by_id(id: UUID, user: User) -> None:
+    account = await Account.get_or_none(id=id, user=user)
+    return await account.delete()
