@@ -6,10 +6,11 @@ from datetime import datetime
 class CreateCategorySchema(BaseModel):
     name: str
     description: Optional[str] = None
+    user: UUID
 
 class CategoryResponse(BaseModel):
     id: UUID
     name: str
     user: UUID
     description: Optional[str] = None
-    created_at = datetime
+    created_at: datetime
