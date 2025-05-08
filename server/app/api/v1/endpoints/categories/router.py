@@ -37,7 +37,7 @@ async def create_categories(data: CreateCategorySchema, user: User = Depends(get
 
 @router.get("/{id}", response_model=CategoryResponse)
 async def get_transaction_by_id(id: UUID, user: User = Depends(get_current_user)):
-    category = crud.get_categories_by_id(id, user)
+    category = await crud.get_category_by_id(id, user)
     return CategoryResponse(
         id=category.id,
         name=category.name,
