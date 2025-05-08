@@ -51,7 +51,7 @@ class Transaction(models.Model):
     )
     created_at = fields.DatetimeField()
     category = fields.ForeignKeyField(
-        "models.Model",
+        "models.Category",
         related_name="transactions",
         null=True,
         on_delete=fields.SET_NULL
@@ -89,3 +89,5 @@ class Category(models.Model):
     description = fields.CharField(max_length=255, nullable=True)
     created_at = fields.DatetimeField(auto_now_add=True)
     #modified_at = fields.DatetimeField(auto_now=True)
+    class Meta:
+        table = "categories"
