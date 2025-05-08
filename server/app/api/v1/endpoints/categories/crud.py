@@ -1,7 +1,9 @@
 from app.database.models import Category, User
 from uuid import UUID
 
-async def create_category(name: str, user: User, description: str | None):
+async def create_category(data: dict, user: User):
+    name = data.get("name")
+    description = data.get("description")
     return await Category.create(name=name, user=user, description=description)
 
 async def get_category_by_id(category_id: UUID, user: User):
