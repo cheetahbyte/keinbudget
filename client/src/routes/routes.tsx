@@ -1,11 +1,11 @@
 import { RouteObject } from "react-router";
-import LoginPage from "./Login";
-import HomePage from "~/routes/home/Dashboard";
-import { ErrorPage } from "./ErrorPage";
-import AccountsPage from "~/routes/home/AccountsPage";
-import RegisterPage from "./RegisterPage";
-import TransactionPage from "~/routes/home/TransactionsPage";
 import Layout from "~/Layout";
+import AccountsPage from "~/routes/home/AccountsPage";
+import HomePage from "~/routes/home/Dashboard";
+import TransactionPage from "~/routes/home/TransactionsPage";
+import { ErrorPage } from "./ErrorPage";
+import LoginPage from "./Login";
+import RegisterPage from "./RegisterPage";
 
 export const appRoutes: RouteObject[] = [
 	{

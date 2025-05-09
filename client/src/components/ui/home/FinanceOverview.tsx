@@ -1,8 +1,8 @@
+import { useEffect, useState } from "react";
+import { useServices } from "~/api/services/services.provider";
+import type { FinanceOverview } from "~/api/types/finance";
 // components/FinanceOverview.tsx
 import { Card, CardContent } from "~/components/lib/card";
-import { useEffect, useState } from "react";
-import type { FinanceOverview } from "~/api/types/finance";
-import { useServices } from "~/api/services/services.provider";
 
 export default function FinanceOverview() {
 	const { financeService } = useServices();

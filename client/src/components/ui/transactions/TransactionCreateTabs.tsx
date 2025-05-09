@@ -1,15 +1,15 @@
-import { Tabs, TabsList, TabsTrigger, TabsContent } from "@radix-ui/react-tabs";
-import { Label } from "~/components/lib/label";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@radix-ui/react-tabs";
 import { Button } from "~/components/lib/button";
 import {
 	Card,
+	CardContent,
+	CardDescription,
+	CardFooter,
 	CardHeader,
 	CardTitle,
-	CardDescription,
-	CardContent,
-	CardFooter,
 } from "~/components/lib/card";
 import { Input } from "~/components/lib/input";
+import { Label } from "~/components/lib/label";
 
 export function TransactionCreateTabs() {
 	return (

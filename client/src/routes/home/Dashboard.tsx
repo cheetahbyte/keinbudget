@@ -1,6 +1,6 @@
 import { useUser } from "~/api/hooks";
-import FinanceOverview from "~/components/ui/home/FinanceOverview";
 import FinanceGraph from "~/components/ui/home/FinanceGraph";
+import FinanceOverview from "~/components/ui/home/FinanceOverview";
 import RecentTransactions from "~/components/ui/home/RecentTransactions";
 
 export default function Home() {

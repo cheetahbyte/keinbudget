@@ -1,6 +1,6 @@
 import { Outlet } from "react-router";
-import { ThemeProvider } from "./components/common/ThemeProvider";
 import { ServicesProvider } from "./api/services/services.provider";
+import { ThemeProvider } from "./components/common/ThemeProvider";
 import Header from "./components/ui/HeaderBar";
 
 export default function Layout() {

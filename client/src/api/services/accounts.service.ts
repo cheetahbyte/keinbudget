@@ -1,4 +1,4 @@
-import { DeleteResponse, type ApiClient } from "../api";
+import { type ApiClient, DeleteResponse } from "../api";
 import type { Account } from "../types/account";
 export class AccountsService {
 	private apiClient: ApiClient;

@@ -1,9 +1,9 @@
+import { render, screen, waitFor } from "@testing-library/react";
 import { useEffect } from "react";
 import {
 	ThemeProvider,
 	useTheme,
 } from "../../../src/components/common/ThemeProvider";
-import { render, waitFor, screen } from "@testing-library/react";
 
 function TestComponent() {
 	const { setTheme, theme } = useTheme();

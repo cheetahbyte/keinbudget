@@ -1,4 +1,4 @@
-import { describe, it, vi, expect, beforeEach } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import { ApiClient } from "../src/api/api";
 
 global.fetch = vi.fn();

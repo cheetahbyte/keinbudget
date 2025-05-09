@@ -1,6 +1,6 @@
-import { RadioGroupItem, RadioGroup } from "~/components/lib/radio-group";
-import { Label } from "~/components/lib/label";
 import type { ComponentProps } from "react";
+import { Label } from "~/components/lib/label";
+import { RadioGroup, RadioGroupItem } from "~/components/lib/radio-group";
 
 interface TransactionTypeRadioProps extends ComponentProps<typeof RadioGroup> {
 	value: "incoming" | "outgoing";

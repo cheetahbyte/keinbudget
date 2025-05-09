@@ -1,10 +1,10 @@
-import { describe, it, vi, expect, afterEach } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
+import type { User } from "~/api/types/user";
+import type { ApiClient } from "../../src/api/api";
 import {
 	AuthService,
 	type AuthServiceTokenRequest,
 } from "../../src/api/services/auth.service";
-import type { ApiClient } from "../../src/api/api";
-import type { User } from "~/api/types/user";
 
 describe("AuthService", async () => {
 	afterEach(() => localStorage.clear());

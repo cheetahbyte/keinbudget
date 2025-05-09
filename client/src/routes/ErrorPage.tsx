@@ -1,5 +1,5 @@
-import { Link, isRouteErrorResponse, useRouteError } from "react-router";
 import { AlertCircle } from "lucide-react";
+import { Link, isRouteErrorResponse, useRouteError } from "react-router";
 
 export function ErrorPage() {
 	const error = useRouteError();

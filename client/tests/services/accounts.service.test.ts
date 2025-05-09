@@ -1,4 +1,4 @@
-import { describe, it, vi, expect } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 import type { ApiClient, DeleteResponse } from "../../src/api/api";
 import { AccountsService } from "../../src/api/services/accounts.service";
 import type { Account } from "../../src/api/types/account";

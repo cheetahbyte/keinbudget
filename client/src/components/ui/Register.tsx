@@ -1,9 +1,9 @@
 import { useState } from "react";
 import { useNavigate } from "react-router";
+import { useServices } from "~/api/services/services.provider";
 import { Button } from "../lib/button";
 import { CardContent, CardFooter } from "../lib/card";
 import { Input } from "../lib/input";
-import { useServices } from "~/api/services/services.provider";
 
 export function SignUpCardContent() {
 	const [email, setEmail] = useState("");

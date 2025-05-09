@@ -1,12 +1,12 @@
-import { describe, it, expect, vi, beforeEach } from "vitest";
 import { render, screen, waitFor } from "@testing-library/react";
+import { beforeEach, describe, expect, it, vi } from "vitest";
+import type { ApiClient } from "../../src/api/api";
 import {
 	ServicesProvider,
 	useServices,
 } from "../../src/api/services/services.provider";
 import type { Account } from "../../src/api/types/account";
 import type { Transaction } from "../../src/api/types/transaction";
-import type { ApiClient } from "../../src/api/api";
 
 vi.mock("../../src/api/services/accounts.service", () => ({
 	AccountsService: vi.fn().mockImplementation(() => ({

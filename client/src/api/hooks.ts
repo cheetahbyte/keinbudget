@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
-import type { User } from "./types/user";
 import { useServices } from "./services/services.provider";
+import type { User } from "./types/user";
 
 export function useToken() {
 	const [token, setToken] = useState<string | null | undefined>(undefined);

@@ -1,8 +1,10 @@
-import { Button } from "~/components/lib/button";
 import { Plus, User } from "lucide-react";
-import { useNavigate, useLocation } from "react-router";
 import { useEffect, useState } from "react";
-import CreateTransactionModal from "./modals/CreateTransaction";
+import { useLocation, useNavigate } from "react-router";
+import { useServices } from "~/api/services/services.provider";
+import type { User as UserType } from "~/api/types/user";
+import { Button } from "~/components/lib/button";
+import { type Theme, useTheme } from "../common/ThemeProvider";
 import {
 	DropdownMenu,
 	DropdownMenuContent,
@@ -17,9 +19,7 @@ import {
 	DropdownMenuSubTrigger,
 	DropdownMenuTrigger,
 } from "../lib/dropdown-menu";
-import type { User as UserType } from "~/api/types/user";
-import { useTheme, type Theme } from "../common/ThemeProvider";
-import { useServices } from "~/api/services/services.provider";
+import CreateTransactionModal from "./modals/CreateTransaction";
 
 const tabs = [
 	{ name: "Overview", path: "/" },

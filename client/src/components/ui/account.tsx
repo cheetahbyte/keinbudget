@@ -4,9 +4,9 @@ import type { Account } from "~/api/types/account";
 
 import {
 	Card,
+	CardContent,
 	CardHeader,
 	CardTitle,
-	CardContent,
 } from "~/components/lib/card";
 import { Skeleton } from "~/components/lib/skeleton";
 

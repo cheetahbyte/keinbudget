@@ -2,9 +2,9 @@ import {
 	Dialog,
 	DialogContent,
 	DialogDescription,
+	DialogFooter,
 	DialogHeader,
 	DialogTitle,
-	DialogFooter,
 } from "~/components/lib/dialog";
 
 interface ModalProps {

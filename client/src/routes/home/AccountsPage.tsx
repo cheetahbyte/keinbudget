@@ -1,3 +1,5 @@
+import { Trash2 } from "lucide-react";
+import { useServices } from "~/api/services/services.provider";
 import { Button } from "~/components/lib/button";
 import {
 	Table,
@@ -7,10 +9,8 @@ import {
 	TableHeader,
 	TableRow,
 } from "~/components/lib/table";
-import { Trash2 } from "lucide-react";
 import { AccountDetailsDrawer } from "~/components/ui/accounts/AccountDrawer";
 import { AccountCreateSheet } from "~/components/ui/accounts/AccountSheet";
-import { useServices } from "~/api/services/services.provider";
 
 export default function AccountsPage() {
 	const { accounts, accountsService, refetchAccounts, refetchTransactions } =

@@ -1,6 +1,6 @@
-import { describe, it, expect, vi } from "vitest";
-import { TransactionService } from "../../src/api/services/transactions.service";
+import { describe, expect, it, vi } from "vitest";
 import type { ApiClient } from "../../src/api/api";
+import { TransactionService } from "../../src/api/services/transactions.service";
 import type { Transaction } from "../../src/api/types/transaction";
 
 describe("TransactionService", () => {

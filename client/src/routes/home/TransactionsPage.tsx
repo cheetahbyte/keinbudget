@@ -1,3 +1,7 @@
+import { format } from "date-fns";
+import { de } from "date-fns/locale";
+import { Trash2 } from "lucide-react";
+import { useServices } from "~/api/services/services.provider";
 import { Button } from "~/components/lib/button";
 import {
 	Table,
@@ -7,11 +11,7 @@ import {
 	TableHeader,
 	TableRow,
 } from "~/components/lib/table";
-import { Trash2 } from "lucide-react";
 import { TransactionCreateSheet } from "~/components/ui/transactions/TransactionSheet";
-import { format } from "date-fns";
-import { de } from "date-fns/locale";
-import { useServices } from "~/api/services/services.provider";
 
 export default function AccountsPage() {
 	const { transactions, transactionsService, refetchTransactions, accounts } =

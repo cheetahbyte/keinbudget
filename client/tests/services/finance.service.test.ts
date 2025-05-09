@@ -1,6 +1,6 @@
-import { describe, it, expect, vi } from "vitest";
-import { FinanceService } from "../../src/api/services/finance.service";
+import { describe, expect, it, vi } from "vitest";
 import type { ApiClient } from "../../src/api/api";
+import { FinanceService } from "../../src/api/services/finance.service";
 import type {
 	FinanceOverview,
 	MonthlyReportEntry,

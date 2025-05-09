@@ -1,6 +1,6 @@
-import { describe, it, expect, vi } from "vitest";
-import { UserService } from "../../src/api/services/user.service";
+import { describe, expect, it, vi } from "vitest";
 import type { ApiClient } from "../../src/api/api";
+import { UserService } from "../../src/api/services/user.service";
 import type { User } from "../../src/api/types/user";
 
 describe("UserService", () => {

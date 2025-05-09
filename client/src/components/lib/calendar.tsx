@@ -1,9 +1,9 @@
-import * as React from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
+import * as React from "react";
 import {
+	type CustomComponents,
 	DayPicker,
 	type DayPickerProps,
-	type CustomComponents,
 } from "react-day-picker";
 
 import { cn } from "~/api/utils";

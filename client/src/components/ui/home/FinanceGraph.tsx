@@ -1,12 +1,15 @@
+import { useEffect, useState } from "react";
 import {
-	ResponsiveContainer,
-	BarChart,
 	Bar,
+	BarChart,
+	CartesianGrid,
+	ResponsiveContainer,
+	Tooltip,
 	XAxis,
 	YAxis,
-	Tooltip,
-	CartesianGrid,
 } from "recharts";
+import { useServices } from "~/api/services/services.provider";
+import type { MonthlyReportEntry } from "~/api/types/finance";
 import {
 	Card,
 	CardContent,
@@ -14,11 +17,8 @@ import {
 	CardHeader,
 	CardTitle,
 } from "~/components/lib/card";
-import { useEffect, useState } from "react";
-import type { MonthlyReportEntry } from "~/api/types/finance";
 import { Checkbox } from "~/components/lib/checkbox"; // oder Switch, je nach Designsystem
 import { Label } from "~/components/lib/label";
-import { useServices } from "~/api/services/services.provider";
 
 export default function FinanceGraph() {
 	const { financeService } = useServices();

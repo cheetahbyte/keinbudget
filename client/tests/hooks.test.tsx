@@ -1,5 +1,5 @@
 import { render, screen, waitFor } from "@testing-library/react";
-import { describe, it, expect, beforeEach } from "vitest";
+import { beforeEach, describe, expect, it } from "vitest";
 import { useToken, useUser } from "../src/api/hooks";
 import { ServicesContext } from "../src/api/services/services.provider";
 import { UserService } from "../src/api/services/user.service";

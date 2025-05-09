@@ -1,14 +1,14 @@
-import {
-	Card,
-	CardHeader,
-	CardTitle,
-	CardDescription,
-	CardContent,
-} from "~/components/lib/card";
 import { ShoppingBasketIcon } from "lucide-react"; // Dummy Icon
 import { useEffect, useState } from "react";
-import type { Transaction } from "~/api/types/transaction";
 import { useServices } from "~/api/services/services.provider";
+import type { Transaction } from "~/api/types/transaction";
+import {
+	Card,
+	CardContent,
+	CardDescription,
+	CardHeader,
+	CardTitle,
+} from "~/components/lib/card";
 
 export default function RecentTransactions() {
 	const { transactionsService } = useServices();
