@@ -6,5 +6,5 @@ export type User = {
 	twofaEnabled: boolean;
 	createdAt: Date;
 	modifiedAt: Date;
-	fullName: string
+	fullName: string;
 };
