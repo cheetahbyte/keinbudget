@@ -79,7 +79,7 @@ jobs:
         run: docker pull ghcr.io/${{ github.repository }}:${{ needs.docker.outputs.tag }}
 
       - name: Run Docker container
-        run: docker run -d -p 8000:8000 --name keinbudget ghcr.io/${{ github.repository }}:${{ needs.docker.outputs.tag }}
+        run: docker run -d -p 3000:8000 --name keinbudget ghcr.io/${{ github.repository }}:${{ needs.docker.outputs.tag }}
 
       - name: Install dependencies
         working-directory: client
