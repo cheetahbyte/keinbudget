@@ -20,6 +20,7 @@ import {
   DropdownMenuTrigger,
 } from "../lib/dropdown-menu";
 import CreateTransactionModal from "./modals/CreateTransaction";
+import { useUser } from "~/api/hooks";
 
 const tabs = [
   { name: "Overview", path: "/" },
@@ -31,16 +32,15 @@ const tabs = [
 ];
 
 export default function Header() {
-  const { userService, authService } = useServices();
+  const { authService } = useServices();
   const { theme, setTheme } = useTheme();
-  const [user, setUser] = useState<UserType | undefined>(undefined);
+  const user = useUser();
   const [version, setVersion] = useState<string>("");
   useEffect(() => {
-    userService?.getMe().then(setUser);
     fetch(`${import.meta.env.VITE_BACKEND_URL}/version`).then((r) =>
       r.json().then((d) => setVersion(d.version))
     );
-  }, [userService]);
+  }, []);
 
   const logout = () => {
     authService.logout();
@@ -53,7 +53,7 @@ export default function Header() {
     useState(false);
 
   if (!user) {
-    return <p>Loading.</p>;
+    return null;
   }
 
   return (

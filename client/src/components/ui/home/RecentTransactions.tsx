@@ -1,7 +1,8 @@
-import { ShoppingBasketIcon } from "lucide-react"; // Dummy Icon
+import type dynamicIconImports from "lucide-react/dynamicIconImports";
 import { useEffect, useState } from "react";
 import { useServices } from "~/api/services/services.provider";
 import type { Transaction } from "~/api/types/transaction";
+import { DynamicIcon } from "~/components/common/DynamicIcon";
 import {
   Card,
   CardContent,
@@ -41,14 +42,26 @@ export default function RecentTransactions() {
                 <li key={tx.id} className="flex items-center justify-between">
                   <div className="flex items-center gap-3">
                     <div className="w-8 h-8 rounded-full bg-muted flex items-center justify-center">
-                      <ShoppingBasketIcon className="w-5 h-5 text-muted-foreground" />
+                      {tx.category ? (
+                        <DynamicIcon
+                          name={
+                            tx.category.icon as keyof typeof dynamicIconImports
+                          }
+                          className="w-5 h-5 text-muted-foreground"
+                        />
+                      ) : (
+                        <DynamicIcon
+                          className="w-5 h-5 text-muted-foreground"
+                          name="shopping-basket"
+                        />
+                      )}
                     </div>
                     <div>
                       <p className="font-medium leading-none">
                         {tx.description || "Unnamed"}
                       </p>
                       <p className="text-sm text-muted-foreground">
-                        {tx.category ?? "Uncategorized"} ·{" "}
+                        {tx.category ? tx.category.name : "Uncategorized"} ·{" "}
                         {new Date(tx.createdAt).toLocaleDateString()}
                       </p>
                     </div>

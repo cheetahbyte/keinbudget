@@ -26,8 +26,9 @@ export function TransactionCreateSheet() {
 
   const create = async () => {
     if (!desc || !name) return;
+    console.log(icon);
 
-    await categoryService?.createCategory(name, desc);
+    await categoryService?.createCategory(name, desc, icon);
 
     await refetchCategories();
   };
@@ -52,7 +53,7 @@ export function TransactionCreateSheet() {
             <Label htmlFor="description" className="text-right">
               Icon
             </Label>
-            <IconPicker value={icon} onChange={setIcon}/>
+            <IconPicker value={icon} onChange={setIcon} />
           </div>
         </div>
 

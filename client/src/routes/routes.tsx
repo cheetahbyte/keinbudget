@@ -7,11 +7,16 @@ import CategoriesPage from "~/routes/home/CategoriesPage";
 import { ErrorPage } from "./ErrorPage";
 import LoginPage from "./Login";
 import RegisterPage from "./RegisterPage";
+import { ServicesProvider } from "~/api/services/services.provider";
 
 export const appRoutes: RouteObject[] = [
   {
     path: "/",
-    element: <Layout />,
+    element: (
+      <ServicesProvider>
+        <Layout />
+      </ServicesProvider>
+    ),
     errorElement: <ErrorPage />,
     children: [
       {

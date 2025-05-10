@@ -135,7 +135,7 @@ export function TransactionCreateSheet() {
             <Label className="text-right">Category</Label>
             <Select onValueChange={setCategoryId} value={categoryId}>
               <SelectTrigger className="col-span-3 w-full">
-                <SelectValue placeholder="Choose account" />
+                <SelectValue placeholder="Choose category" />
               </SelectTrigger>
               <SelectContent>
                 {categories.map((cat) => (

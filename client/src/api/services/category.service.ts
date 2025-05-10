@@ -20,7 +20,11 @@ export class CategoryService {
     return await this.apiClient.post<Category>("/categories/", {
       name,
       description: description ?? "",
-      icon
+      icon,
     });
+  }
+
+  public async deleteCategory(id: string) {
+    await this.apiClient.delete(`/categories/${id}`);
   }
 }

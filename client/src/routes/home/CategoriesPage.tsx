@@ -12,9 +12,12 @@ import {
 import { TransactionCreateSheet } from "~/components/ui/categories/CategorySheet";
 
 export default function AccountsPage() {
-  const { categories } = useServices();
+  const { categories, categoryService, refetchCategories } = useServices();
 
-  const handleDelete = async (_id: string) => {};
+  const handleDelete = async (id: string) => {
+    await categoryService?.deleteCategory(id);
+    await refetchCategories();
+  };
 
   return (
     <div className="p-6 max-w-5xl mx-auto space-y-6">

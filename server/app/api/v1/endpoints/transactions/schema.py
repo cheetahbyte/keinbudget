@@ -1,4 +1,5 @@
 from app.database.models import Transaction
+from app.api.v1.endpoints.categories.schemas import CategoryResponse
 from tortoise.contrib.pydantic import pydantic_model_creator
 from pydantic import BaseModel
 from typing import Optional
@@ -22,7 +23,7 @@ class TransactionResponse(BaseModel):
     id: UUID
     amount: float
     description: str
-    category: Optional[str] = None
+    category: Optional[CategoryResponse] = None
     created_at: datetime
     to_account: Optional[UUID] = None
     from_account: Optional[UUID] = None
