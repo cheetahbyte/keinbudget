@@ -325,3 +325,6 @@ go.work.sum
 node_modules
 dist
 server/version.txt
+
+# Jetbrains IDEs
+.idea/
