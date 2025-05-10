@@ -101,7 +101,7 @@ jobs:
 
       - name: Create default user
         run: |
-          docker exec -t keinbudget uv run -m app.cli users create test@test.de password Test Test
+          docker exec -t keinbudget uv run --frozen -m app.cli users create test@test.de password Test Test
 
       - name: Install dependencies
         working-directory: client
