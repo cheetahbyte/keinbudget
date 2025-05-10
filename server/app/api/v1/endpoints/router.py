@@ -4,6 +4,7 @@ from app.api.v1.endpoints.users.router import router as users_router
 from app.api.v1.endpoints.auth.router import auth_router
 from app.api.v1.endpoints.transactions.router import router as transactions_router
 from app.api.v1.endpoints.finance.router import router as finance_router
+from app.api.v1.endpoints.categories.router import router as categories_router
 router = APIRouter()
 
 @router.get("/version")
@@ -20,3 +21,4 @@ router.include_router(auth_router, prefix="/auth", tags=["auth"])
 router.include_router(accounts_router, prefix="/accounts", tags=["accounts"])
 router.include_router(transactions_router, prefix="/transactions", tags=["transactions"])
 router.include_router(finance_router, prefix="/finance", tags=["finance"])
+router.include_router(categories_router, prefix="/categories", tags=["categories"])

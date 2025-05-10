@@ -11,6 +11,7 @@ class User(models.Model):
     twofa: fields.ReverseRelation["User2fa"]
     created_at = fields.DatetimeField(auto_now_add=True)
     modified_at = fields.DatetimeField(auto_now=True)
+    categories: fields.ReverseRelation["Category"]
 
 
     @property
@@ -49,6 +50,12 @@ class Transaction(models.Model):
         on_delete=fields.CASCADE
     )
     created_at = fields.DatetimeField()
+    category = fields.ForeignKeyField(
+        "models.Category",
+        related_name="transactions",
+        null=True,
+        on_delete=fields.SET_NULL
+    )
     class Meta:
         table = "transactions"
         
@@ -74,3 +81,14 @@ class Account(models.Model):
         outgoing_sum = sum(float(x) for x in outgoing)
 
         return round(float(self.start_balance) - incoming_sum + outgoing_sum, 2)
+
+class Category(models.Model):
+    id = fields.UUIDField(primary_key=True)
+    name = fields.CharField(max_length=25)
+    user = fields.ForeignKeyField("models.User", related_name="categories", on_delete=fields.CASCADE)
+    description = fields.CharField(max_length=255, nullable=True)
+    created_at = fields.DatetimeField(auto_now_add=True)
+    icon = fields.CharField(max_length=255, default="shopping-basket")
+    #modified_at = fields.DatetimeField(auto_now=True)
+    class Meta:
+        table = "categories"

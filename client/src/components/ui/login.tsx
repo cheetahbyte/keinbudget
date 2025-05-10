@@ -1,6 +1,6 @@
 import { useRef, useState } from "react";
 import { useNavigate } from "react-router";
-import { type AuthServiceTokenRequest } from "~/api/services/auth.service";
+import type { AuthServiceTokenRequest } from "~/api/services/auth.service";
 import { useServices } from "~/api/services/services.provider";
 import { Button } from "~/components/lib/button";
 import { CardContent, CardFooter } from "~/components/lib/card";
@@ -16,7 +16,6 @@ export function LoginCardContent(props: LoginCardProps) {
   const [password, setPassword] = useState("");
   const { authService } = useServices();
   const navigate = useNavigate();
-
   const handleLogin = async () => {
     const result = await authService.login(email, password);
     if (result.intermediate) {
@@ -76,9 +75,8 @@ export function TwoFACardContent(props: TwoFaCardContentProps) {
   const { authService } = useServices();
   const auth = authService;
   const [otp, setOtp] = useState(["", "", "", "", "", ""]);
-  const navigate = useNavigate();
   const inputsRef = useRef<Array<HTMLInputElement | null>>([]);
-
+  const navigate = useNavigate();
   const handleChange = (index: number, value: string) => {
     if (!/^[0-9]?$/.test(value)) return; // nur Ziffern erlauben
     const newOtp = [...otp];
