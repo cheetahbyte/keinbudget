@@ -1,6 +1,6 @@
+import ReactDOM from "react-dom/client";
 import { RouterProvider } from "react-router";
 import { router } from "~/routes/index";
-import ReactDOM from "react-dom/client";
 
 import "./index.css";
 import "react-day-picker/dist/style.css";
