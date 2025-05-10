@@ -143,6 +143,7 @@ export function TransactionCreateSheet() {
                     {cat.name}
                   </SelectItem>
                 ))}
+                <SelectItem key={"empty"} value={"empty"}>no category</SelectItem>
               </SelectContent>
             </Select>
           </div>
