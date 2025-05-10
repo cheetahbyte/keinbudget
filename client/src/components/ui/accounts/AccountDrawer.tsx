@@ -1,19 +1,19 @@
+import { Eye } from "lucide-react";
+import { useEffect, useState } from "react";
+import { useServices } from "~/api/services/services.provider";
+import type { Account } from "~/api/types/account";
+import type { Transaction } from "~/api/types/transaction";
+import { Button } from "~/components/lib/button";
 import {
   Drawer,
-  DrawerTrigger,
+  DrawerClose,
   DrawerContent,
-  DrawerHeader,
-  DrawerTitle,
   DrawerDescription,
   DrawerFooter,
-  DrawerClose,
+  DrawerHeader,
+  DrawerTitle,
+  DrawerTrigger,
 } from "~/components/lib/drawer";
-import { Button } from "~/components/lib/button";
-import { Eye } from "lucide-react";
-import type { Account } from "~/api/types/account";
-import { useEffect, useState } from "react";
-import { Transaction } from "~/api/types/transaction";
-import { useTransactionContext } from "~/api/services/transactions.service";
 import AccountGraph from "./AccountGraph";
 
 interface AccountDetailsDrawerProps {
@@ -21,16 +21,16 @@ interface AccountDetailsDrawerProps {
 }
 
 export function AccountDetailsDrawer({ account }: AccountDetailsDrawerProps) {
-  const { transactionService } = useTransactionContext();
+  const { transactionsService } = useServices();
   const [accountTransactions, setAccountTransactions] = useState<Transaction[]>(
     []
   );
 
   useEffect(() => {
-    transactionService
+    transactionsService!
       .getTransactionsForAccount(account.id)
       .then(setAccountTransactions);
-  }, [transactionService, account.id]);
+  }, [transactionsService, account.id]);
 
   return (
     <Drawer>
@@ -55,9 +55,7 @@ export function AccountDetailsDrawer({ account }: AccountDetailsDrawerProps) {
               <p>{account.startBalance.toFixed(2)}€</p>
             </div>
             <div>
-              <p className="font-medium text-foreground">
-                Current Balance
-              </p>
+              <p className="font-medium text-foreground">Current Balance</p>
               <p>{account.currentBalance.toFixed(2)}€</p>
             </div>
           </div>

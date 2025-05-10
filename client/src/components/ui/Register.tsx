@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router";
-// Removed Label import from recharts as it's not compatible
-import { useAuth } from "~/api/services/login.service";
+import { useServices } from "~/api/services/services.provider";
 import { Button } from "../lib/button";
 import { CardContent, CardFooter } from "../lib/card";
 import { Input } from "../lib/input";
@@ -11,14 +10,14 @@ export function SignUpCardContent() {
 	const [password, setPassword] = useState("");
 	const [firstName, setFirstName] = useState("");
 	const [lastName, setLastName] = useState("");
-	const authService = useAuth();
+	const { authService } = useServices();
 	const navigate = useNavigate();
 
 	const handleSignUp = async () => {
 		try {
 			await authService.signUp(email, password, firstName, lastName);
-            const result = await authService.login(email, password)
-            authService.storeToken(result.token)
+			const result = await authService.login(email, password);
+			authService.storeToken(result.token);
 			navigate("/");
 		} catch (error) {
 			console.error("Sign-up failed", error);
@@ -29,7 +28,12 @@ export function SignUpCardContent() {
 		<>
 			<CardContent className="space-y-4">
 				<div className="space-y-2">
-					<label htmlFor="firstName" className="block text-sm font-medium text-gray-700">First Name</label>
+					<label
+						htmlFor="firstName"
+						className="block text-sm font-medium text-gray-700"
+					>
+						First Name
+					</label>
 					<Input
 						id="firstName"
 						placeholder="John"
@@ -37,7 +41,12 @@ export function SignUpCardContent() {
 					/>
 				</div>
 				<div className="space-y-2">
-					<label htmlFor="lastName" className="block text-sm font-medium text-gray-700">Last Name</label>
+					<label
+						htmlFor="lastName"
+						className="block text-sm font-medium text-gray-700"
+					>
+						Last Name
+					</label>
 					<Input
 						id="lastName"
 						placeholder="Doe"
@@ -45,7 +54,12 @@ export function SignUpCardContent() {
 					/>
 				</div>
 				<div className="space-y-2">
-					<label htmlFor="email" className="block text-sm font-medium text-gray-700">Email</label>
+					<label
+						htmlFor="email"
+						className="block text-sm font-medium text-gray-700"
+					>
+						Email
+					</label>
 					<Input
 						id="email"
 						type="email"
@@ -54,7 +68,12 @@ export function SignUpCardContent() {
 					/>
 				</div>
 				<div className="space-y-2">
-					<label htmlFor="password" className="block text-sm font-medium text-gray-700">Password</label>
+					<label
+						htmlFor="password"
+						className="block text-sm font-medium text-gray-700"
+					>
+						Password
+					</label>
 					<Input
 						id="password"
 						type="password"

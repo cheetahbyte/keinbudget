@@ -1,26 +1,26 @@
+import { ShoppingBasketIcon } from "lucide-react"; // Dummy Icon
+import { useEffect, useState } from "react";
+import { useServices } from "~/api/services/services.provider";
+import type { Transaction } from "~/api/types/transaction";
 import {
   Card,
+  CardContent,
+  CardDescription,
   CardHeader,
   CardTitle,
-  CardDescription,
-  CardContent,
 } from "~/components/lib/card";
-import { ShoppingBasketIcon } from "lucide-react"; // Dummy Icon
-import { useTransactionService } from "~/api/services/transactions.service";
-import { useEffect, useState } from "react";
-import type { Transaction } from "~/api/types/transaction";
 
 export default function RecentTransactions() {
-  const transactionService = useTransactionService();
+  const { transactionsService } = useServices();
   const [lastTransactions, setLastTransactions] = useState<Transaction[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    transactionService.getLastTransactions().then((res) => {
+    transactionsService?.getLastTransactions().then((res) => {
       setLastTransactions(res);
       setLoading(false);
     });
-  }, [transactionService]);
+  }, [transactionsService]);
   return (
     <Card>
       <CardHeader>
@@ -60,7 +60,7 @@ export default function RecentTransactions() {
                         : "text-green-600"
                     }`}
                   >
-                    {!tx.toAccount && tx.fromAccount ? "-" : "+"}
+                    {!tx.toAccount && tx.fromAccount ? "-" : "+"}$
                     {new Intl.NumberFormat("de-DE", {
                       style: "currency",
                       currency: "EUR",
