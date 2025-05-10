@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useUserService } from "./services/user.service";
+import { useServices } from "./services/services.provider";
 import type { User } from "./types/user";
 
 export function useToken() {
@@ -15,10 +15,10 @@ export function useToken() {
 
 export function useUser(): User | null {
 	const [user, setUser] = useState<User | null>(null);
-	const userService = useUserService();
+	const { userService } = useServices();
 
 	useEffect(() => {
-		userService.getMe().then(setUser).catch(console.error);
+		userService!.getMe().then(setUser).catch(console.error);
 	}, [userService]);
 
 	return user;

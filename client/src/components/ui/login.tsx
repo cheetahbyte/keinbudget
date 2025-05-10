@@ -1,9 +1,7 @@
 import { useRef, useState } from "react";
 import { useNavigate } from "react-router";
-import {
-	type AuthServiceTokenRequest,
-	useAuth,
-} from "~/api/services/login.service";
+import { type AuthServiceTokenRequest } from "~/api/services/auth.service";
+import { useServices } from "~/api/services/services.provider";
 import { Button } from "~/components/lib/button";
 import { CardContent, CardFooter } from "~/components/lib/card";
 import { Input } from "~/components/lib/input";
@@ -16,7 +14,7 @@ type LoginCardProps = {
 export function LoginCardContent(props: LoginCardProps) {
 	const [email, setEmail] = useState("");
 	const [password, setPassword] = useState("");
-	const authService = useAuth();
+	const { authService } = useServices();
 	const navigate = useNavigate();
 
 	const handleLogin = async () => {
@@ -71,7 +69,8 @@ type TwoFaCardContentProps = {
 };
 
 export function TwoFACardContent(props: TwoFaCardContentProps) {
-	const auth = useAuth();
+	const { authService } = useServices();
+	const auth = authService;
 	const [otp, setOtp] = useState(["", "", "", "", "", ""]);
 	const navigate = useNavigate();
 	const inputsRef = useRef<Array<HTMLInputElement | null>>([]);
