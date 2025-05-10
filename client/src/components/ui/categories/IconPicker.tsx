@@ -78,6 +78,7 @@ export const IconPicker: React.FC<IconPickerProps> = ({ value, onChange }) => {
                 setOpen(false);
               }}
               className="p-2 hover:bg-muted rounded flex flex-col items-center text-xs"
+              variant={"ghost"}
             >
               <DynamicIcon
                 name={name as keyof typeof dynamicIconImports}
