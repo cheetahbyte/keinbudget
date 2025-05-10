@@ -1,4 +1,4 @@
-from app.database.models import Transaction, User, Account
+from app.database.models import Transaction, User, Account, Category
 from uuid import UUID
 from tortoise.expressions import Q
 
@@ -19,11 +19,13 @@ async def get_last_transaction(limit: int, user: User) -> list[Transaction]:
 async def create_transaction(transaction_data: dict, user: User) -> Transaction | None:
     from_account = await Account.get_or_none(id=transaction_data.get("from_account"))
     to_account = await Account.get_or_none(id=transaction_data.get("to_account"))
+    category = await Account.get_or_none(id=transaction_data.get("category"))
     if not to_account and not from_account:
         return None
     return await Transaction.create(
         description=transaction_data.get("description"),
         amount=transaction_data.get("amount"),
+        category=category,
         to_account=to_account,
         from_account=from_account,
         user=user,
