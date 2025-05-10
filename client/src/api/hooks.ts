@@ -2,23 +2,27 @@ import { useEffect, useState } from "react";
 import { useServices } from "./services/services.provider";
 import type { User } from "./types/user";
 
-export function useToken() {
-  const [token, setToken] = useState<string | null | undefined>(undefined);
+export function useToken(): string | null {
+  const [token, setToken] = useState<string | null>(() =>
+    localStorage.getItem("token")
+  );
 
   useEffect(() => {
-    const fetchedToken = localStorage.getItem("token");
-    setToken(fetchedToken);
+    const onChange = () => setToken(localStorage.getItem("token"));
+    window.addEventListener("authchange", onChange);
+    return () => window.removeEventListener("authchange", onChange);
   }, []);
 
   return token;
 }
 
-export function useUser(): User | null {
-  const [user, setUser] = useState<User | null>(null);
+export function useUser() {
   const { userService } = useServices();
+  const [user, setUser] = useState<User | null | undefined>(undefined);
 
   useEffect(() => {
-    userService?.getMe().then(setUser).catch(console.error);
+    if (!userService) return;
+    userService.getMe().then(setUser);
   }, [userService]);
 
   return user;
