@@ -2,9 +2,9 @@ import { Outlet, useNavigate } from "react-router";
 import { ThemeProvider } from "./components/common/ThemeProvider";
 import Header from "./components/ui/HeaderBar";
 import { useUser } from "./api/hooks";
-import { useEffect } from "react";
+import { type JSX, useEffect } from "react";
 
-export default function Layout() {
+export default function Layout(): JSX.Element {
   const user = useUser();
   const navigate = useNavigate();
   const isAuthPage = ["/login", "/register"].includes(window.location.pathname);
@@ -15,9 +15,9 @@ export default function Layout() {
     }
   }, [user, isAuthPage, navigate]);
 
-  if (!user && !isAuthPage) return null;
+  if (!user && !isAuthPage) return <></>;
 
-  if (user && isAuthPage) return navigate("/");
+  if (user && isAuthPage) navigate("/");
 
   return (
     <div>

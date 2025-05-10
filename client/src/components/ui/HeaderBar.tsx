@@ -2,7 +2,6 @@ import { Plus, User } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router";
 import { useServices } from "~/api/services/services.provider";
-import type { User as UserType } from "~/api/types/user";
 import { Button } from "~/components/lib/button";
 import { type Theme, useTheme } from "../common/ThemeProvider";
 import {
