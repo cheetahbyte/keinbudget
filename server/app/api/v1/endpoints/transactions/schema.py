@@ -12,7 +12,7 @@ TransactionSchema = pydantic_model_creator(Transaction, name="Transaction")
 class CreateTransactionSchema(BaseModel):
     description: str
     amount: float
-    category: Optional[UUID] = None
+    category: Optional[UUID|str] = None
     from_account: Optional[UUID] = None
     to_account: Optional[UUID] = None
     created_at: datetime
