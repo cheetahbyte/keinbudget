@@ -37,7 +37,7 @@ export class TransactionService {
         created_at: date,
         category: category,
       });
-    throw Error("unknown type");
+    throw Error("unknown thing");
   }
 
   public async deleteTransaction(id: string) {
