@@ -88,6 +88,7 @@ class Category(models.Model):
     user = fields.ForeignKeyField("models.User", related_name="categories", on_delete=fields.CASCADE)
     description = fields.CharField(max_length=255, nullable=True)
     created_at = fields.DatetimeField(auto_now_add=True)
+    icon = fields.CharField(max_length=255, default="shopping-basket")
     #modified_at = fields.DatetimeField(auto_now=True)
     class Meta:
         table = "categories"
