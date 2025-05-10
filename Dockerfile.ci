@@ -1,0 +1,12 @@
+FROM python:3.13-slim
+RUN pip install --no-cache-dir uv
+WORKDIR /app
+COPY server/pyproject.toml ./pyproject.toml
+COPY server/uv.lock ./uv.lock
+RUN uv sync --locked
+COPY server/ ./server
+COPY client/dist ./server/static
+WORKDIR /app/server
+ENV ENVIRONMENT=production
+EXPOSE 8000
+CMD ["uv", "run", "-m", "app.cli", "run"]

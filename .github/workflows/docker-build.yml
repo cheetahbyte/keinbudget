@@ -27,6 +27,14 @@ jobs:
       - name: Generate version.txt
         run: python scripts/version.py
 
+      - name: Install Node.js Dependencies
+        run: npm ci
+        working-directory: client
+
+      - name: Build Frontend
+        run: VITE_BACKEND_URL=/api/v1 npm run build
+        working-directory: client
+
       - name: Set up QEMU (for ARM64 builds)
         uses: docker/setup-qemu-action@v3
 
@@ -55,7 +63,7 @@ jobs:
         uses: docker/build-push-action@v5
         with:
           context: .
-          file: ./Dockerfile
+          file: ./Dockerfile.ci
           push: true
           platforms: linux/amd64,linux/arm64
           tags: ghcr.io/${{ github.repository }}:${{ steps.tag.outputs.tag }}
@@ -93,7 +101,7 @@ jobs:
 
       - name: Create default user
         run: |
-          docker exec -it keinbudget uv run -m app.cli user create test@test.de password Test Test
+          docker exec -t keinbudget uv run -m app.cli user create test@test.de password Test Test
 
       - name: Install dependencies
         working-directory: client
