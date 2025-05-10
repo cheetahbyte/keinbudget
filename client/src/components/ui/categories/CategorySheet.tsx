@@ -14,10 +14,13 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "~/components/lib/sheet";
+import { IconPicker } from "./IconPicker";
 
 export function TransactionCreateSheet() {
   const [name, setName] = useState<string>("");
   const [desc, setDesc] = useState<string>("");
+
+  const [icon, setIcon] = useState("shopping-basket");
 
   const { categoryService, refetchCategories } = useServices();
 
@@ -47,11 +50,20 @@ export function TransactionCreateSheet() {
         <div className="grid gap-4 py-4">
           <div className="grid grid-cols-4 items-center gap-4">
             <Label htmlFor="description" className="text-right">
+              Icon
+            </Label>
+            <IconPicker value={icon} onChange={setIcon}/>
+          </div>
+        </div>
+
+        <div className="grid gap-4 py-4">
+          <div className="grid grid-cols-4 items-center gap-4">
+            <Label htmlFor="description" className="text-right">
               Name
             </Label>
             <Input
               id="description"
-              placeholder="Birthday Cake"
+              placeholder="Food"
               className="col-span-3"
               value={name}
               onChange={(e) => setName(e.target.value)}
@@ -66,7 +78,7 @@ export function TransactionCreateSheet() {
             </Label>
             <Input
               id="description"
-              placeholder="Birthday Cake"
+              placeholder="Nom nom"
               className="col-span-3"
               value={desc}
               onChange={(e) => setDesc(e.target.value)}
