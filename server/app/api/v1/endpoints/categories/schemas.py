@@ -6,7 +6,6 @@ from datetime import datetime
 class CreateCategorySchema(BaseModel):
     name: str
     description: Optional[str] = None
-    user: UUID
 
 class CategoryResponse(BaseModel):
     id: UUID

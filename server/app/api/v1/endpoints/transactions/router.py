@@ -22,6 +22,7 @@ async def get_transactions(account_id: UUID = None, user: User = Depends(get_cur
                 id=t.id,
                 to_account=t.to_account.id if t.to_account else None,
                 from_account=t.from_account.id if t.from_account else None,
+                category= t.category.name if t.category else None,
                 amount=t.amount,
                 description=t.description,
                 created_at=t.created_at,
@@ -41,6 +42,7 @@ async def create_transaction(
         description=transaction.description,
         to_account=transaction.to_account.id if transaction.to_account else None,
         from_account=transaction.from_account.id if transaction.from_account else None,
+        category= transaction.category.name if transaction.category else None,
         created_at=transaction.created_at,
     )
 
@@ -54,6 +56,7 @@ async def get_last_transactions(user: User = Depends(get_current_user), limit: i
                 id=t.id,
                 to_account=t.to_account.id if t.to_account else None,
                 from_account=t.from_account.id if t.from_account else None,
+                category= t.category.name if t.category else None,
                 amount=t.amount,
                 description=t.description,
                 created_at=t.created_at,
@@ -70,6 +73,7 @@ async def get_transaction_by_id(id: UUID, user: User = Depends(get_current_user)
         description=transaction.description,
         to_account=transaction.to_account.id if transaction.to_account else None,
         from_account=transaction.from_account.id if transaction.from_account else None,
+        category= transaction.category.name if transaction.category else None,
         created_at=transaction.created_at,
     )
     

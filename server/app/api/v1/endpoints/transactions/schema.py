@@ -22,7 +22,7 @@ class TransactionResponse(BaseModel):
     id: UUID
     amount: float
     description: str
-    category: Optional[UUID] = None
+    category: Optional[str] = None
     created_at: datetime
     to_account: Optional[UUID] = None
     from_account: Optional[UUID] = None
