@@ -9,6 +9,8 @@ import {
 	PopoverTrigger,
 } from "~/components/lib/popover";
 
+import { de } from "date-fns/locale"
+
 interface DatePickerProps {
 	value: Date;
 	onChange: (date: Date) => void;
@@ -32,6 +34,7 @@ export function DatePicker({ value, onChange }: DatePickerProps) {
 					selected={value}
 					onSelect={(e) => onChange(e as Date)}
 					initialFocus
+					locale={de}
 				/>
 			</PopoverContent>
 		</Popover>
