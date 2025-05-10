@@ -19,6 +19,7 @@ async def get_categories(user: User = Depends(get_current_user)):
                 name=c.name,
                 user=user.id,
                 description = c.description,
+                icon=c.icon,
                 created_at = c.created_at,
             )
         )
@@ -32,6 +33,7 @@ async def create_categories(data: CreateCategorySchema, user: User = Depends(get
         name=categories.name,
         user=user.id,
         description=categories.description,
+        icon=categories.icon,
         created_at=categories.created_at,
     )
 
@@ -43,6 +45,7 @@ async def get_transaction_by_id(id: UUID, user: User = Depends(get_current_user)
         name=category.name,
         user=user.id,
         description=category.description,
+        icon=category.icon,
         created_at=category.created_at,
     )
     
