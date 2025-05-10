@@ -61,7 +61,7 @@ export default function RecentTransactions() {
                         {tx.description || "Unnamed"}
                       </p>
                       <p className="text-sm text-muted-foreground">
-                        {tx.category ? tx.category.name : "Uncategorized"} ·{" "}
+                        {tx.category ? tx.category.name : "no category"} ·{" "}
                         {new Date(tx.createdAt).toLocaleDateString()}
                       </p>
                     </div>
