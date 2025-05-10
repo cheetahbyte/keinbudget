@@ -70,7 +70,17 @@ jobs:
 
       - uses: actions/setup-node@v4
         with:
-          node-version: lts/*
+          node-version: 20
+          cache: "npm"
+          cache-dependency-path: client/package-lock.json
+
+      - name: Cache Playwright Browsers
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/ms-playwright
+          key: playwright-${{ runner.os }}-${{ hashFiles('client/package-lock.json') }}
+          restore-keys: |
+            playwright-${{ runner.os }}-
 
       - name: Show image tag
         run: echo "Using image tag ${{ needs.docker.outputs.tag }}"
@@ -83,7 +93,7 @@ jobs:
 
       - name: Create default user
         run: |
-          curl --request POST --url http://localhost:8000/api/v1/users/ --header 'content-type: application/json' --data '{ "email": "test@test.de", "password": "password", "last_name": "Test", "first_name": "Test"}'
+          curl --request POST --url http://localhost:3000/api/v1/users/ --header 'content-type: application/json' --data '{ "email": "test@test.de", "password": "password", "last_name": "Test", "first_name": "Test"}'
 
       - name: Install dependencies
         working-directory: client
