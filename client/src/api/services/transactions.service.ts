@@ -20,7 +20,6 @@ export class TransactionService {
     description: string,
     category: string
   ): Promise<Transaction> {
-    console.log(accountId, type, category);
     if (type === "incoming")
       return await this.apiClient.post<Transaction>("/transactions/", {
         to_account: accountId,

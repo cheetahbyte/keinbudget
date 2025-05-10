@@ -114,9 +114,6 @@ export const ServicesProvider: React.FC<ServicesProviderProps> = ({
     refetchCategories();
   }, [categoryService, refetchCategories]);
 
-  const isAuthPage = ["/login", "/register"].includes(window.location.pathname);
-  if (!token && !isAuthPage) return null;
-
   return (
     <ServicesContext.Provider
       value={{

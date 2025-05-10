@@ -26,7 +26,6 @@ export function TransactionCreateSheet() {
 
   const create = async () => {
     if (!desc || !name) return;
-    console.log(icon);
 
     await categoryService?.createCategory(name, desc, icon);
 

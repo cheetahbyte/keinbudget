@@ -42,8 +42,8 @@ export default function Header() {
   }, []);
 
   const logout = () => {
-    authService.logout();
     navigate("/login");
+    authService.logout();
   };
 
   const navigate = useNavigate();
@@ -60,7 +60,7 @@ export default function Header() {
       <div className="flex items-center justify-between px-6 py-4">
         <h1 className="text-2xl font-bold tracking-tight">keinbudget.</h1>
         <DropdownMenu>
-          <DropdownMenuTrigger asChild>
+          <DropdownMenuTrigger asChild data-testid="user-dropdown">
             <Button variant="ghost" size="icon">
               <User className="w-5 h-5" />
             </Button>
@@ -98,7 +98,11 @@ export default function Header() {
               version: {version}
             </DropdownMenuItem>
             <DropdownMenuSeparator />
-            <DropdownMenuItem onClick={logout} variant="destructive">
+            <DropdownMenuItem
+              onClick={logout}
+              variant="destructive"
+              data-testid="logout-btn"
+            >
               Log Out
             </DropdownMenuItem>
           </DropdownMenuContent>

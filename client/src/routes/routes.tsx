@@ -8,13 +8,16 @@ import { ErrorPage } from "./ErrorPage";
 import LoginPage from "./Login";
 import RegisterPage from "./RegisterPage";
 import { ServicesProvider } from "~/api/services/services.provider";
+import { ProtectedRoute } from "./ProtectedRoute";
 
 export const appRoutes: RouteObject[] = [
   {
     path: "/",
     element: (
       <ServicesProvider>
-        <Layout />
+        <ProtectedRoute>
+          <Layout />
+        </ProtectedRoute>
       </ServicesProvider>
     ),
     errorElement: <ErrorPage />,
@@ -35,14 +38,22 @@ export const appRoutes: RouteObject[] = [
         element: <CategoriesPage />,
         path: "/categories",
       },
-      {
-        path: "/login",
-        element: <LoginPage />,
-      },
-      {
-        path: "/register",
-        element: <RegisterPage />,
-      },
     ],
+  },
+  {
+    path: "/login",
+    element: (
+      <ServicesProvider>
+        <LoginPage />
+      </ServicesProvider>
+    ),
+  },
+  {
+    path: "/register",
+    element: (
+      <ServicesProvider>
+        <RegisterPage />
+      </ServicesProvider>
+    ),
   },
 ];

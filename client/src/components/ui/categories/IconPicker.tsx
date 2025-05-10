@@ -74,7 +74,6 @@ export const IconPicker: React.FC<IconPickerProps> = ({ value, onChange }) => {
             <Button
               key={name}
               onClick={() => {
-                console.log(name);
                 onChange(name);
                 setOpen(false);
               }}
