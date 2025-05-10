@@ -28,7 +28,9 @@ app.add_middleware(
 app.include_router(api_router, prefix="/api/v1")
 
 if os.getenv("ENVIRONMENT") == "production":
-    app.mount("/assets", StaticFiles(directory="/app/server/static/assets"), name="assets")
+    app.mount(
+        "/assets", StaticFiles(directory="/app/server/static/assets"), name="assets"
+    )
 
     @app.api_route("/{full_path:path}", methods=["GET"])
     async def serve_spa(request: Request, full_path: str):
@@ -43,6 +45,9 @@ if os.getenv("ENVIRONMENT") == "production":
         return FileResponse("/app/server/static/index.html")
 
 
+@app.get("/health")
+async def health_check():
+    return {"ok": 1}
 
 
 if __name__ == "__main__":

@@ -91,6 +91,9 @@ jobs:
       - name: Run Docker container
         run: docker run -d -p 3000:8000 --name keinbudget ghcr.io/${{ github.repository }}:${{ needs.docker.outputs.tag }}
 
+      - name: Wait for backend to be ready
+        run: npx wait-on http://localhost:3000/health
+
       - name: Create default user
         run: |
           curl --request POST --url http://localhost:3000/api/v1/users/ --header 'content-type: application/json' --data '{ "email": "test@test.de", "password": "password", "last_name": "Test", "first_name": "Test"}'
