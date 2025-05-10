@@ -1,7 +1,7 @@
 name: Playwright Tests
 on:
   workflow_run:
-    workflows: ["docker-build"]
+    workflows: ["Build and Push Docker Image"]
     types:
       - completed
 
