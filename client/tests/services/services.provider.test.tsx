@@ -54,7 +54,7 @@ vi.mock("../../src/api/hooks", () => ({
 }));
 
 vi.mock("../../src/api/utils", () => ({
-  apiClientWithToken: (client: ApiClient, token: string) => client,
+  apiClientWithToken: (client: ApiClient, _token: string) => client,
 }));
 
 vi.mock("../../src/api", () => ({
