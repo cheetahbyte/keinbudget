@@ -1,5 +1,4 @@
-import { render } from "@testing-library/react";
-import { screen, waitFor } from "@testing-library/dom";
+import { render, waitFor, screen } from "@testing-library/react";
 import { useEffect } from "react";
 import {
   ThemeProvider,
