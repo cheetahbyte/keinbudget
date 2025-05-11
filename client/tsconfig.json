@@ -20,7 +20,7 @@
     "paths": {
       "~/*": ["./src/*"]
     },
-    "types": ["vitest/globals", "vitest-dom/extend-expect"]
+    "types": ["vitest/globals", "vitest-dom/extend-expect", "playwright"]
   },
-  "include": ["src", "vite.config.ts"]
+  "include": ["src", "vite.config.ts", "playwright.config.ts"]
 }
