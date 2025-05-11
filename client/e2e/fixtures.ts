@@ -6,7 +6,7 @@ type MyFixture = {
 
 export const testLoggedIn = base.extend<MyFixture>({
   authenticatedPage: async ({ page }, use) => {
-    await page.goto("http://localhost:3000/login");
+    await page.goto("/login");
     await page.getByLabel("email").fill("test@test.de");
     await page.getByLabel("password").fill("password");
     await Promise.all([
