@@ -5,7 +5,7 @@ export default defineConfig({
     globals: true,
     setupFiles: ["./tests/setup.ts"],
     environment: "jsdom",
-    include: ["tests/**/*.{test,spec}.ts"],
+    include: ["tests/**/*.{test,spec}.ts", "tests/**/*.{test,spec}.tsx"],
     exclude: ["e2e/**", "node_modules/**", "dist/**"],
     coverage: {
       provider: "v8",

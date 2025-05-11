@@ -1,18 +1,19 @@
-name: Build and Push Docker Image
+name: Build, Push and Test
 
 on:
   push:
-    branches: [ main, development ]
+    branches: [main, development]
   pull_request:
-    branches: [ main ]
+    branches: [main]
 
 jobs:
   docker:
     runs-on: ubuntu-latest
-
     permissions:
       contents: read
       packages: write
+    outputs:
+      tag: ${{ steps.tag.outputs.tag }}
 
     steps:
       - name: Checkout code
@@ -21,10 +22,18 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
-          python-version: '3.11'
+          python-version: "3.11"
 
       - name: Generate version.txt
         run: python scripts/version.py
+
+      - name: Install Node.js Dependencies
+        run: npm ci
+        working-directory: client
+
+      - name: Build Frontend
+        run: VITE_BACKEND_URL=/api/v1 npm run build
+        working-directory: client
 
       - name: Set up QEMU (for ARM64 builds)
         uses: docker/setup-qemu-action@v3
@@ -41,10 +50,12 @@ jobs:
 
       - name: Determine image tag
         id: tag
+        env:
+          HEAD_BRANCH: ${{ github.event.workflow_run.head_branch }}
         run: |
-          if [[ "${{ github.ref }}" == "refs/heads/main" ]]; then
+          if [[ "$HEAD_BRANCH" == "main" ]]; then
             echo "tag=latest" >> "$GITHUB_OUTPUT"
-          elif [[ "${{ github.ref }}" == "refs/heads/development" ]]; then
+          elif [[ "$HEAD_BRANCH" == "development" ]]; then
             echo "tag=nightly" >> "$GITHUB_OUTPUT"
           else
             echo "tag=dev" >> "$GITHUB_OUTPUT"
@@ -54,7 +65,61 @@ jobs:
         uses: docker/build-push-action@v5
         with:
           context: .
-          file: ./Dockerfile
+          file: ./Dockerfile.ci
           push: true
           platforms: linux/amd64,linux/arm64
           tags: ghcr.io/${{ github.repository }}:${{ steps.tag.outputs.tag }}
+
+  playwright:
+    needs: docker
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: "npm"
+          cache-dependency-path: client/package-lock.json
+
+      - name: Cache Playwright Browsers
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/ms-playwright
+          key: playwright-${{ runner.os }}-${{ hashFiles('client/package-lock.json') }}
+          restore-keys: |
+            playwright-${{ runner.os }}-
+
+      - name: Show image tag
+        run: echo "Using image tag ${{ needs.docker.outputs.tag }}"
+
+      - name: Pull Docker image
+        run: docker pull ghcr.io/${{ github.repository }}:${{ needs.docker.outputs.tag }}
+
+      - name: Run Docker container
+        run: docker run -d -p 3000:8000 --name keinbudget ghcr.io/${{ github.repository }}:${{ needs.docker.outputs.tag }}
+
+      - name: Create default user
+        run: |
+          docker exec -t keinbudget uv run --frozen -m app.cli users create test@test.de password Test Test
+
+      - name: Install dependencies
+        working-directory: client
+        run: npm ci
+
+      - name: Install Playwright Browsers
+        working-directory: client
+        run: npx playwright install --with-deps
+
+      - name: Run Playwright tests
+        working-directory: client
+        run: npx playwright test
+
+      - uses: actions/upload-artifact@v4
+        if: ${{ !cancelled() }}
+        with:
+          name: playwright-report
+          path: playwright-report/
+          retention-days: 30

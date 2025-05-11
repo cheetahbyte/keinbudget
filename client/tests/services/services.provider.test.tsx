@@ -48,6 +48,12 @@ vi.mock("../../src/api/services/user.service", () => ({
   UserService: vi.fn().mockImplementation(() => ({})),
 }));
 
+vi.mock("../../src/api/services/category.service", () => ({
+  CategoryService: vi.fn().mockImplementation(() => ({
+    getCategories: vi.fn().mockResolvedValue([{ id: "cat1" }]),
+  })),
+}));
+
 vi.mock("../../src/api/hooks", () => ({
   useToken: vi.fn(() => "test-token"),
 }));

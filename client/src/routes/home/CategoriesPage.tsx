@@ -9,27 +9,24 @@ import {
   TableHeader,
   TableRow,
 } from "~/components/lib/table";
-import { AccountDetailsDrawer } from "~/components/ui/accounts/AccountDrawer";
-import { AccountCreateSheet } from "~/components/ui/accounts/AccountSheet";
+import { TransactionCreateSheet } from "~/components/ui/categories/CategorySheet";
 
 export default function AccountsPage() {
-  const { accounts, accountsService, refetchAccounts, refetchTransactions } =
-    useServices();
+  const { categories, categoryService, refetchCategories } = useServices();
 
   const handleDelete = async (id: string) => {
-    await accountsService?.deleteAccount(id);
-    await refetchAccounts();
-    await refetchTransactions();
+    await categoryService?.deleteCategory(id);
+    await refetchCategories();
   };
 
   return (
     <div className="p-6 max-w-5xl mx-auto space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight">Accounts</h1>
-          <p className="text-muted-foreground">Manage your accounts.</p>
+          <h1 className="text-2xl font-bold tracking-tight">Categories</h1>
+          <p className="text-muted-foreground">Manage your categories.</p>
         </div>
-        <AccountCreateSheet />
+        <TransactionCreateSheet />
       </div>
 
       <div className="border rounded-md">
@@ -37,28 +34,23 @@ export default function AccountsPage() {
           <TableHeader>
             <TableRow>
               <TableHead>Name</TableHead>
-              <TableHead className="text-center">Balance</TableHead>
+              <TableHead className="text-center">Description</TableHead>
               <TableHead className="text-right">Actions</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
-            {accounts.length > 0 ? (
-              accounts.map((account) => (
-                <TableRow key={account.id}>
-                  <TableCell>{account.name}</TableCell>
+            {categories.length > 0 ? (
+              categories.map((cat) => (
+                <TableRow key={cat.id}>
+                  <TableCell>{cat.name}</TableCell>
                   <TableCell className="text-center">
-                    {new Intl.NumberFormat("de-DE", {
-                      style: "currency",
-                      currency: "EUR",
-                    }).format(account.currentBalance)}
+                    {cat.description}
                   </TableCell>
                   <TableCell className="text-right flex justify-end gap-2">
-                    <AccountDetailsDrawer account={account} />
                     <Button
-                      data-testid="delete-account"
                       variant="ghost"
                       size="icon"
-                      onClick={() => handleDelete(account.id)}
+                      onClick={() => handleDelete(cat.id)}
                     >
                       <Trash2 className="w-4 h-4 text-red-500" />
                     </Button>
@@ -71,7 +63,7 @@ export default function AccountsPage() {
                   colSpan={3}
                   className="text-center text-muted-foreground"
                 >
-                  No accounts found.
+                  No categories found.
                 </TableCell>
               </TableRow>
             )}

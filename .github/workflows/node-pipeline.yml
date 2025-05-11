@@ -1,15 +1,16 @@
 name: Frontend Lint & Test
-
+permissions:
+  contents: read
 on:
   push:
     paths:
-      - 'client/**'
+      - "client/**"
     branches:
       - main
       - development
   pull_request:
     paths:
-      - 'client/**'
+      - "client/**"
     branches:
       - main
       - development
@@ -28,8 +29,8 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
-          cache: 'npm'
+          node-version: "20"
+          cache: "npm"
           cache-dependency-path: client/package-lock.json
 
       - name: Install dependencies

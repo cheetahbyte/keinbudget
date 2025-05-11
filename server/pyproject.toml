@@ -11,6 +11,7 @@ dependencies = [
     "pyotp>=2.9.0",
     "python-jose>=3.4.0",
     "tortoise-orm>=0.25.0",
+    "typer>=0.15.3",
     "uvicorn>=0.34.2",
 ]
 
