@@ -113,6 +113,7 @@ export default function Header() {
         <div className="flex space-x-1 bg-muted p-1 rounded-xl">
           {tabs.map((tab) => (
             <Button
+              data-testid={`tab-${tab.name.toLowerCase()}`}
               key={tab.path}
               variant={location.pathname === tab.path ? "secondary" : "ghost"}
               className={`rounded-xl text-sm font-medium px-4 cursor-pointer ${
