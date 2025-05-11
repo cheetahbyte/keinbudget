@@ -10,7 +10,9 @@
     "format": "biome format .",
     "preview": "vite preview",
     "test": "vitest run",
-    "test:coverage": "vitest run --coverage"
+    "test:coverage": "vitest run --coverage",
+    "test:e2e": "npx playwright test",
+    "test:e2eui": "npx playwright test --ui"
   },
   "dependencies": {
     "@radix-ui/react-checkbox": "^1.1.4",
