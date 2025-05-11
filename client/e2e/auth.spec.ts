@@ -2,7 +2,7 @@ import { test, expect } from "@playwright/test";
 import { testLoggedIn } from "./fixtures";
 
 test("can login with credentials", async ({ page }) => {
-  await page.goto("http://localhost:3000/login");
+  await page.goto("/login");
 
   await page.getByLabel("email").fill("test@test.de");
   await page.getByLabel("password").fill("password");
@@ -20,7 +20,7 @@ test("can login with credentials", async ({ page }) => {
 });
 
 test("redirects to login when not authenticated", async ({ page }) => {
-  await page.goto("http://localhost:3000/");
+  await page.goto("/");
   await expect(page).toHaveURL(/\/login$/);
 });
 

@@ -50,10 +50,12 @@ jobs:
 
       - name: Determine image tag
         id: tag
+        env:
+          HEAD_BRANCH: ${{ github.event.workflow_run.head_branch }}
         run: |
-          if [[ "${{ github.ref }}" == "refs/heads/main" ]]; then
+          if [[ "$HEAD_BRANCH" == "main" ]]; then
             echo "tag=latest" >> "$GITHUB_OUTPUT"
-          elif [[ "${{ github.ref }}" == "refs/heads/development" ]]; then
+          elif [[ "$HEAD_BRANCH" == "development" ]]; then
             echo "tag=nightly" >> "$GITHUB_OUTPUT"
           else
             echo "tag=dev" >> "$GITHUB_OUTPUT"

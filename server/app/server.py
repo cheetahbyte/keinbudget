@@ -38,9 +38,10 @@ if os.getenv("ENVIRONMENT") == "production":
         if request.url.path.startswith("/api/"):
             raise HTTPException(status_code=404, detail="Not Found")
 
-        static_path = f"/app/server/static/{full_path}"
-        if os.path.exists(static_path) and os.path.isfile(static_path):
-            return FileResponse(static_path)
+        base_path = "/app/server/static"
+        static_path = os.path.normpath(os.path.join(base_path, full_path))
+        if not static_path.startswith(base_path):
+            raise HTTPException(status_code=404, detail="Not Found")
 
         return FileResponse("/app/server/static/index.html")
 
