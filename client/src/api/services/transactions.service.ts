@@ -1,6 +1,15 @@
 import type { ApiClient, DeleteResponse } from "../api";
 import type { Transaction } from "../types/transaction";
 
+
+type EditableTransactionProperties = {
+  description?: string;
+  amount?: number;
+  category?: string;
+  to_account?: string;
+  from_account?: string;
+  created_at?: Date;
+}
 export class TransactionService {
   private apiClient: ApiClient;
 
@@ -41,6 +50,10 @@ export class TransactionService {
 
   public async deleteTransaction(id: string) {
     await this.apiClient.delete<DeleteResponse>(`/transactions/${id}`);
+  }
+
+  public async editTransaction(txid: string, data: EditableTransactionProperties): Promise<Transaction> {
+    return await this.apiClient.patch<Transaction>(`/transactions/${txid}`, data)
   }
 
   public async getTransactionsForAccount(id: string): Promise<Transaction[]> {
