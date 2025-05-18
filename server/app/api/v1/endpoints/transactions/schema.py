@@ -17,6 +17,13 @@ class CreateTransactionSchema(BaseModel):
     to_account: Optional[UUID] = None
     created_at: datetime
     
+class EditTransactionSchema(BaseModel):
+    description: Optional[str] = None
+    amount: Optional[float] = None
+    category: Optional[UUID|str] = None
+    from_account: Optional[UUID] = None
+    to_account: Optional[UUID] = None
+    created_at: Optional[datetime] = None
 
 
 class TransactionResponse(BaseModel):
