@@ -14,5 +14,6 @@ export function apiClientWithToken(
 		get: (url, params) => client.get(url, params, token),
 		post: (url, body) => client.post(url, body, token),
 		delete: (url, params) => client.delete(url, params, token),
+		patch: (url, body) => client.patch(url, body, token)
 	} as ApiClient;
 }
