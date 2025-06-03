@@ -89,6 +89,5 @@ class Category(models.Model):
     description = fields.CharField(max_length=255, nullable=True)
     created_at = fields.DatetimeField(auto_now_add=True)
     icon = fields.CharField(max_length=255, default="shopping-basket")
-    #modified_at = fields.DatetimeField(auto_now=True)
     class Meta:
         table = "categories"

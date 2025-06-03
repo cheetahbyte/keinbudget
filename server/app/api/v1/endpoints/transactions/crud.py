@@ -40,3 +40,23 @@ async def get_transaction_by_id(id: UUID, user: User) -> Transaction | None:
 async def delete_transaction_by_id(id: UUID, user: User) -> None:
     transaction = await Transaction.get_or_none(id=id, user=user)
     return await transaction.delete()
+
+async def edit_transaction_by_id(id: UUID, transaction_data: dict, user: User) -> Transaction | None:
+    tx = await Transaction.get_or_none(id=id, user=user)
+    if not tx:
+        return None
+    if transaction_data.get("description"):
+        tx.description = transaction_data.get("description")
+    if transaction_data.get("amount"):
+        tx.amount = transaction_data.get("amount")
+    if transaction_data.get("category"):
+        tx.category = await Category.get_or_none(id=transaction_data.get("category"))
+    if transaction_data.get("to_account"):
+        tx.to_account = await Account.get_or_none(id=transaction_data.get("to_account"))
+        tx.from_account = None
+    if transaction_data.get("from_account"):
+        tx.from_account = await Account.get_or_none(id=transaction_data.get("from_account"))
+        tx.to_account = None
+    await tx.save()
+    await tx.fetch_related("to_account", "from_account", "category")
+    return tx
