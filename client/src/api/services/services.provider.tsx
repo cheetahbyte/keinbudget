@@ -13,11 +13,9 @@ import { useToken } from "../hooks";
 import { apiClientWithToken } from "../utils";
 
 import type { Account } from "../types/account";
-import type { Transaction } from "../types/transaction";
 import { AccountsService } from "./accounts.service";
 import { AuthService } from "./auth.service";
 import { FinanceService } from "./finance.service";
-import { TransactionService } from "./transactions.service";
 import { UserService } from "./user.service";
 import type { Category } from "../types/category";
 import { CategoryService } from "./category.service";
@@ -26,14 +24,11 @@ export interface ServicesContextType {
   accountsService?: AccountsService;
   financeService?: FinanceService;
   userService?: UserService;
-  transactionsService?: TransactionService;
   categoryService?: CategoryService;
   authService: AuthService;
   accounts: Account[];
-  transactions: Transaction[];
   categories: Category[];
   refetchAccounts: () => Promise<void>;
-  refetchTransactions: () => Promise<void>;
   refetchCategories: () => Promise<void>;
 }
 
@@ -58,14 +53,12 @@ export const ServicesProvider: React.FC<ServicesProviderProps> = ({
   const token = useToken();
   const [accounts, setAccounts] = useState<Account[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
-  const [transactions, setTransactions] = useState<Transaction[]>([]);
 
   const {
     accountsService,
     financeService,
     authService,
     userService,
-    transactionsService,
     categoryService,
   } = useMemo(() => {
     const apiClient = new ApiClient();
@@ -73,19 +66,12 @@ export const ServicesProvider: React.FC<ServicesProviderProps> = ({
 
     return {
       accountsService: token ? new AccountsService(client) : undefined,
-      transactionsService: token ? new TransactionService(client) : undefined,
       financeService: token ? new FinanceService(client) : undefined,
       userService: token ? new UserService(client) : undefined,
       categoryService: token ? new CategoryService(client) : undefined,
       authService: new AuthService(client),
     };
   }, [token]);
-
-  const refetchTransactions = useCallback(async () => {
-    if (!transactionsService) return;
-    const result = await transactionsService.getLastTransactions();
-    setTransactions(result);
-  }, [transactionsService]);
 
   const refetchAccounts = useCallback(async () => {
     if (!accountsService) return;
@@ -105,11 +91,6 @@ export const ServicesProvider: React.FC<ServicesProviderProps> = ({
   }, [accountsService, refetchAccounts]);
 
   useEffect(() => {
-    if (!transactionsService) return;
-    refetchTransactions();
-  }, [transactionsService, refetchTransactions]);
-
-  useEffect(() => {
     if (!categoryService) return;
     refetchCategories();
   }, [categoryService, refetchCategories]);
@@ -121,13 +102,10 @@ export const ServicesProvider: React.FC<ServicesProviderProps> = ({
         financeService,
         userService,
         authService,
-        transactionsService,
         categoryService,
         accounts,
-        transactions,
         categories,
         refetchAccounts,
-        refetchTransactions,
         refetchCategories,
       }}
     >

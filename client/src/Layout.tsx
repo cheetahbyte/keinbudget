@@ -3,6 +3,7 @@ import { useNavigate, Outlet } from "react-router";
 import { useUser } from "./api/hooks";
 import { ThemeProvider } from "./components/common/ThemeProvider";
 import Header from "./components/ui/HeaderBar";
+import { TransactionStoreInitializer } from "./components/common/TransactionStoreInitializer";
 
 export default function Layout(): JSX.Element {
   const user = useUser();
@@ -18,6 +19,7 @@ export default function Layout(): JSX.Element {
 
   return (
     <div>
+      <TransactionStoreInitializer />
       <main>
         <ThemeProvider>
           <Header />

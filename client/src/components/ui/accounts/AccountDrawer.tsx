@@ -1,6 +1,5 @@
 import { Eye } from "lucide-react";
 import { useEffect, useState } from "react";
-import { useServices } from "~/api/services/services.provider";
 import type { Account } from "~/api/types/account";
 import type { Transaction } from "~/api/types/transaction";
 import { Button } from "~/components/lib/button";
@@ -15,22 +14,19 @@ import {
   DrawerTrigger,
 } from "~/components/lib/drawer";
 import AccountGraph from "./AccountGraph";
+import { useTransactionsActions } from "~/api/hooks/useTransactionActions";
 
 interface AccountDetailsDrawerProps {
   account: Account;
 }
 
 export function AccountDetailsDrawer({ account }: AccountDetailsDrawerProps) {
-  const { transactionsService } = useServices();
-  const [accountTransactions, setAccountTransactions] = useState<Transaction[]>(
-    []
-  );
+  const { getTransactionsForAccount } = useTransactionsActions();
+  const [transactions, setTransactions] = useState<Transaction[]>([]);
 
   useEffect(() => {
-    transactionsService!
-      .getTransactionsForAccount(account.id)
-      .then(setAccountTransactions);
-  }, [transactionsService, account.id]);
+    getTransactionsForAccount(account.id).then(setTransactions);
+  }, [account.id, getTransactionsForAccount]);
 
   return (
     <Drawer>
@@ -61,9 +57,9 @@ export function AccountDetailsDrawer({ account }: AccountDetailsDrawerProps) {
           </div>
 
           <div className="border-t pt-4">
-            {accountTransactions.length > 0 ? (
+            {transactions.length > 0 ? (
               <AccountGraph
-                transactions={accountTransactions}
+                transactions={transactions}
                 accountId={account.id}
               />
             ) : (
