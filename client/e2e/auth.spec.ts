@@ -1,4 +1,4 @@
-import { test, expect } from "@playwright/test";
+import { expect, test } from "@playwright/test";
 import { testLoggedIn } from "./fixtures";
 
 test("can login with credentials", async ({ page }) => {
@@ -8,7 +8,7 @@ test("can login with credentials", async ({ page }) => {
   await page.getByLabel("password").fill("password");
   const [response] = await Promise.all([
     page.waitForResponse(
-      (res) => res.url().includes("/auth/login") && res.status() === 200
+      (res) => res.url().includes("/auth/login") && res.status() === 200,
     ),
     page.getByRole("button", { name: /Login/i }).click(),
   ]);
@@ -37,7 +37,7 @@ testLoggedIn("can log out", async ({ authenticatedPage }) => {
   await logoutButton.click();
 
   expect(
-    await authenticatedPage.evaluate(() => localStorage.getItem("token"))
+    await authenticatedPage.evaluate(() => localStorage.getItem("token")),
   ).toBeNull();
   await expect(authenticatedPage).toHaveURL(/\/login/);
 });

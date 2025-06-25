@@ -12,7 +12,7 @@ router = APIRouter()
 @router.post("/", response_model=UserSchema)
 async def create(user: UserCreateSchema):
     if os.getenv("USER_SIGNUP") == "true":
-        user_obj = await crud.create_user(user.dict())
+        user_obj = await crud.create_user(user.model_dump())
         return user_obj
     else:
         raise HTTPException(status_code=403, detail="User signup is disabled")

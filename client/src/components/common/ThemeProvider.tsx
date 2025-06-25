@@ -5,43 +5,43 @@ export type Theme = "light" | "dark";
 const themes: Theme[] = ["light", "dark"];
 
 interface ThemeContextType {
-	theme: Theme;
-	setTheme: (theme: Theme) => void;
+  theme: Theme;
+  setTheme: (theme: Theme) => void;
 }
 
 const ThemeContext = createContext<ThemeContextType>({
-	theme: "light",
-	setTheme: () => {},
+  theme: "light",
+  setTheme: () => {},
 });
 
 export const ThemeProvider = ({ children }: { children: React.ReactNode }) => {
-	const [theme, setThemeState] = useState<Theme>("light");
+  const [theme, setThemeState] = useState<Theme>("light");
 
-	const setTheme = (newTheme: Theme) => {
-		setThemeState(newTheme);
-		localStorage.setItem("theme", newTheme);
-	};
+  const setTheme = (newTheme: Theme) => {
+    setThemeState(newTheme);
+    localStorage.setItem("theme", newTheme);
+  };
 
-	// biome-ignore lint/correctness/useExhaustiveDependencies: there is no right way to define this.
-	useEffect(() => {
-		const saved = localStorage.getItem("theme") as Theme | null;
-		if (saved && themes.includes(saved)) {
-			setTheme(saved);
-		}
-	}, []);
+  // biome-ignore lint/correctness/useExhaustiveDependencies: there is no right way to define this.
+  useEffect(() => {
+    const saved = localStorage.getItem("theme") as Theme | null;
+    if (saved && themes.includes(saved)) {
+      setTheme(saved);
+    }
+  }, []);
 
-	useEffect(() => {
-		document.documentElement.classList.remove(
-			...themes.map((t) => `theme-${t}`),
-		);
-		document.documentElement.classList.add(`theme-${theme}`);
-	}, [theme]);
+  useEffect(() => {
+    document.documentElement.classList.remove(
+      ...themes.map((t) => `theme-${t}`),
+    );
+    document.documentElement.classList.add(`theme-${theme}`);
+  }, [theme]);
 
-	return (
-		<ThemeContext.Provider value={{ theme, setTheme }}>
-			{children}
-		</ThemeContext.Provider>
-	);
+  return (
+    <ThemeContext.Provider value={{ theme, setTheme }}>
+      {children}
+    </ThemeContext.Provider>
+  );
 };
 // eslint-ignore
 export const useTheme = () => useContext(ThemeContext);

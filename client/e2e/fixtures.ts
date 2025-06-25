@@ -11,7 +11,7 @@ export const testLoggedIn = base.extend<MyFixture>({
     await page.getByLabel("password").fill("password");
     await Promise.all([
       page.waitForResponse(
-        (res) => res.url().includes("/auth/login") && res.status() === 200
+        (res) => res.url().includes("/auth/login") && res.status() === 200,
       ),
       page.getByRole("button", { name: /Login/i }).click(),
     ]);

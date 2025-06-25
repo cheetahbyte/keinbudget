@@ -18,14 +18,14 @@ export class AuthService {
 
   public async login(
     username: string,
-    password: string
+    password: string,
   ): Promise<AuthServiceTokenRequest> {
     const response = await this.apiClient.post<AuthServiceTokenRequest>(
       "/auth/login",
       {
         username,
         password,
-      }
+      },
     );
     return response;
   }
@@ -34,7 +34,7 @@ export class AuthService {
     email: string,
     password: string,
     firstName: string,
-    lastName: string
+    lastName: string,
   ): Promise<User> {
     const response = await this.apiClient.post<User>("/users/", {
       email,

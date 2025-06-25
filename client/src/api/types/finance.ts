@@ -1,12 +1,12 @@
 export type FinanceOverview = {
-	totalBalance: number;
-	income: number;
-	expenses: number;
-	savings: number;
+  totalBalance: number;
+  income: number;
+  expenses: number;
+  savings: number;
 };
 
 export type MonthlyReportEntry = {
-	month: string;
-	income: number;
-	expenses: number;
+  month: string;
+  income: number;
+  expenses: number;
 };

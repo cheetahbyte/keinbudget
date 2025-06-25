@@ -1,4 +1,4 @@
-import { render, waitFor, screen } from "@testing-library/react";
+import { render, screen, waitFor } from "@testing-library/react";
 import { useEffect } from "react";
 import {
   ThemeProvider,
@@ -21,11 +21,11 @@ describe("<ThemeProvider/>", () => {
     render(
       <ThemeProvider>
         <TestComponent />
-      </ThemeProvider>
+      </ThemeProvider>,
     );
     await waitFor(() => {
       expect(document.documentElement.classList.contains("theme-dark")).toBe(
-        true
+        true,
       );
       expect(localStorage.getItem("theme")).toBe("dark");
     });
@@ -35,14 +35,14 @@ describe("<ThemeProvider/>", () => {
     render(
       <ThemeProvider>
         <TestComponent2 />
-      </ThemeProvider>
+      </ThemeProvider>,
     );
     await waitFor(() => {
       const elem = screen.getByText(/dark/i);
       expect(elem).toBeInTheDocument();
       expect(elem.textContent).toBe("dark");
       expect(document.documentElement.classList.contains("theme-dark")).toBe(
-        true
+        true,
       );
     });
   });

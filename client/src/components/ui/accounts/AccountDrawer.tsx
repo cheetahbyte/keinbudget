@@ -1,5 +1,6 @@
 import { Eye } from "lucide-react";
 import { useEffect, useState } from "react";
+import { useTransactionsActions } from "~/api/hooks/useTransactionActions";
 import type { Account } from "~/api/types/account";
 import type { Transaction } from "~/api/types/transaction";
 import { Button } from "~/components/lib/button";
@@ -14,7 +15,6 @@ import {
   DrawerTrigger,
 } from "~/components/lib/drawer";
 import AccountGraph from "./AccountGraph";
-import { useTransactionsActions } from "~/api/hooks/useTransactionActions";
 
 interface AccountDetailsDrawerProps {
   account: Account;

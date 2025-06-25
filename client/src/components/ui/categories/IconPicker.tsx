@@ -43,7 +43,7 @@ export const IconPicker: React.FC<IconPickerProps> = ({ value, onChange }) => {
 
   const allIcons = Object.keys(dynamicIconImports);
   const filteredIcons = allIcons.filter((name) =>
-    name.toLowerCase().includes(filter.toLowerCase())
+    name.toLowerCase().includes(filter.toLowerCase()),
   );
   const shownIcons =
     filter.trim() === "" ? defaultCategoryIcons : filteredIcons.slice(0, 50);

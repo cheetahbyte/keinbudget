@@ -50,7 +50,7 @@ export function TransactionCreateSheet() {
       date,
       amount,
       description,
-      categoryId
+      categoryId,
     );
 
     await refetchTransactions();

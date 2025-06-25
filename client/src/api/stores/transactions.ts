@@ -1,6 +1,6 @@
 import { create } from "zustand";
-import type { Transaction } from "../types/transaction";
 import type { TransactionService } from "../services/transactions.service";
+import type { Transaction } from "../types/transaction";
 
 interface TransactionState {
   transactions: Transaction[];
@@ -19,7 +19,7 @@ interface TransactionActions {
       date: Date,
       amount: number,
       description: string,
-      category: string
+      category: string,
     ) => Promise<void>;
     deleteTransaction: (id: string) => Promise<void>;
     getTransactionsForAccount: (accountId: string) => Promise<Transaction[]>;
@@ -45,7 +45,7 @@ export const useTransactionStore = create<
         const transactions = await service.getLastTransactions();
         const sorted = transactions.sort(
           (a, b) =>
-            new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+            new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
         );
         set({ transactions: sorted });
       } catch (error) {
@@ -63,7 +63,7 @@ export const useTransactionStore = create<
       date,
       amount,
       description,
-      category
+      category,
     ) => {
       const service = get().transactionService;
       if (!service) return;
@@ -75,7 +75,7 @@ export const useTransactionStore = create<
           date,
           amount,
           description,
-          category
+          category,
         );
         set((state) => ({
           transactions: [newTx, ...state.transactions],

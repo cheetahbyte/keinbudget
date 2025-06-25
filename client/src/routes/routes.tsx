@@ -1,14 +1,14 @@
 import type { RouteObject } from "react-router";
+import { ServicesProvider } from "~/api/services/services.provider";
 import Layout from "~/Layout";
 import AccountsPage from "~/routes/home/AccountsPage";
+import CategoriesPage from "~/routes/home/CategoriesPage";
 import HomePage from "~/routes/home/Dashboard";
 import TransactionPage from "~/routes/home/TransactionsPage";
-import CategoriesPage from "~/routes/home/CategoriesPage";
 import { ErrorPage } from "./ErrorPage";
 import LoginPage from "./Login";
-import RegisterPage from "./RegisterPage";
-import { ServicesProvider } from "~/api/services/services.provider";
 import { ProtectedRoute } from "./ProtectedRoute";
+import RegisterPage from "./RegisterPage";
 
 export const appRoutes: RouteObject[] = [
   {

@@ -1,12 +1,12 @@
-import { render, waitFor, screen } from "@testing-library/react";
+import { render, screen, waitFor } from "@testing-library/react";
 import { beforeEach, describe, expect, it } from "vitest";
 import { useToken, useUser } from "../src/api/hooks";
-import { ServicesContext } from "../src/api/services/services.provider";
-import type { UserService } from "../src/api/services/user.service";
-import type { AuthService } from "../src/api/services/auth.service";
 import type { AccountsService } from "../src/api/services/accounts.service";
+import type { AuthService } from "../src/api/services/auth.service";
 import type { FinanceService } from "../src/api/services/finance.service";
+import { ServicesContext } from "../src/api/services/services.provider";
 import type { TransactionService } from "../src/api/services/transactions.service";
+import type { UserService } from "../src/api/services/user.service";
 
 function TestComponent() {
   const token = useToken();
@@ -65,7 +65,7 @@ describe("useUser", () => {
     render(
       <ServicesContext.Provider value={mockServices}>
         <TestUserComponent />
-      </ServicesContext.Provider>
+      </ServicesContext.Provider>,
     );
 
     await waitFor(() => {

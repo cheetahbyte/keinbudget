@@ -1,5 +1,5 @@
-import dynamicIconImports from "lucide-react/dynamicIconImports";
 import type { LucideProps } from "lucide-react";
+import dynamicIconImports from "lucide-react/dynamicIconImports";
 import { lazy, Suspense, useMemo } from "react";
 
 export interface IconProps extends Omit<LucideProps, "ref"> {

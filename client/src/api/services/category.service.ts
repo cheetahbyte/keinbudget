@@ -15,7 +15,7 @@ export class CategoryService {
   public async createCategory(
     name: string,
     description?: string,
-    icon?: string
+    icon?: string,
   ): Promise<Category> {
     return await this.apiClient.post<Category>("/categories/", {
       name,

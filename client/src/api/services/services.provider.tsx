@@ -1,6 +1,6 @@
 import {
-  type ReactNode,
   createContext,
+  type ReactNode,
   useCallback,
   useContext,
   useEffect,
@@ -10,15 +10,14 @@ import {
 
 import { ApiClient } from "../api";
 import { useToken } from "../hooks";
-import { apiClientWithToken } from "../utils";
-
 import type { Account } from "../types/account";
+import type { Category } from "../types/category";
+import { apiClientWithToken } from "../utils";
 import { AccountsService } from "./accounts.service";
 import { AuthService } from "./auth.service";
+import { CategoryService } from "./category.service";
 import { FinanceService } from "./finance.service";
 import { UserService } from "./user.service";
-import type { Category } from "../types/category";
-import { CategoryService } from "./category.service";
 
 export interface ServicesContextType {
   accountsService?: AccountsService;
@@ -33,7 +32,7 @@ export interface ServicesContextType {
 }
 
 export const ServicesContext = createContext<ServicesContextType | undefined>(
-  undefined
+  undefined,
 );
 
 export const useServices = () => {

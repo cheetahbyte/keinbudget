@@ -92,7 +92,7 @@ export function TwoFACardContent(props: TwoFaCardContentProps) {
     const res = await auth.getApiClient.post<AuthServiceTokenRequest>(
       `/auth/validate-2fa?code=${otp.join("")}`,
       {},
-      props.token
+      props.token,
     );
     auth.storeToken(res.token);
     navigate("/");

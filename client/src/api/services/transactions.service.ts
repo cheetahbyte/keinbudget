@@ -18,7 +18,7 @@ export class TransactionService {
     date: Date,
     amount: number,
     description: string,
-    category: string
+    category: string,
   ): Promise<Transaction> {
     if (type === "incoming")
       return await this.apiClient.post<Transaction>("/transactions/", {

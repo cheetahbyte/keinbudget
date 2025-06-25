@@ -13,7 +13,7 @@ async function createAccount(page: Page) {
       (res) =>
         res.url().includes("/accounts/") &&
         res.status() === 200 &&
-        res.request().method() === "POST"
+        res.request().method() === "POST",
     ),
     page.getByRole("button", { name: /Create Account/i }).click(),
   ]);
@@ -32,7 +32,7 @@ testLoggedIn("can create account", async ({ authenticatedPage }) => {
   await createAccountButton.click();
 
   await expect(
-    authenticatedPage.getByText("Create a new Account")
+    authenticatedPage.getByText("Create a new Account"),
   ).toBeVisible();
   await authenticatedPage.getByLabel("name").fill("Playwright Account");
   const inputField = authenticatedPage.getByTestId("startbalance");
@@ -43,7 +43,7 @@ testLoggedIn("can create account", async ({ authenticatedPage }) => {
       (res) =>
         res.url().includes("/accounts/") &&
         res.status() === 200 &&
-        res.request().method() === "POST"
+        res.request().method() === "POST",
     ),
     authenticatedPage.getByRole("button", { name: /Create Account/i }).click(),
   ]);

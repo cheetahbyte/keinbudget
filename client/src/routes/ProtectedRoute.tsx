@@ -1,4 +1,4 @@
-import { type JSX, useState, useEffect } from "react";
+import { type JSX, useEffect, useState } from "react";
 import { useNavigate } from "react-router";
 import { useServices } from "~/api/services/services.provider";
 import type { User } from "~/api/types/user";

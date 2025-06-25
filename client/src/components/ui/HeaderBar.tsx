@@ -1,6 +1,7 @@
 import { Plus, User } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router";
+import { useUser } from "~/api/hooks";
 import { useServices } from "~/api/services/services.provider";
 import { Button } from "~/components/lib/button";
 import { type Theme, useTheme } from "../common/ThemeProvider";
@@ -19,7 +20,6 @@ import {
   DropdownMenuTrigger,
 } from "../lib/dropdown-menu";
 import CreateTransactionModal from "./modals/CreateTransaction";
-import { useUser } from "~/api/hooks";
 
 const tabs = [
   { name: "Overview", path: "/" },
@@ -37,7 +37,7 @@ export default function Header() {
   const [version, setVersion] = useState<string>("");
   useEffect(() => {
     fetch(`${import.meta.env.VITE_BACKEND_URL}/version`).then((r) =>
-      r.json().then((d) => setVersion(d.version))
+      r.json().then((d) => setVersion(d.version)),
     );
   }, []);
 

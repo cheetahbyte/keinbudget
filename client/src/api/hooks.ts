@@ -4,7 +4,7 @@ import type { User } from "./types/user";
 
 export function useToken(): string | null {
   const [token, setToken] = useState<string | null>(() =>
-    localStorage.getItem("token")
+    localStorage.getItem("token"),
   );
 
   useEffect(() => {

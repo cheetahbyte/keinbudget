@@ -43,7 +43,7 @@ describe("AuthService", async () => {
       "test@test.de",
       "password",
       "firstname",
-      "lastname"
+      "lastname",
     );
 
     expect(mockedApiClient.post).toBeCalledTimes(1);

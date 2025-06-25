@@ -1,6 +1,6 @@
-import { describe, it, expect, vi } from "vitest";
-import { CategoryService } from "../../src/api/services/category.service";
+import { describe, expect, it, vi } from "vitest";
 import type { ApiClient } from "../../src/api/api";
+import { CategoryService } from "../../src/api/services/category.service";
 import type { Category } from "../../src/api/types/category";
 
 describe("CategoryService", () => {
@@ -36,7 +36,7 @@ describe("CategoryService", () => {
     const service = new CategoryService(mockedApiClient);
     const result = await service.createCategory(
       "Books",
-      "Educational and leisure"
+      "Educational and leisure",
     );
 
     expect(mockedApiClient.post).toBeCalledTimes(1);
