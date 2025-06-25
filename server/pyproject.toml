@@ -13,6 +13,7 @@ dependencies = [
     "tortoise-orm>=0.25.0",
     "typer>=0.15.3",
     "uvicorn>=0.34.2",
+    "fastapi-autocrud @ git+https://github.com/cheetahbyte/fastapi-autocrud@main"
 ]
 
 [dependency-groups]

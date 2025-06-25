@@ -199,6 +199,16 @@ wheels = [
 ]
 
 [[package]]
+name = "fastapi-autocrud"
+version = "0.1.0"
+source = { git = "https://github.com/cheetahbyte/fastapi-autocrud?rev=main#0de19c3a1c5909eba32868072ea337de0142d72b" }
+dependencies = [
+    { name = "fastapi" },
+    { name = "pydantic" },
+    { name = "tortoise-orm" },
+]
+
+[[package]]
 name = "h11"
 version = "0.16.0"
 source = { registry = "https://pypi.org/simple" }
@@ -268,6 +278,7 @@ version = "0.1.0"
 source = { virtual = "." }
 dependencies = [
     { name = "fastapi" },
+    { name = "fastapi-autocrud" },
     { name = "passlib" },
     { name = "pydantic", extra = ["email"] },
     { name = "pyotp" },
@@ -291,6 +302,7 @@ dev = [
 [package.metadata]
 requires-dist = [
     { name = "fastapi", specifier = ">=0.115.12" },
+    { name = "fastapi-autocrud", git = "https://github.com/cheetahbyte/fastapi-autocrud?rev=main" },
     { name = "passlib", specifier = ">=1.7.4" },
     { name = "pydantic", extras = ["email"], specifier = ">=2.11.4" },
     { name = "pyotp", specifier = ">=2.9.0" },
