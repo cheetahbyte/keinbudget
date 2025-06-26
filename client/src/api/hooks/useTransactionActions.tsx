@@ -1,5 +1,7 @@
 import { useTransactionStore } from "../stores/transactions";
 
-export function useTransactionsActions() {
+function useTransactionsActions() {
   return useTransactionStore((s) => s.actions);
 }
+
+export default useTransactionsActions;
