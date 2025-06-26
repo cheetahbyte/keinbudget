@@ -1,5 +1,6 @@
 import { Trash2 } from "lucide-react";
-import { useServices } from "~/api/services/services.provider";
+import useAccount from "~/api/hooks/useAccount";
+import useAccountActions from "~/api/hooks/useAccountActions";
 import { Button } from "~/components/lib/button";
 import {
   Table,
@@ -13,14 +14,8 @@ import { AccountDetailsDrawer } from "~/components/ui/accounts/AccountDrawer";
 import { AccountCreateSheet } from "~/components/ui/accounts/AccountSheet";
 
 export default function AccountsPage() {
-  const { accounts, accountsService, refetchAccounts, refetchTransactions } =
-    useServices();
-
-  const handleDelete = async (id: string) => {
-    await accountsService?.deleteAccount(id);
-    await refetchAccounts();
-    await refetchTransactions();
-  };
+  const accounts = useAccount();
+  const { deleteAccount } = useAccountActions();
 
   return (
     <div className="p-6 max-w-5xl mx-auto space-y-6">
@@ -58,7 +53,7 @@ export default function AccountsPage() {
                       data-testid="delete-account"
                       variant="ghost"
                       size="icon"
-                      onClick={() => handleDelete(account.id)}
+                      onClick={() => deleteAccount(account.id)}
                     >
                       <Trash2 className="w-4 h-4 text-red-500" />
                     </Button>

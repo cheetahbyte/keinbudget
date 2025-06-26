@@ -2,9 +2,8 @@ import { format } from "date-fns";
 import { de } from "date-fns/locale";
 import { Trash2 } from "lucide-react";
 import { useEffect } from "react";
-import { useTransactions } from "~/api/hooks/useTransaction";
-import { useTransactionsActions } from "~/api/hooks/useTransactionActions";
-import { useTransactionStore } from "~/api/stores/transactions";
+import useTransactions from "~/api/hooks/useTransaction";
+import useTransactionsActions from "~/api/hooks/useTransactionActions";
 
 import { Button } from "~/components/lib/button";
 import {
