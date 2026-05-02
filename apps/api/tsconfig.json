@@ -1,0 +1,10 @@
+{
+  "extends": "../../tsconfig.json",
+  "compilerOptions": {
+    "jsxImportSource": "hono/jsx",
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true,
+    "types": ["bun"]
+  },
+  "include": ["src/**/*.ts", "src/**/*.tsx"]
+}

@@ -1,0 +1,22 @@
+{
+  "name": "api",
+  "scripts": {
+    "dev": "bun run --hot src/index.ts"
+  },
+  "dependencies": {
+    "@keinbudget/auth": "workspace:*",
+    "@keinbudget/contracts": "workspace:*",
+    "@keinbudget/db": "workspace:*",
+    "@orpc/openapi": "^1.14.0",
+    "@orpc/server": "^1.14.0",
+    "@scalar/hono-api-reference": "^0.10.13",
+    "drizzle-orm": "^0.45.2",
+    "hono": "^4.12.16",
+    "reflect-metadata": "^0.2.2",
+    "tsyringe": "^4.10.0",
+    "zod": "^4.4.2"
+  },
+  "devDependencies": {
+    "@types/bun": "latest"
+  }
+}
