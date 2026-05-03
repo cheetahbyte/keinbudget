@@ -3,18 +3,16 @@ Track your subscriptions
 ![alt text](docs/screenshot.png)
 
 ## Self-Hosting
-Just execute the `compose.yaml` 
+Just execute the `compose.yaml`
 
 ```sh
 $ docker compose up -d
 ```
 
-For local Docker Compose usage, the auth stack defaults to `http://localhost:4000` and falls back to a development-only `BETTER_AUTH_SECRET` if none is provided. Set your own `BETTER_AUTH_SECRET` before building for any non-local deployment.
-
-If your production web and API run on different subdomains, also set `BETTER_AUTH_COOKIE_DOMAIN` to the shared parent domain, for example `example.com`. Without that, the auth cookie can stay scoped to the API host, which breaks SSR and server actions on the web host even though client-side sign-in appears to work.
+For local Docker Compose usage, the auth stack defaults to `http://localhost:3000` and falls back to a development-only `BETTER_AUTH_SECRET` if none is provided. Set your own `BETTER_AUTH_SECRET` before building for any non-local deployment.
 
 ## Development
-Install dependencies and run the workspace with `pnpm` on Node 22:
+Install dependencies and run with `pnpm` on Node 22:
 
 ```sh
 pnpm install
@@ -22,11 +20,9 @@ pnpm dev
 ```
 
 ## Techstack
-- pnpm workspaces on Node.js 22
+- pnpm on Node.js 22
 - Tanstack Start + React 19 for the web app
-- Bun + Hono for the API runtime
 - Tailwind CSS 4, Radix UI, and shadcn-style components for the UI
-- oRPC + Zod for shared contracts and type-safe API calls
 - Drizzle ORM with `postgres` and PostgreSQL for the database layer
 - Better Auth for authentication
 - Docker Compose for simple self-hosting

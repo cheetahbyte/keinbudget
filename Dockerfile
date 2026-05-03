@@ -1,0 +1,31 @@
+FROM node:22-alpine AS builder
+
+ENV PNPM_HOME="/pnpm"
+ENV PATH="$PNPM_HOME:$PATH"
+ARG VITE_API_URL=http://localhost:4000
+ARG VITE_AUTH_URL=http://localhost:4000
+ENV VITE_API_URL=$VITE_API_URL
+ENV VITE_AUTH_URL=$VITE_AUTH_URL
+
+WORKDIR /app
+RUN corepack enable
+
+COPY package.json pnpm-lock.yaml tsconfig.json ./
+RUN pnpm install --frozen-lockfile
+
+COPY . .
+
+RUN pnpm build
+
+FROM node:22-alpine AS runner
+
+WORKDIR /app
+ENV NODE_ENV=production
+ENV HOST=0.0.0.0
+ENV PORT=3000
+
+COPY --from=builder /app/.output ./
+
+EXPOSE 3000
+
+CMD ["node", "server/index.mjs"]

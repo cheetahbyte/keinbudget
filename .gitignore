@@ -35,3 +35,13 @@ report.[0-9]_.[0-9]_.[0-9]_.[0-9]_.json
 
 # database
 *.db
+
+# TanStack Start / Nitro output
+.output
+.tanstack
+.nitro
+.vinxi
+dist-ssr
+*.local
+__unconfig*
+todos.json

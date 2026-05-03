@@ -4,6 +4,11 @@
 **/.next
 **/dist
 **/out
+**/.output
+**/.tanstack
+**/.nitro
+**/.vinxi
+**/dist-ssr
 **/*.log
 **/.env*
 **/*.db
