@@ -3,6 +3,14 @@ import * as schema from "@keinbudget/db/schema";
 import { betterAuth } from "better-auth";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
 
+function buildCorsOrigins(): string[] {
+  const rawOrigins = process.env.CORS_ORIGIN || "";
+  return rawOrigins
+    .split(",")
+    .map((origin) => origin.trim())
+    .filter((origin) => origin);
+}
+
 export const auth = betterAuth({
   database: drizzleAdapter(db, { provider: "pg", schema }),
   baseURL: process.env.BETTER_AUTH_URL ?? "http://localhost:4000",
@@ -12,7 +20,7 @@ export const auth = betterAuth({
   trustedOrigins: [
     "http://localhost:3000",
     "http://localhost:4000",
-    "https://example.com",
+    ...buildCorsOrigins(),
   ],
 });
 
