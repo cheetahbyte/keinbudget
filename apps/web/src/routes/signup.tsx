@@ -41,7 +41,7 @@ function SignupPage() {
     <div className="flex flex-1 items-center justify-center p-4">
       <Card className="w-full max-w-sm">
         <CardHeader>
-          <CardTitle>Sign in</CardTitle>
+          <CardTitle>Sign up</CardTitle>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit} className="flex flex-col gap-4">
@@ -80,7 +80,7 @@ function SignupPage() {
             </div>
             {error ? <p className="text-sm text-red-500">{error}</p> : null}
             <Button type="submit" disabled={loading} className="w-full">
-              {loading ? "Signing in…" : "Sign in"}
+              {loading ? "Signing up…" : "Sign up"}
             </Button>
           </form>
         </CardContent>
