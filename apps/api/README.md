@@ -1,11 +1,13 @@
-To install dependencies:
+Install dependencies from the repo root:
+
 ```sh
-bun install
+pnpm install
 ```
 
-To run:
+Run the API in watch mode:
+
 ```sh
-bun run dev
+pnpm --filter @keinbudget/api dev
 ```
 
-open http://localhost:3000
+The API listens on `http://localhost:4000`.

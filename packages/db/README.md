@@ -1,15 +1,13 @@
 # db
 
-To install dependencies:
+Install dependencies from the repo root:
 
-```bash
-bun install
+```sh
+pnpm install
 ```
 
-To run:
+Push the database schema:
 
-```bash
-bun run index.ts
+```sh
+pnpm --filter @keinbudget/db push
 ```
-
-This project was created using `bun init` in bun v1.3.13. [Bun](https://bun.com) is a fast all-in-one JavaScript runtime.

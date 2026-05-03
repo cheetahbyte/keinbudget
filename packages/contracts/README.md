@@ -1,15 +1,9 @@
 # contracts
 
-To install dependencies:
+Install dependencies from the repo root:
 
-```bash
-bun install
+```sh
+pnpm install
 ```
 
-To run:
-
-```bash
-bun run index.ts
-```
-
-This project was created using `bun init` in bun v1.3.13. [Bun](https://bun.com) is a fast all-in-one JavaScript runtime.
+This package is consumed through the workspace by the web and API apps.
