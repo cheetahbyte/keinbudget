@@ -19,9 +19,17 @@ const openApiGenerator = new OpenAPIGenerator();
 
 const app = new Hono();
 
+function buildCorsOrigins(): string[] {
+  const rawOrigins = process.env.CORS_ORIGIN || "";
+  return rawOrigins
+    .split(",")
+    .map((origin) => origin.trim())
+    .filter((origin) => origin);
+}
+
 app.use(
   cors({
-    origin: "http://localhost:3000",
+    origin: ["http://localhost:3000", ...buildCorsOrigins()],
     allowHeaders: ["Content-Type", "Authorization"],
     allowMethods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
     credentials: true,
