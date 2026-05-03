@@ -16,7 +16,7 @@ export function createClient(baseUrl: string, headers?: Record<string, string>) 
       fetch: (url, opts) =>
         fetch(url, {
           ...(opts as RequestInit | undefined),
-          credentials: "omit",
+          credentials: "include",
           headers: {
             ...((opts as RequestInit | undefined)?.headers as Record<string, string> | undefined),
             ...headers,

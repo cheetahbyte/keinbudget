@@ -3,11 +3,14 @@ import { OpenAPIGenerator } from "@orpc/openapi";
 import { OpenAPIHandler } from "@orpc/openapi/fetch";
 import { RPCHandler } from "@orpc/server/fetch";
 import { apiReference } from "@scalar/hono-api-reference";
+import { fileURLToPath } from "node:url";
 import { Hono } from "hono";
 import { cors } from "hono/cors";
 import { categoriesRPCRouter } from "./features/categories/categories.routes";
 import { subscriptionsRPCRouter } from "./features/subscriptions/subscriptions.routes";
+import { migrate } from "drizzle-orm/postgres-js/migrator";
 
+import { db } from "@keinbudget/db";
 const appRouter = {
   categories: categoriesRPCRouter,
   subscriptions: subscriptionsRPCRouter,
@@ -18,6 +21,9 @@ const openApiHandler = new OpenAPIHandler(appRouter);
 const openApiGenerator = new OpenAPIGenerator();
 
 const app = new Hono();
+const migrationsFolder = fileURLToPath(
+  new URL("../../../packages/db/migrations", import.meta.url),
+);
 
 function buildCorsOrigins(): string[] {
   const rawOrigins = process.env.CORS_ORIGIN || "";
@@ -66,6 +72,8 @@ app.all("/rpc/*", async (c) => {
   if (result.matched) return result.response;
   return c.notFound();
 });
+
+await migrate(db, { migrationsFolder });
 
 export default {
   port: 4000,

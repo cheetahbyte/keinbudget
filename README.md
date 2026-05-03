@@ -11,6 +11,8 @@ $ docker compose up -d
 
 For local Docker Compose usage, the auth stack defaults to `http://localhost:4000` and falls back to a development-only `BETTER_AUTH_SECRET` if none is provided. Set your own `BETTER_AUTH_SECRET` before building for any non-local deployment.
 
+If your production web and API run on different subdomains, also set `BETTER_AUTH_COOKIE_DOMAIN` to the shared parent domain, for example `example.com`. Without that, the auth cookie can stay scoped to the API host, which breaks SSR and server actions on the web host even though client-side sign-in appears to work.
+
 ## Development
 Install dependencies and run the workspace with `pnpm` on Node 22:
 

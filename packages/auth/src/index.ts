@@ -11,6 +11,19 @@ function buildCorsOrigins(): string[] {
     .filter((origin) => origin);
 }
 
+function buildCrossSubDomainCookiesConfig() {
+  const rawDomain = process.env.BETTER_AUTH_COOKIE_DOMAIN?.trim();
+
+  if (!rawDomain) {
+    return undefined;
+  }
+
+  return {
+    enabled: true,
+    domain: rawDomain.replace(/^\./, ""),
+  };
+}
+
 export const auth = betterAuth({
   database: drizzleAdapter(db, { provider: "pg", schema }),
   baseURL: process.env.BETTER_AUTH_URL ?? "http://localhost:4000",
@@ -22,6 +35,9 @@ export const auth = betterAuth({
     "http://localhost:4000",
     ...buildCorsOrigins(),
   ],
+  advanced: {
+    crossSubDomainCookies: buildCrossSubDomainCookiesConfig(),
+  },
 });
 
 export type Session = typeof auth.$Infer.Session;
