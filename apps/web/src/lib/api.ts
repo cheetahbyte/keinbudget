@@ -1,4 +1,5 @@
-// apps/web/src/lib/api.ts
-import { createClient } from "@keinbudget/contracts/client";
+import { createClient } from "@keinbudget/contracts/client"
 
-export const api = createClient("http://localhost:4000/rpc");
+const apiUrl = import.meta.env.VITE_API_URL ?? "http://localhost:4000"
+
+export const api = createClient(`${apiUrl}/rpc`)

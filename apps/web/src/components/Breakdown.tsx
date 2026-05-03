@@ -1,35 +1,34 @@
-"use client";
-import { useMemo, useState } from "react";
+import { useMemo, useState } from "react"
 
 export interface BreakdownItem {
-  name: string;
-  value: number;
-  color: string;
-  category: string;
-  categoryColor: string;
+  name: string
+  value: number
+  color: string
+  category: string
+  categoryColor: string
 }
 
 interface BreakdownProps {
-  items: BreakdownItem[];
+  items: BreakdownItem[]
 }
 
 export function Breakdown({ items }: BreakdownProps) {
   const [breakdownType, setBreakdownType] = useState<
     "category" | "subscription"
-  >("subscription");
+  >("subscription")
 
   const visibleItems = useMemo(() => {
     if (breakdownType === "subscription") {
-      return items;
+      return items
     }
 
     return Object.values(
       items.reduce<Record<string, BreakdownItem>>((acc, item) => {
-        const existing = acc[item.category];
+        const existing = acc[item.category]
 
         if (existing) {
-          existing.value += item.value;
-          return acc;
+          existing.value += item.value
+          return acc
         }
 
         acc[item.category] = {
@@ -38,14 +37,14 @@ export function Breakdown({ items }: BreakdownProps) {
           color: item.categoryColor,
           categoryColor: item.categoryColor,
           value: item.value,
-        };
+        }
 
-        return acc;
+        return acc
       }, {}),
-    ).sort((a, b) => b.value - a.value);
-  }, [breakdownType, items]);
+    ).sort((a, b) => b.value - a.value)
+  }, [breakdownType, items])
 
-  const total = visibleItems.reduce((sum, item) => sum + item.value, 0);
+  const total = visibleItems.reduce((sum, item) => sum + item.value, 0)
 
   return (
     <section className="space-y-5">
@@ -112,5 +111,5 @@ export function Breakdown({ items }: BreakdownProps) {
         ))}
       </div>
     </section>
-  );
+  )
 }

@@ -1,21 +1,20 @@
-import type { BreakdownItem } from "@/components/Breakdown";
-import { Breakdown } from "@/components/Breakdown";
+import { Breakdown, type BreakdownItem } from "#/components/Breakdown"
 
 interface StatSectionProps {
-  dailyCost: number;
-  avgPerSub: number;
-  breakdownStats: BreakdownItem[];
+  dailyCost: number
+  avgPerSub: number
+  breakdownStats: BreakdownItem[]
 }
 
 interface SmallCardProps {
-  title: string;
-  value: string;
-  text: string;
+  title: string
+  value: string
+  text: string
 }
 
 function SmallCard({ title, value, text }: SmallCardProps) {
   return (
-    <div className="hidden min-h-36 flex-col justify-center rounded-xl border border-border bg-card/50 p-7 lg:flex ">
+    <div className="hidden min-h-36 flex-col justify-center rounded-xl border border-border bg-card/50 p-7 lg:flex">
       <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
         {title}
       </p>
@@ -27,22 +26,23 @@ function SmallCard({ title, value, text }: SmallCardProps) {
 
       <p className="mt-3 text-sm text-muted-foreground">{text}</p>
     </div>
-  );
+  )
 }
+
 export function StatsSection({
   dailyCost,
   avgPerSub: _avgPerSub,
   breakdownStats,
 }: StatSectionProps) {
-  const monthlyCost = dailyCost * 30;
-  const yearlyCost = dailyCost * 365;
+  const monthlyCost = dailyCost * 30
+  const yearlyCost = dailyCost * 365
 
-  const donerPrice = 8;
-  const coffeePrice = 4;
+  const donerPrice = 8
+  const coffeePrice = 4
 
-  const monthlyDoner = monthlyCost / donerPrice;
-  const yearlyDoner = yearlyCost / donerPrice;
-  const dailyCoffee = dailyCost / coffeePrice;
+  const monthlyDoner = monthlyCost / donerPrice
+  const yearlyDoner = yearlyCost / donerPrice
+  const dailyCoffee = dailyCost / coffeePrice
 
   return (
     <div className="flex flex-col gap-8">
@@ -83,22 +83,10 @@ export function StatsSection({
             value={dailyCost.toFixed(2)}
             text={`${dailyCoffee.toFixed(1)} coffees per day`}
           />
-
-          {/*<SmallCard
-            title="Average"
-            value={avgPerSub.toFixed(2)}
-            text="per subscription"
-          />
-
-          <SmallCard
-            title="Monthly"
-            value={monthlyCost.toFixed(2)}
-            text={`${(monthlyCost / coffeePrice).toFixed(0)} coffees per month`}
-          />*/}
         </div>
       </div>
 
       <Breakdown items={breakdownStats} />
     </div>
-  );
+  )
 }

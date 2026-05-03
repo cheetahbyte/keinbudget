@@ -1,13 +1,14 @@
 import { defineConfig } from "drizzle-kit";
+import { dirname } from "path";
 import path from "path";
+import { fileURLToPath } from "url";
 
-const url = process.env.DATABASE_URL
-  ? `file:${process.env.DATABASE_URL}`
-  : "file:local.db";
+const dbDir = dirname(fileURLToPath(import.meta.url));
+const databaseUrl = process.env.DATABASE_URL?.trim() || "postgres://postgres:postgres@localhost:5432/keinbudget";
 
 export default defineConfig({
-  schema: path.join(import.meta.dir, "./src/schema/index.ts"),
-  out: path.join(import.meta.dir, "./migrations"),
-  dialect: "turso",
-  dbCredentials: { url },
+  schema: path.join(dbDir, "./src/schema/index.ts"),
+  out: path.join(dbDir, "./migrations"),
+  dialect: "postgresql",
+  dbCredentials: { url: databaseUrl },
 });

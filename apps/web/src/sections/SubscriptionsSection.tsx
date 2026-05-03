@@ -1,7 +1,7 @@
-"use client";
-import { Plus, Trash2 } from "lucide-react";
-import { useState } from "react";
-import { Button } from "@/components/ui/button";
+import { Plus, Trash2 } from "lucide-react"
+import { useState } from "react"
+
+import { Button } from "#/components/ui/button"
 import {
   Dialog,
   DialogClose,
@@ -10,34 +10,34 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { CategoriesTable } from "./subscriptions/CategoriesTable";
-import { SubscriptionsTable } from "./subscriptions/SubscriptionsTable";
+} from "#/components/ui/dialog"
+import { Input } from "#/components/ui/input"
+import { Label } from "#/components/ui/label"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "#/components/ui/tabs"
+import { CategoriesTable } from "./subscriptions/CategoriesTable"
+import { SubscriptionsTable } from "./subscriptions/SubscriptionsTable"
 
 type Category = {
-  id: number;
-  name: string;
-  icon: string;
-};
+  id: number
+  name: string
+  icon: string
+}
 
 type Subscription = {
-  id: number;
-  name: string;
-  price: number;
-  billingInterval: "monthly" | "weekly" | "yearly";
-  category: Category | null;
-};
+  id: number
+  name: string
+  price: number
+  billingInterval: "monthly" | "weekly" | "yearly"
+  category: Category | null
+}
 
 interface ActiveSubscriptionsProps {
-  categories: Category[];
-  createCategoryAction: (formData: FormData) => Promise<void>;
-  createSubscriptionAction: (formData: FormData) => Promise<void>;
-  deleteCategoryAction: (formData: FormData) => Promise<void>;
-  deleteSubscriptionAction: (formData: FormData) => Promise<void>;
-  subscriptions: Subscription[];
+  categories: Category[]
+  createCategoryAction: (formData: FormData) => Promise<void>
+  createSubscriptionAction: (formData: FormData) => Promise<void>
+  deleteCategoryAction: (formData: FormData) => Promise<void>
+  deleteSubscriptionAction: (formData: FormData) => Promise<void>
+  subscriptions: Subscription[]
 }
 
 export function ActiveSubscriptions({
@@ -48,37 +48,38 @@ export function ActiveSubscriptions({
   deleteSubscriptionAction,
   subscriptions,
 }: ActiveSubscriptionsProps) {
-  const [tab, setTab] = useState("sub");
-  const [isCategoryOpen, setIsCategoryOpen] = useState(false);
-  const [isSubscriptionOpen, setIsSubscriptionOpen] = useState(false);
+  const [tab, setTab] = useState("sub")
+  const [isCategoryOpen, setIsCategoryOpen] = useState(false)
+  const [isSubscriptionOpen, setIsSubscriptionOpen] = useState(false)
+
   return (
     <div className="space-y-8">
       <div className="space-y-4">
-        <div className="flex items-center justify-between w-full">
-          <div className="flex items-center gap-3 w-full">
+        <div className="flex w-full items-center justify-between">
+          <div className="flex w-full items-center gap-3">
             <Tabs
               defaultValue="sub"
-              className="w-full"
+              className="w-full flex flex-col"
               value={tab}
               onValueChange={setTab}
             >
-              <div className="flex flex-row items-center gap-2 justify-between">
-                <div className="flex flex-row items-center gap-2 ">
+              <div className="flex flex-row items-center justify-between gap-2">
+                <div className="flex flex-row items-center gap-2">
                   <TabsList>
                     <TabsTrigger value="sub">Subscriptions</TabsTrigger>
                     <TabsTrigger value="cat">Categories</TabsTrigger>
                   </TabsList>
                   <p className="text-xs text-muted-foreground">
-                    {subscriptions.length} total
+                    {tab === "sub" ? subscriptions.length : categories.length} total
                   </p>
                 </div>
                 <Button
                   className="cursor-pointer"
                   onClick={() => {
                     if (tab === "sub") {
-                      setIsSubscriptionOpen(true);
+                      setIsSubscriptionOpen(true)
                     } else {
-                      setIsCategoryOpen(true);
+                      setIsCategoryOpen(true)
                     }
                   }}
                 >
@@ -113,8 +114,8 @@ export function ActiveSubscriptions({
                 </DialogHeader>
                 <form
                   action={async (formData) => {
-                    await createCategoryAction(formData);
-                    setIsCategoryOpen(false);
+                    await createCategoryAction(formData)
+                    setIsCategoryOpen(false)
                   }}
                   className="grid gap-5"
                 >
@@ -142,11 +143,7 @@ export function ActiveSubscriptions({
 
                   <DialogFooter>
                     <DialogClose asChild>
-                      <Button
-                        variant="outline"
-                        size="lg"
-                        className="rounded-xl"
-                      >
+                      <Button variant="outline" size="lg" className="rounded-xl">
                         Cancel
                       </Button>
                     </DialogClose>
@@ -159,49 +156,9 @@ export function ActiveSubscriptions({
                     </Button>
                   </DialogFooter>
                 </form>
-                {categories.length > 0 ? (
-                  <div className="grid gap-2">
-                    <p className="text-sm font-medium text-[#2e241d]">
-                      Existing categories
-                    </p>
-                    <div className="flex flex-col gap-2">
-                      {categories.map((category) => (
-                        <div
-                          key={category.id}
-                          className="flex items-center justify-between rounded-xl bg-[#f8f1e7] px-3 py-2 text-sm text-[#75685f]"
-                        >
-                          <span>
-                            {category.icon} {category.name}
-                          </span>
-                          <form
-                            action={async (formData) => {
-                              await deleteCategoryAction(formData);
-                            }}
-                          >
-                            <input
-                              type="hidden"
-                              name="id"
-                              value={category.id}
-                            />
-                            <Button
-                              type="submit"
-                              variant="ghost"
-                              size="icon-sm"
-                              className="text-[#8c6e5a] hover:bg-[#efdfca] hover:text-[#5a3f2d]"
-                            >
-                              <Trash2 className="size-3.5" />
-                              <span className="sr-only">
-                                Delete {category.name}
-                              </span>
-                            </Button>
-                          </form>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                ) : null}
               </DialogContent>
             </Dialog>
+
             <Dialog
               open={isSubscriptionOpen}
               onOpenChange={setIsSubscriptionOpen}
@@ -215,8 +172,8 @@ export function ActiveSubscriptions({
                 </DialogHeader>
                 <form
                   action={async (formData) => {
-                    await createSubscriptionAction(formData);
-                    setIsSubscriptionOpen(false);
+                    await createSubscriptionAction(formData)
+                    setIsSubscriptionOpen(false)
                   }}
                   className="grid gap-5"
                 >
@@ -280,11 +237,7 @@ export function ActiveSubscriptions({
 
                   <DialogFooter>
                     <DialogClose asChild>
-                      <Button
-                        variant="outline"
-                        size="lg"
-                        className="rounded-xl"
-                      >
+                      <Button variant="outline" size="lg" className="rounded-xl">
                         Cancel
                       </Button>
                     </DialogClose>
@@ -303,5 +256,5 @@ export function ActiveSubscriptions({
         </div>
       </div>
     </div>
-  );
+  )
 }

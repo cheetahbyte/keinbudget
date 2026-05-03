@@ -1,10 +1,9 @@
-"use client";
+import { Shapes, Trash2 } from "lucide-react"
+import { useEffect, useState } from "react"
 
-import { Shapes, Trash2 } from "lucide-react";
-import { useEffect, useState } from "react";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
-import { Field, FieldLabel } from "@/components/ui/field";
+import { Button } from "#/components/ui/button"
+import { Card, CardContent } from "#/components/ui/card"
+import { Field, FieldLabel } from "#/components/ui/field"
 import {
   Pagination,
   PaginationContent,
@@ -13,7 +12,7 @@ import {
   PaginationLink,
   PaginationNext,
   PaginationPrevious,
-} from "@/components/ui/pagination";
+} from "#/components/ui/pagination"
 import {
   Select,
   SelectContent,
@@ -21,43 +20,43 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select";
+} from "#/components/ui/select"
 
 type Category = {
-  id: number;
-  name: string;
-  icon: string;
-};
-
-type Subscription = {
-  id: number;
-  name: string;
-  price: number;
-  billingInterval: "monthly" | "weekly" | "yearly";
-  category: Category | null;
-};
-
-interface SubscriptionsTableProps {
-  deleteSubscriptionAction: (formData: FormData) => Promise<void>;
-  subscriptions: Subscription[];
+  id: number
+  name: string
+  icon: string
 }
 
-type PageSizes = 5 | 10 | 20;
-const PAGE_SIZE_OPTIONS: PageSizes[] = [5, 10, 20];
+type Subscription = {
+  id: number
+  name: string
+  price: number
+  billingInterval: "monthly" | "weekly" | "yearly"
+  category: Category | null
+}
+
+interface SubscriptionsTableProps {
+  deleteSubscriptionAction: (formData: FormData) => Promise<void>
+  subscriptions: Subscription[]
+}
+
+type PageSizes = 5 | 10 | 20
+const PAGE_SIZE_OPTIONS: PageSizes[] = [5, 10, 20]
 
 function intervalLabel(billingInterval: Subscription["billingInterval"]) {
-  if (billingInterval === "weekly") return "per week";
-  if (billingInterval === "yearly") return "per year";
-  return "per month";
+  if (billingInterval === "weekly") return "per week"
+  if (billingInterval === "yearly") return "per year"
+  return "per month"
 }
 
 function getPageItems(currentPage: number, totalPages: number) {
   if (totalPages <= 5) {
-    return Array.from({ length: totalPages }, (_, index) => index + 1);
+    return Array.from({ length: totalPages }, (_, index) => index + 1)
   }
 
   if (currentPage <= 3) {
-    return [1, 2, 3, 4, "ellipsis", totalPages] as const;
+    return [1, 2, 3, 4, "ellipsis", totalPages] as const
   }
 
   if (currentPage >= totalPages - 2) {
@@ -68,7 +67,7 @@ function getPageItems(currentPage: number, totalPages: number) {
       totalPages - 2,
       totalPages - 1,
       totalPages,
-    ] as const;
+    ] as const
   }
 
   return [
@@ -79,22 +78,22 @@ function getPageItems(currentPage: number, totalPages: number) {
     currentPage + 1,
     "ellipsis",
     totalPages,
-  ] as const;
+  ] as const
 }
 
 export function SubscriptionsTable({
   deleteSubscriptionAction,
   subscriptions,
 }: SubscriptionsTableProps) {
-  const [currentPage, setCurrentPage] = useState(1);
-  const [pageSize, setPageSize] = useState<PageSizes>(5);
-  const totalPages = Math.max(1, Math.ceil(subscriptions.length / pageSize));
+  const [currentPage, setCurrentPage] = useState(1)
+  const [pageSize, setPageSize] = useState<PageSizes>(5)
+  const totalPages = Math.max(1, Math.ceil(subscriptions.length / pageSize))
 
   useEffect(() => {
     if (currentPage > totalPages) {
-      setCurrentPage(totalPages);
+      setCurrentPage(totalPages)
     }
-  }, [currentPage, totalPages]);
+  }, [currentPage, totalPages])
 
   if (subscriptions.length === 0) {
     return (
@@ -112,16 +111,16 @@ export function SubscriptionsTable({
           </p>
         </CardContent>
       </Card>
-    );
+    )
   }
 
-  const startIndex = (currentPage - 1) * pageSize;
+  const startIndex = (currentPage - 1) * pageSize
   const visibleSubscriptions = subscriptions.slice(
     startIndex,
     startIndex + pageSize,
-  );
-  const pageItems = getPageItems(currentPage, totalPages);
-  let ellipsisCount = 0;
+  )
+  const pageItems = getPageItems(currentPage, totalPages)
+  let ellipsisCount = 0
 
   return (
     <div className="space-y-4">
@@ -181,8 +180,8 @@ export function SubscriptionsTable({
           <Select
             value={String(pageSize)}
             onValueChange={(value) => {
-              setPageSize(Number(value) as PageSizes);
-              setCurrentPage(1);
+              setPageSize(Number(value) as PageSizes)
+              setCurrentPage(1)
             }}
           >
             <SelectTrigger className="w-20" id="select-rows-per-page">
@@ -210,9 +209,9 @@ export function SubscriptionsTable({
                     currentPage === 1 ? "pointer-events-none opacity-50" : ""
                   }
                   onClick={(event) => {
-                    event.preventDefault();
+                    event.preventDefault()
                     if (currentPage > 1) {
-                      setCurrentPage(currentPage - 1);
+                      setCurrentPage(currentPage - 1)
                     }
                   }}
                 />
@@ -222,7 +221,7 @@ export function SubscriptionsTable({
                 const key =
                   item === "ellipsis"
                     ? `ellipsis-${++ellipsisCount}`
-                    : `page-${item}`;
+                    : `page-${item}`
 
                 return (
                   <PaginationItem key={key}>
@@ -233,15 +232,15 @@ export function SubscriptionsTable({
                         href="#subscriptions"
                         isActive={item === currentPage}
                         onClick={(event) => {
-                          event.preventDefault();
-                          setCurrentPage(item);
+                          event.preventDefault()
+                          setCurrentPage(item)
                         }}
                       >
                         {item}
                       </PaginationLink>
                     )}
                   </PaginationItem>
-                );
+                )
               })}
 
               <PaginationItem>
@@ -254,9 +253,9 @@ export function SubscriptionsTable({
                       : ""
                   }
                   onClick={(event) => {
-                    event.preventDefault();
+                    event.preventDefault()
                     if (currentPage < totalPages) {
-                      setCurrentPage(currentPage + 1);
+                      setCurrentPage(currentPage + 1)
                     }
                   }}
                 />
@@ -266,5 +265,5 @@ export function SubscriptionsTable({
         ) : null}
       </div>
     </div>
-  );
+  )
 }

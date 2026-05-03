@@ -1,53 +1,13 @@
-import { Database } from "bun:sqlite";
-import { drizzle } from "drizzle-orm/bun-sqlite";
+import { drizzle } from "drizzle-orm/bun-sql";
 import * as schema from "./schema";
 
-const dbPath = Bun.env.DATABASE_URL ?? new URL("../local.db", import.meta.url).pathname;
-const sqlite = new Database(dbPath);
+const databaseUrl = process.env.DATABASE_URL?.trim();
 
-sqlite.exec("PRAGMA foreign_keys = ON;");
-
-sqlite.exec(`
-  CREATE TABLE IF NOT EXISTS categories (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    userId TEXT NOT NULL REFERENCES user(id) ON DELETE CASCADE,
-    name TEXT NOT NULL,
-    icon TEXT NOT NULL
-  );
-`);
-
-sqlite.exec(`
-  CREATE TABLE IF NOT EXISTS subscriptions (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    userId TEXT NOT NULL REFERENCES user(id) ON DELETE CASCADE,
-    name TEXT NOT NULL,
-    price REAL NOT NULL,
-    billingInterval TEXT NOT NULL DEFAULT 'monthly',
-    categoryId INTEGER REFERENCES categories(id) ON DELETE SET NULL
-  );
-`);
-
-const subscriptionColumns = sqlite
-  .query("PRAGMA table_info(subscriptions)")
-  .all() as Array<{ name: string }>;
-
-if (!subscriptionColumns.some((column) => column.name === "categoryId")) {
-  sqlite.exec(
-    "ALTER TABLE subscriptions ADD COLUMN categoryId INTEGER REFERENCES categories(id) ON DELETE SET NULL;"
-  );
+if (!databaseUrl) {
+  throw new Error("DATABASE_URL must be set");
 }
 
-if (!subscriptionColumns.some((column) => column.name === "billingInterval")) {
-  sqlite.exec(
-    "ALTER TABLE subscriptions ADD COLUMN billingInterval TEXT NOT NULL DEFAULT 'monthly';"
-  );
-}
-
-sqlite.exec(
-  "UPDATE subscriptions SET billingInterval = 'monthly' WHERE billingInterval IS NULL OR billingInterval = '';"
-);
-
-export const db = drizzle(sqlite, { schema });
+export const db = drizzle({ connection: { url: databaseUrl }, schema });
 
 export * from "./schema";
-export type { BunSQLiteDatabase } from "drizzle-orm/bun-sqlite";
+export type { BunSQLDatabase } from "drizzle-orm/bun-sql";

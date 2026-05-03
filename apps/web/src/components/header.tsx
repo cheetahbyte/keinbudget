@@ -1,35 +1,35 @@
-"use client";
+import { LogOut } from "lucide-react"
+import { Link, useNavigate, useRouter } from "@tanstack/react-router"
 
-import { LogOut, Wallet2 } from "lucide-react";
-import Link from "next/link";
-import { useRouter } from "next/navigation";
-import { authClient } from "@/lib/auth";
-import { Button } from "@/components/ui/button";
+import { Button } from "#/components/ui/button"
+import { authClient } from "#/lib/auth"
 
 function getInitials(email: string) {
-  return email.slice(0, 2).toUpperCase();
+  return email.slice(0, 2).toUpperCase()
 }
 
 export function Header() {
-  const router = useRouter();
-  const { data: session, isPending } = authClient.useSession();
+  const navigate = useNavigate()
+  const router = useRouter()
+  const { data: session, isPending } = authClient.useSession()
 
   async function handleSignOut() {
-    await authClient.signOut();
-    router.push("/login");
-    router.refresh();
+    await authClient.signOut()
+    await navigate({ to: "/login" })
+    await router.invalidate()
   }
 
   return (
-    <header className="border-b border-[#e9dccd] bg-[#fdf9f4]  mx-auto w-full">
-      <div className="mx-auto flex w-full items-center justify-between gap-4 px-6 py-5 max-w-6xl">
-        <Link href="/" className="flex items-center gap-3">
-          {/*<div className="flex size-11 items-center justify-center rounded-2xl bg-[#2e241d] text-white">
-            <Wallet2 className="size-5" />
-          </div>*/}
+    <header className="mx-auto w-full border-b border-[#e9dccd] bg-[#fdf9f4]">
+      <div className="mx-auto flex w-full max-w-6xl items-center justify-between gap-4 px-6 py-5">
+        <Link to="/" className="flex items-center gap-3">
           <div>
-            <p className="text-lg font-semibold tracking-tight text-[#2e241d]">keinbudget</p>
-            <p className="text-sm text-[#7a6a5d]">Track the subscriptions eating your salary</p>
+            <p className="text-lg font-semibold tracking-tight text-[#2e241d]">
+              keinbudget
+            </p>
+            <p className="text-sm text-[#7a6a5d]">
+              Track the subscriptions eating your salary
+            </p>
           </div>
         </Link>
 
@@ -63,11 +63,11 @@ export function Header() {
               size="lg"
               className="h-11 rounded-full bg-[#2e241d] px-5 text-white hover:bg-[#433226]"
             >
-              <Link href="/login">Sign in</Link>
+              <Link to="/login">Sign in</Link>
             </Button>
           )}
         </div>
       </div>
     </header>
-  );
+  )
 }

@@ -1,4 +1,5 @@
-import { createTanstackQueryUtils } from "@orpc/tanstack-query";
-import { api } from "./api";
+import { createTanstackQueryUtils } from "@orpc/tanstack-query"
 
-export const orpc = createTanstackQueryUtils(api);
+import { api } from "./api"
+
+export const orpc = createTanstackQueryUtils(api)

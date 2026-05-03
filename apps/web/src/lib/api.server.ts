@@ -1,10 +1,12 @@
-import { cookies } from "next/headers";
-import { createClient } from "@keinbudget/contracts/client";
+import { getRequest } from "@tanstack/react-start/server"
+import { createClient } from "@keinbudget/contracts/client"
 
-export async function getApi() {
-  const cookieStore = await cookies();
-  const apiUrl = process.env.API_URL ?? "http://localhost:4000";
+export function getServerApi() {
+  const req = getRequest()
+  const apiUrl = process.env.API_URL ?? "http://localhost:4000"
+  const cookie = req.headers.get("cookie") ?? req.headers.get("Cookie") ?? ""
+
   return createClient(`${apiUrl}/rpc`, {
-    Cookie: cookieStore.toString(),
-  });
+    Cookie: cookie,
+  })
 }
