@@ -1,22 +1,23 @@
-import { LogOut } from "lucide-react"
-import { Link, useNavigate, useRouter } from "@tanstack/react-router"
+import { Link, useNavigate, useRouter } from "@tanstack/react-router";
+import { LogOut } from "lucide-react";
 
-import { Button } from "#/components/ui/button"
-import { authClient } from "#/lib/auth"
+import { Button } from "#/components/ui/button";
+import { authClient } from "#/lib/auth";
+import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 
 function getInitials(email: string) {
-  return email.slice(0, 2).toUpperCase()
+  return email.slice(0, 2).toUpperCase();
 }
 
 export function Header() {
-  const navigate = useNavigate()
-  const router = useRouter()
-  const { data: session, isPending } = authClient.useSession()
+  const navigate = useNavigate();
+  const router = useRouter();
+  const { data: session, isPending } = authClient.useSession();
 
   async function handleSignOut() {
-    await authClient.signOut()
-    await navigate({ to: "/login" })
-    await router.invalidate()
+    await authClient.signOut();
+    await navigate({ to: "/login" });
+    await router.invalidate();
   }
 
   return (
@@ -37,12 +38,20 @@ export function Header() {
           {isPending ? null : session ? (
             <>
               <div className="hidden items-center gap-3 rounded-full border border-[#e5d7c8] bg-white px-3 py-2 sm:flex">
-                <div className="flex size-7.5 items-center justify-center rounded-full bg-[#f1e1c8] text-sm font-semibold text-[#5a4738]">
-                  {getInitials(session.user.email)}
-                </div>
+                <Avatar>
+                  <AvatarImage
+                    src={
+                      session.user.image ??
+                      `https://api.dicebear.com/9.x/thumbs/svg?seed=${session.user.name}`
+                    }
+                  />
+                  <AvatarFallback>
+                    {getInitials(session.user.name)}
+                  </AvatarFallback>
+                </Avatar>
                 <div className="min-w-0">
-                  <p className="max-w-52 truncate text-sm font-medium text-[#2e241d]">
-                    {session.user.email}
+                  <p className="max-w-52 truncate text-sm font-medium text-[#2e241d] pr-2">
+                    {session.user.name}
                   </p>
                 </div>
               </div>
@@ -58,23 +67,26 @@ export function Header() {
               </Button>
             </>
           ) : (
-            <><Button
-              variant="ghost"
-              asChild
-              size="lg"
-              className="h-11 rounded-full px-5 "
-            >
-              <Link to="/login">Sign in</Link>
-            </Button><Button
-              asChild
-              size="lg"
-              className="h-11 rounded-full bg-[#2e241d] px-5 text-white hover:bg-[#433226]"
-            >
+            <>
+              <Button
+                variant="ghost"
+                asChild
+                size="lg"
+                className="h-11 rounded-full px-5 "
+              >
+                <Link to="/login">Sign in</Link>
+              </Button>
+              <Button
+                asChild
+                size="lg"
+                className="h-11 rounded-full bg-[#2e241d] px-5 text-white hover:bg-[#433226]"
+              >
                 <Link to="/signup">Sign up</Link>
-              </Button></>
+              </Button>
+            </>
           )}
         </div>
       </div>
     </header>
-  )
+  );
 }
