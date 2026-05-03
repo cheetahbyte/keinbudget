@@ -1,6 +1,6 @@
 # keinbudget
 Track your subscriptions
-![alt text](<docs/screenshot.png)
+![alt text](docs/screenshot.png)
 ## Self-Hosting
 Just execute the `compose.yaml` 
 ```sh
