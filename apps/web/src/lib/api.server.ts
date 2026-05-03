@@ -3,7 +3,8 @@ import { createClient } from "@keinbudget/contracts/client";
 
 export async function getApi() {
   const cookieStore = await cookies();
-  return createClient("http://localhost:4000/rpc", {
+  const apiUrl = process.env.API_URL ?? "http://localhost:4000";
+  return createClient(`${apiUrl}/rpc`, {
     Cookie: cookieStore.toString(),
   });
 }

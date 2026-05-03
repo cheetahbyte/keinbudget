@@ -13,7 +13,6 @@
     "typescript": "^6"
   },
   "dependencies": {
-    "@better-auth/passkey": "^1.6.9",
     "@keinbudget/db": "workspace:*",
     "better-auth": "^1.6.9"
   }

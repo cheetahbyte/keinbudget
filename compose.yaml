@@ -1,0 +1,58 @@
+services:
+  migrate:
+    build:
+      context: .
+      dockerfile: apps/api/Dockerfile
+    command: sh -c "cd /app/packages/db && bunx drizzle-kit push"
+    environment:
+      DATABASE_URL: /data/keinbudget.db
+    volumes:
+      - sqlite_data:/data
+    restart: "no"
+
+  api:
+    build:
+      context: .
+      dockerfile: apps/api/Dockerfile
+    ports:
+      - "4000:4000"
+    environment:
+      DATABASE_URL: /data/keinbudget.db
+      BETTER_AUTH_SECRET: ${BETTER_AUTH_SECRET}
+    volumes:
+      - sqlite_data:/data
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+    read_only: true
+    tmpfs:
+      - /tmp
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    restart: unless-stopped
+
+  web:
+    build:
+      context: .
+      dockerfile: apps/web/Dockerfile
+    ports:
+      - "3000:3000"
+    environment:
+      API_URL: http://api:4000
+      NODE_ENV: production
+    depends_on:
+      - api
+    read_only: true
+    tmpfs:
+      - /tmp
+      - /app/apps/web/.next/cache
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    restart: unless-stopped
+
+volumes:
+  sqlite_data:

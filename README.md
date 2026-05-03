@@ -1,37 +1,19 @@
 # keinbudget
+Track your subscriptions
 
-To install dependencies:
-
-```bash
-bun install
+## Self-Hosting
+Just execute the `compose.yaml` 
+```sh
+$ docker compose up -d
 ```
 
-To run:
 
-```bash
-bun run index.ts
-```
-
-This project was created using `bun init` in bun v1.3.13. [Bun](https://bun.com) is a fast all-in-one JavaScript runtime.
-
-Server Component — direct await:
-  // app/subscriptions/page.tsx
-  import { api } from "@/lib/api";
-
-  export default async function Page() {
-    const subscriptions = await api.subscriptions.all();
-    // ...
-  }
-
-  Client Component — via orpc utils:
-  "use client";
-  import { useQuery } from "@tanstack/react-query";
-  import { orpc } from "@/lib/orpc";
-
-  export function SubscriptionList() {
-    const { data, isPending } = useQuery(orpc.subscriptions.all.queryOptions());
-    if (isPending) return <p>Loading...</p>;
-    return <ul>{data?.map(s => <li key={s.id}>{s.name}</li>)}</ul>;
-  }
-
-  The orpc object mirrors your contract structure exactly, so orpc.subscriptions.all gives you queryOptions(), mutationOptions(), and getQueryKey() — all fully typed.
+## Techstack
+- Bun workspaces for the monorepo and package management
+- Next.js 16 + React 19 for the web app
+- Tailwind CSS 4, Radix UI, and shadcn-style components for the UI
+- Hono for the API
+- oRPC + Zod for shared contracts and type-safe API calls
+- Drizzle ORM with SQLite for the database layer
+- Better Auth for authentication
+- Docker Compose for simple self-hosting
