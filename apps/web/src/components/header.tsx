@@ -58,13 +58,20 @@ export function Header() {
               </Button>
             </>
           ) : (
-            <Button
+            <><Button
+              variant="ghost"
+              asChild
+              size="lg"
+              className="h-11 rounded-full px-5 "
+            >
+              <Link to="/login">Sign in</Link>
+            </Button><Button
               asChild
               size="lg"
               className="h-11 rounded-full bg-[#2e241d] px-5 text-white hover:bg-[#433226]"
             >
-              <Link to="/login">Sign in</Link>
-            </Button>
+                <Link to="/signup">Sign up</Link>
+              </Button></>
           )}
         </div>
       </div>
