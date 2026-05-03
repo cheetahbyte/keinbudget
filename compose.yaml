@@ -8,7 +8,12 @@ services:
     volumes:
       - postgres_data:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-keinbudget} -d ${POSTGRES_DB:-keinbudget}"]
+      test:
+        [
+          "CMD-SHELL",
+          "pg_isready -U ${POSTGRES_USER:-keinbudget} -d
+            ${POSTGRES_DB:-keinbudget}",
+        ]
       interval: 5s
       timeout: 5s
       retries: 10
@@ -18,7 +23,7 @@ services:
     build:
       context: .
       dockerfile: apps/api/Dockerfile
-    command: bun run --cwd packages/db push
+    command: bun run --cwd packages/db migrate
     environment:
       DATABASE_URL: postgres://${POSTGRES_USER:-keinbudget}:${POSTGRES_PASSWORD:-keinbudget}@postgres:5432/${POSTGRES_DB:-keinbudget}
     depends_on:
