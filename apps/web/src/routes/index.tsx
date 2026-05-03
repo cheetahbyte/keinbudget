@@ -63,7 +63,8 @@ export const Route = createFileRoute('/')({
   loader: async () => {
     try {
       return await getDashboardDataFn()
-    } catch {
+    } catch (err) {
+      console.log(err)
       throw redirect({ to: '/login' })
     }
   },
