@@ -15,7 +15,7 @@ COPY . .
 
 RUN pnpm build
 
-FROM cgr.dev/chainguard/node:22 AS runner
+FROM cgr.dev/chainguard/node:22-slim AS runner
 
 WORKDIR /app
 ENV NODE_ENV=production
