@@ -15,7 +15,7 @@
     "db:migrate": "drizzle-kit migrate",
     "lint": "biome check .",
     "format": "biome format --write .",
-    "start": "node server/index.mjs"
+    "start": "node dist/server/index.mjs"
   },
   "dependencies": {
     "@tailwindcss/vite": "^4.1.18",
