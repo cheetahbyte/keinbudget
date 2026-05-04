@@ -12,14 +12,13 @@ export const exportAccountData = createServerFn({ method: "GET" }).handler(
   async () => {
     const { user } = await ensureSession();
     const [subscriptions, categories] = await Promise.all([
-      subService.findAll(user.id),
+      subService.findAllForExport(user.id),
       catService.findAll(user.id),
     ]);
     return { version: "1.0", subscriptions, categories };
   },
 );
 
-// TODO
 export const importAccountData = createServerFn({
   method: "POST",
 })
@@ -27,9 +26,35 @@ export const importAccountData = createServerFn({
   .handler(async ({ data }) => {
     const { user } = await ensureSession();
     if (data.version === "1.0") {
-      const [subscriptions, categories] = await Promise.all([
-        catService.bulkCreate(user.id, data.categories),
-        subService.bulkCreate(user.id, data.subscriptions),
-      ]);
+      const newCategories = await catService.bulkCreate(
+        user.id,
+        data.categories,
+      );
+
+      const oldToNewId = new Map<number, number>();
+      for (let i = 0; i < data.categories.length; i++) {
+        oldToNewId.set(data.categories[i].id, newCategories[i].id);
+      }
+
+      const subscriptions = data.subscriptions.map((sub) => ({
+        name: sub.name,
+        price: sub.price,
+        billingInterval: sub.billingInterval,
+        categoryId:
+          sub.categoryId !== null
+            ? (oldToNewId.get(sub.categoryId) ?? null)
+            : null,
+      }));
+
+      const newSubscriptions = await subService.bulkCreate(
+        user.id,
+        subscriptions,
+      );
+
+      return {
+        importedCategories: newCategories.length,
+        importedSubscriptions: newSubscriptions.length,
+      };
     }
+    return { importedCategories: 0, importedSubscriptions: 0 };
   });
