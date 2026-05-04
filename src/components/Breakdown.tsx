@@ -90,7 +90,7 @@ export function Breakdown({ items }: BreakdownProps) {
             key={item.name}
             className="h-full"
             style={{
-              width: `${(item.value / total) * 100}%`,
+              width: `${total > 0 ? (item.value / total) * 100 : 0}%`,
               backgroundColor: item.color,
             }}
           />
@@ -105,7 +105,11 @@ export function Breakdown({ items }: BreakdownProps) {
               style={{ backgroundColor: item.color }}
             />
             <span className="text-sm" style={{ color: item.color }}>
-              {item.name}
+              {item.name} (
+              {total > 0
+                ? parseFloat(((item.value / total) * 100).toFixed(1))
+                : 0}
+              %)
             </span>
           </div>
         ))}

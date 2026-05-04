@@ -9,7 +9,10 @@ if (!databaseUrl) {
   throw new Error("DATABASE_URL must be set");
 }
 
-const sql = postgres(databaseUrl);
+const sql = postgres(databaseUrl, {
+  idle_timeout: 30000,
+  connect_timeout: 5000,
+});
 
 export const db = drizzle(sql, { schema });
 export type DB = PostgresJsDatabase<typeof schema>;
