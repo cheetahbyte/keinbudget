@@ -1,10 +1,10 @@
 import { queryOptions } from "@tanstack/react-query";
-import { getCategories } from "#/features/categories/categories.actions";
+import { getCategories } from "#/functions/categories";
 import {
   getMonthlyCosts,
   getSubscriptionStats,
   getSubscriptions,
-} from "#/features/subscriptions/subscriptions.actions";
+} from "#/functions/subscriptions";
 
 export const dashboardQueryKeys = {
   all: ["dashboard"] as const,

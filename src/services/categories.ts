@@ -1,9 +1,12 @@
 import { and, eq } from "drizzle-orm";
-import { categories, db } from "#/db";
+import type { DB } from "#/db";
+import { categories } from "#/db";
 
-export class CategoryRepo {
+export class CategoryService {
+  constructor(private readonly db: DB) {}
+
   findAll(userId: string) {
-    return db
+    return this.db
       .select({
         id: categories.id,
         name: categories.name,
@@ -14,7 +17,7 @@ export class CategoryRepo {
   }
 
   async create(userId: string, input: { name: string; icon: string }) {
-    const [category] = await db
+    const [category] = await this.db
       .insert(categories)
       .values({
         userId,
@@ -35,7 +38,7 @@ export class CategoryRepo {
   }
 
   async remove(userId: string, id: number) {
-    const result = await db
+    const result = await this.db
       .delete(categories)
       .where(and(eq(categories.id, id), eq(categories.userId, userId)))
       .returning({ id: categories.id });

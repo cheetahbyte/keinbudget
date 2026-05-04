@@ -3,7 +3,7 @@ import { ChevronDown, LogOut, Settings } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 
 import { Button } from "#/components/ui/button";
-import { authClient } from "#/lib/auth";
+import { authClient } from "#/lib/auth-client";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 
 function getInitials(email: string) {

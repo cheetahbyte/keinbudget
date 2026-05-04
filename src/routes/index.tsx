@@ -24,7 +24,6 @@ function Home() {
 }
 
 import { useSuspenseQuery } from "@tanstack/react-query";
-import { useDashboardActions } from "#/hooks/useDashboardActions";
 import {
   categoriesQueryOptions,
   subscriptionStatsQueryOptions,
@@ -34,16 +33,10 @@ import { buildBreakdownItems } from "#/lib/dashboard/utils";
 import { StatsSection } from "#/sections/StatsSection";
 import { ActiveSubscriptions } from "#/sections/SubscriptionsSection";
 
-export function DashboardPage() {
+function DashboardPage() {
   const { data: categories } = useSuspenseQuery(categoriesQueryOptions());
   const { data: stats } = useSuspenseQuery(subscriptionStatsQueryOptions());
   const { data: subscriptions } = useSuspenseQuery(subscriptionsQueryOptions());
-  const {
-    createCategory,
-    createSubscription,
-    deleteCategory,
-    deleteSubscription,
-  } = useDashboardActions();
 
   const breakdownStats = buildBreakdownItems(subscriptions);
 
@@ -56,10 +49,6 @@ export function DashboardPage() {
       <section className="space-y-6">
         <ActiveSubscriptions
           categories={categories}
-          createCategoryAction={createCategory}
-          createSubscriptionAction={createSubscription}
-          deleteCategoryAction={deleteCategory}
-          deleteSubscriptionAction={deleteSubscription}
           subscriptions={subscriptions}
         />
       </section>

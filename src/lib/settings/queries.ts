@@ -1,5 +1,5 @@
 import { queryOptions } from "@tanstack/react-query";
-import { exportAccountData } from "#/features/account/account.actions";
+import { exportAccountData } from "#/functions/account";
 
 export const settingsQueryKeys = {
   all: ["settings"] as const,

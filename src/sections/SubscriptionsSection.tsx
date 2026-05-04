@@ -1,34 +1,90 @@
 import { Plus } from "lucide-react";
 import { useState } from "react";
+import { useQueryClient } from "@tanstack/react-query";
 
 import { AddCategoryDialog } from "#/components/dashboard/AddCategoryDialog";
 import { AddSubscriptionDialog } from "#/components/dashboard/AddSubscriptionDialog";
 import { Button } from "#/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "#/components/ui/tabs";
+import { createCategory, deleteCategory } from "#/functions/categories";
+import {
+  createSubscription,
+  deleteSubscription,
+} from "#/functions/subscriptions";
 import type { Category, Subscription } from "#/lib/dashboard/types";
+import {
+  parseCreateCategoryFormData,
+  parseCreateSubscriptionFormData,
+  parseEntityIdFormData,
+} from "#/lib/dashboard/mutations";
+import { dashboardQueryKeys } from "#/lib/dashboard/queries";
 import { CategoriesTable } from "./subscriptions/CategoriesTable";
 import { SubscriptionsTable } from "./subscriptions/SubscriptionsTable";
 
 interface ActiveSubscriptionsProps {
   categories: Category[];
-  createCategoryAction: (formData: FormData) => Promise<void>;
-  createSubscriptionAction: (formData: FormData) => Promise<void>;
-  deleteCategoryAction: (formData: FormData) => Promise<void>;
-  deleteSubscriptionAction: (formData: FormData) => Promise<void>;
   subscriptions: Subscription[];
 }
 
 export function ActiveSubscriptions({
   categories,
-  createCategoryAction,
-  createSubscriptionAction,
-  deleteCategoryAction,
-  deleteSubscriptionAction,
   subscriptions,
 }: ActiveSubscriptionsProps) {
+  const queryClient = useQueryClient();
   const [tab, setTab] = useState("sub");
   const [isCategoryOpen, setIsCategoryOpen] = useState(false);
   const [isSubscriptionOpen, setIsSubscriptionOpen] = useState(false);
+
+  async function handleCreateCategory(formData: FormData) {
+    const input = parseCreateCategoryFormData(formData);
+    if (!input) return;
+    await createCategory({ data: input });
+    await queryClient.invalidateQueries({
+      queryKey: dashboardQueryKeys.categories(),
+    });
+  }
+
+  async function handleCreateSubscription(formData: FormData) {
+    const input = parseCreateSubscriptionFormData(formData);
+    if (!input) return;
+    await createSubscription({ data: input });
+    await Promise.all([
+      queryClient.invalidateQueries({
+        queryKey: dashboardQueryKeys.subscriptions(),
+      }),
+      queryClient.invalidateQueries({
+        queryKey: dashboardQueryKeys.stats(),
+      }),
+    ]);
+  }
+
+  async function handleDeleteCategory(formData: FormData) {
+    const input = parseEntityIdFormData(formData);
+    if (!input) return;
+    await deleteCategory({ data: { id: input.id } });
+    await Promise.all([
+      queryClient.invalidateQueries({
+        queryKey: dashboardQueryKeys.categories(),
+      }),
+      queryClient.invalidateQueries({
+        queryKey: dashboardQueryKeys.subscriptions(),
+      }),
+    ]);
+  }
+
+  async function handleDeleteSubscription(formData: FormData) {
+    const input = parseEntityIdFormData(formData);
+    if (!input) return;
+    await deleteSubscription({ data: { id: input.id } });
+    await Promise.all([
+      queryClient.invalidateQueries({
+        queryKey: dashboardQueryKeys.subscriptions(),
+      }),
+      queryClient.invalidateQueries({
+        queryKey: dashboardQueryKeys.stats(),
+      }),
+    ]);
+  }
 
   return (
     <div className="space-y-8">
@@ -68,14 +124,14 @@ export function ActiveSubscriptions({
               </div>
               <TabsContent value="sub">
                 <SubscriptionsTable
-                  deleteSubscriptionAction={deleteSubscriptionAction}
+                  deleteSubscriptionAction={handleDeleteSubscription}
                   subscriptions={subscriptions}
                 />
               </TabsContent>
               <TabsContent value="cat">
                 <CategoriesTable
                   categories={categories}
-                  deleteCategoryAction={deleteCategoryAction}
+                  deleteCategoryAction={handleDeleteCategory}
                 />
               </TabsContent>
             </Tabs>
@@ -85,14 +141,14 @@ export function ActiveSubscriptions({
             <AddCategoryDialog
               open={isCategoryOpen}
               onOpenChange={setIsCategoryOpen}
-              onSubmit={createCategoryAction}
+              onSubmit={handleCreateCategory}
             />
 
             <AddSubscriptionDialog
               categories={categories}
               open={isSubscriptionOpen}
               onOpenChange={setIsSubscriptionOpen}
-              onSubmit={createSubscriptionAction}
+              onSubmit={handleCreateSubscription}
             />
           </div>
         </div>

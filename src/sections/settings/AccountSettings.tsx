@@ -3,8 +3,8 @@ import { Download, Trash2, Upload } from "lucide-react";
 import { useState, useTransition } from "react";
 import { Button } from "#/components/ui/button";
 import { Separator } from "#/components/ui/separator";
-import { authClient } from "#/lib/auth";
-import { exportAccountData } from "#/features/account/account.actions";
+import { exportAccountData } from "#/functions/account";
+import { authClient } from "#/lib/auth-client";
 import { SettingsSection } from "./SettingsSection";
 
 export function AccountSettings() {
@@ -54,9 +54,10 @@ export function AccountSettings() {
           <div className="shrink-0">
             <Button
               type="button"
-              variant="outline"
+              variant="ghost"
               size="lg"
               className="h-10 rounded-full border-[#cfbda7] bg-white px-4 text-[#2e241d] hover:bg-[#f8f1e7]"
+              disabled
             >
               <Upload className="size-4" />
               Import Data

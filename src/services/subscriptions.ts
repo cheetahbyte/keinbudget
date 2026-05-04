@@ -1,9 +1,34 @@
 import { and, eq } from "drizzle-orm";
-import { categories, db, subscriptions } from "#/db";
+import type { DB } from "#/db";
+import { categories, subscriptions } from "#/db";
 
-export class SubscriptionRepo {
-  findAll(userId: string) {
-    return db
+function toMonthlyCost(
+  price: number,
+  billingInterval: "monthly" | "weekly" | "yearly",
+) {
+  if (billingInterval === "weekly") {
+    return (price * 52) / 12;
+  }
+
+  if (billingInterval === "yearly") {
+    return price / 12;
+  }
+
+  return price;
+}
+
+export function normalizeMonthlyPrice(
+  price: number,
+  billingInterval: "monthly" | "weekly" | "yearly",
+) {
+  return toMonthlyCost(price, billingInterval);
+}
+
+export class SubscriptionService {
+  constructor(private readonly db: DB) {}
+
+  async findAll(userId: string) {
+    const rows = await this.db
       .select({
         id: subscriptions.id,
         name: subscriptions.name,
@@ -18,20 +43,56 @@ export class SubscriptionRepo {
       .from(subscriptions)
       .leftJoin(categories, eq(subscriptions.categoryId, categories.id))
       .where(eq(subscriptions.userId, userId));
+
+    return rows.map((subscription) => ({
+      ...subscription,
+      category:
+        subscription.category?.id == null
+          ? null
+          : {
+              id: subscription.category.id,
+              name: subscription.category.name,
+              icon: subscription.category.icon,
+            },
+    }));
   }
 
-  calculateStats(userId: string) {
-    return db
+  async calculateStats(userId: string) {
+    const rows = await this.db
       .select({
         price: subscriptions.price,
         billingInterval: subscriptions.billingInterval,
       })
       .from(subscriptions)
       .where(eq(subscriptions.userId, userId));
+    const monthlyCost = rows.reduce(
+      (sum, s) => sum + toMonthlyCost(s.price, s.billingInterval ?? "monthly"),
+      0,
+    );
+
+    return {
+      averagePerSub: rows.length === 0 ? 0 : monthlyCost / rows.length,
+      dailyCost: monthlyCost / 30,
+    };
   }
 
-  findCategoryById(userId: string, categoryId: number) {
-    return db
+  async calculateMonthlyCosts(userId: string) {
+    const rows = await this.findAll(userId);
+
+    return rows.map((subscription) => ({
+      id: subscription.id,
+      name: subscription.name,
+      price: subscription.price,
+      billingInterval: subscription.billingInterval,
+      monthlyPrice: normalizeMonthlyPrice(
+        subscription.price,
+        subscription.billingInterval ?? "monthly",
+      ),
+    }));
+  }
+
+  private findCategoryById(userId: string, categoryId: number) {
+    return this.db
       .select({
         id: categories.id,
         name: categories.name,
@@ -62,7 +123,7 @@ export class SubscriptionRepo {
       categoryId = category.id;
     }
 
-    const [subscription] = await db
+    const [subscription] = await this.db
       .insert(subscriptions)
       .values({
         userId,
@@ -111,7 +172,7 @@ export class SubscriptionRepo {
   }
 
   async remove(userId: string, id: number) {
-    const result = await db
+    const result = await this.db
       .delete(subscriptions)
       .where(and(eq(subscriptions.id, id), eq(subscriptions.userId, userId)))
       .returning({ id: subscriptions.id });
