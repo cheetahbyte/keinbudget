@@ -1,5 +1,5 @@
 import { and, eq } from "drizzle-orm";
-import type { DB } from "#/db";
+import type { DrizzleClient } from "#/db";
 import { categories, subscriptions } from "#/db";
 
 function toMonthlyCost(
@@ -24,8 +24,10 @@ export function normalizeMonthlyPrice(
   return toMonthlyCost(price, billingInterval);
 }
 
+type SubInsertInput = Omit<typeof subscriptions.$inferInsert, "id" | "userId">;
+
 export class SubscriptionService {
-  constructor(private readonly db: DB) {}
+  constructor(private readonly db: DrizzleClient) {}
 
   async findAll(userId: string) {
     const rows = await this.db
@@ -55,6 +57,20 @@ export class SubscriptionService {
               icon: subscription.category.icon,
             },
     }));
+  }
+
+  async findAllForExport(userId: string) {
+    const rows = await this.db
+      .select({
+        id: subscriptions.id,
+        name: subscriptions.name,
+        price: subscriptions.price,
+        billingInterval: subscriptions.billingInterval,
+        categoryId: subscriptions.categoryId,
+      })
+      .from(subscriptions)
+      .where(eq(subscriptions.userId, userId));
+    return rows;
   }
 
   async calculateStats(userId: string) {
@@ -169,6 +185,21 @@ export class SubscriptionService {
       billingInterval: subscription.billingInterval,
       category: category ?? null,
     };
+  }
+
+  async bulkCreate(userId: string, input: SubInsertInput[]) {
+    if (input.length === 0) return [];
+    const rows = await this.db
+      .insert(subscriptions)
+      .values(input.map((s) => ({ userId, ...s })))
+      .returning({
+        id: subscriptions.id,
+        name: subscriptions.name,
+        price: subscriptions.price,
+        billingInterval: subscriptions.billingInterval,
+        categoryId: subscriptions.categoryId,
+      });
+    return rows;
   }
 
   async update(

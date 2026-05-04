@@ -1,9 +1,9 @@
 import { useNavigate, useRouter } from "@tanstack/react-router";
 import { Download, Trash2, Upload } from "lucide-react";
-import { useState, useTransition } from "react";
+import { useRef, useState, useTransition } from "react";
 import { Button } from "#/components/ui/button";
 import { Separator } from "#/components/ui/separator";
-import { exportAccountData } from "#/functions/account";
+import { exportAccountData, importAccountData } from "#/functions/account";
 import { authClient } from "#/lib/auth-client";
 import { SettingsSection } from "./SettingsSection";
 
@@ -13,6 +13,10 @@ export function AccountSettings() {
   const [isConfirmingDelete, setIsConfirmingDelete] = useState(false);
   const [isDeleting, startDeleting] = useTransition();
   const [isExporting, startExporting] = useTransition();
+  const [isImporting, startImporting] = useTransition();
+  const [importResult, setImportResult] = useState<string | null>(null);
+  const [importError, setImportError] = useState<string | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   function handleDeleteConfirm() {
     startDeleting(async () => {
@@ -38,6 +42,37 @@ export function AccountSettings() {
     });
   }
 
+  function handleFileSelect() {
+    fileInputRef.current?.click();
+  }
+
+  function handleFileChange(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setImportResult(null);
+    setImportError(null);
+
+    startImporting(async () => {
+      try {
+        const text = await file.text();
+        const parsed = JSON.parse(text);
+        const result = await importAccountData({ data: parsed });
+        setImportResult(
+          `Imported ${result.importedCategories} categories and ${result.importedSubscriptions} subscriptions.`,
+        );
+      } catch (err) {
+        setImportError(
+          err instanceof Error ? err.message : "Failed to import data.",
+        );
+      }
+    });
+
+    if (fileInputRef.current) {
+      fileInputRef.current.value = "";
+    }
+  }
+
   return (
     <SettingsSection title="Account Settings">
       <div className="overflow-hidden">
@@ -52,18 +87,37 @@ export function AccountSettings() {
           </div>
 
           <div className="shrink-0">
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept=".json"
+              className="hidden"
+              onChange={handleFileChange}
+            />
             <Button
               type="button"
               variant="ghost"
               size="lg"
               className="h-10 rounded-full border-[#cfbda7] bg-white px-4 text-[#2e241d] hover:bg-[#f8f1e7]"
-              disabled
+              onClick={handleFileSelect}
+              disabled={isImporting}
             >
               <Upload className="size-4" />
-              Import Data
+              {isImporting ? "Importing..." : "Import Data"}
             </Button>
           </div>
         </div>
+
+        {importResult && (
+          <div className="px-5 pb-4 sm:px-6">
+            <p className="text-sm text-green-700">{importResult}</p>
+          </div>
+        )}
+        {importError && (
+          <div className="px-5 pb-4 sm:px-6">
+            <p className="text-sm text-red-600">{importError}</p>
+          </div>
+        )}
 
         <Separator className="bg-[#efe4d7]" />
 

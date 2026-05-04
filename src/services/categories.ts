@@ -1,9 +1,10 @@
 import { and, eq } from "drizzle-orm";
-import type { DB } from "#/db";
+import type { DrizzleClient } from "#/db";
 import { categories } from "#/db";
+import type { Category } from "#/schemas";
 
 export class CategoryService {
-  constructor(private readonly db: DB) {}
+  constructor(private readonly db: DrizzleClient) {}
 
   findAll(userId: string) {
     return this.db
@@ -14,6 +15,19 @@ export class CategoryService {
       })
       .from(categories)
       .where(eq(categories.userId, userId));
+  }
+
+  async bulkCreate(userId: string, input: Category[]) {
+    if (input.length === 0) return [];
+    const rows = await this.db
+      .insert(categories)
+      .values(input.map((c) => ({ userId, name: c.name, icon: c.icon })))
+      .returning({
+        id: categories.id,
+        name: categories.name,
+        icon: categories.icon,
+      });
+    return rows;
   }
 
   async create(userId: string, input: { name: string; icon: string }) {
