@@ -1,6 +1,6 @@
 import { z } from "zod";
 import { categorySchema } from "./category";
-import { entityIdSchema } from "./rest";
+import type { entityIdSchema } from "./rest";
 
 export const billingIntervalSchema = z.enum(["monthly", "weekly", "yearly"]);
 

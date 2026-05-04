@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { entityIdSchema } from "./rest";
+import type { entityIdSchema } from "./rest";
 
 export const categorySchema = z.object({
   id: z.number(),

@@ -1,6 +1,6 @@
+import { useQueryClient } from "@tanstack/react-query";
 import { Plus } from "lucide-react";
 import { useState } from "react";
-import { useQueryClient } from "@tanstack/react-query";
 
 import { AddCategoryDialog } from "#/components/dashboard/AddCategoryDialog";
 import { AddSubscriptionDialog } from "#/components/dashboard/AddSubscriptionDialog";
@@ -11,13 +11,13 @@ import {
   createSubscription,
   deleteSubscription,
 } from "#/functions/subscriptions";
-import type { Category, Subscription } from "#/lib/dashboard/types";
 import {
   parseCreateCategoryFormData,
   parseCreateSubscriptionFormData,
   parseEntityIdFormData,
 } from "#/lib/dashboard/mutations";
 import { dashboardQueryKeys } from "#/lib/dashboard/queries";
+import type { Category, Subscription } from "#/lib/dashboard/types";
 import { CategoriesTable } from "./subscriptions/CategoriesTable";
 import { SubscriptionsTable } from "./subscriptions/SubscriptionsTable";
 

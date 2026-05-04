@@ -9,13 +9,13 @@
     "ignoreUnknown": true,
     "includes": [
       "**",
-      "!**/node_modules/**",
+      "!**/node_modules",
       "!**/.next",
-      "!**/public/**",
-      "!**/.wrangler/**",
-      "!**/dist/**",
-      "!**/icons/**",
-      "!**/patches/**",
+      "!**/public",
+      "!**/.wrangler",
+      "!**/dist",
+      "!**/icons",
+      "!**/patches",
       "!**/*.css",
       "!**/*.scss"
     ]

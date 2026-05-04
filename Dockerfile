@@ -2,8 +2,6 @@ FROM node:22-alpine AS builder
 
 ENV PNPM_HOME="/pnpm"
 ENV PATH="$PNPM_HOME:$PATH"
-ARG VITE_BETTER_AUTH_URL=http://localhost:3000
-ENV VITE_BETTER_AUTH_URL=$VITE_BETTER_AUTH_URL
 
 WORKDIR /app
 RUN corepack enable
