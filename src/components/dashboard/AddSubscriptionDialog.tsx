@@ -10,13 +10,14 @@ import {
 } from "#/components/ui/dialog";
 import { Input } from "#/components/ui/input";
 import { Label } from "#/components/ui/label";
-import type { Category } from "#/lib/dashboard/types";
+import type { Category, Subscription } from "#/lib/dashboard/types";
 
 interface AddSubscriptionDialogProps {
   categories: Category[];
   open: boolean;
   onOpenChange: (open: boolean) => void;
   onSubmit: (formData: FormData) => Promise<void>;
+  subscription?: Subscription;
 }
 
 export function AddSubscriptionDialog({
@@ -24,14 +25,21 @@ export function AddSubscriptionDialog({
   open,
   onOpenChange,
   onSubmit,
+  subscription,
 }: AddSubscriptionDialogProps) {
+  const isEdit = subscription != null;
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Create a new subscription</DialogTitle>
+          <DialogTitle>
+            {isEdit ? "Edit subscription" : "Create a new subscription"}
+          </DialogTitle>
           <DialogDescription>
-            Add a monthly price and optionally attach a category.
+            {isEdit
+              ? "Update the details for this subscription."
+              : "Add a monthly price and optionally attach a category."}
           </DialogDescription>
         </DialogHeader>
         <form
@@ -41,12 +49,15 @@ export function AddSubscriptionDialog({
           }}
           className="grid gap-5"
         >
+          {isEdit && <input type="hidden" name="id" value={subscription.id} />}
+
           <div className="grid gap-2">
             <Label htmlFor="subscription-name">Name</Label>
             <Input
               id="subscription-name"
               name="name"
               placeholder="Netflix, Spotify, iCloud+..."
+              defaultValue={isEdit ? subscription.name : undefined}
               required
               className="h-12 rounded-xl border-[#d8c9b6] bg-white px-4 text-base"
             />
@@ -61,6 +72,7 @@ export function AddSubscriptionDialog({
               step="0.01"
               min="0.01"
               placeholder="9.99"
+              defaultValue={isEdit ? subscription.price : undefined}
               required
               className="h-12 rounded-xl border-[#d8c9b6] bg-white px-4 text-base"
             />
@@ -73,7 +85,7 @@ export function AddSubscriptionDialog({
             <select
               id="subscription-billing-interval"
               name="billingInterval"
-              defaultValue="monthly"
+              defaultValue={isEdit ? subscription.billingInterval : "monthly"}
               className="h-12 rounded-xl border border-[#d8c9b6] bg-white px-4 text-base text-[#2e241d] outline-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50"
             >
               <option value="monthly">Monthly</option>
@@ -87,7 +99,7 @@ export function AddSubscriptionDialog({
             <select
               id="subscription-category"
               name="categoryId"
-              defaultValue=""
+              defaultValue={isEdit ? (subscription.category?.id ?? "") : ""}
               className="h-12 rounded-xl border border-[#d8c9b6] bg-white px-4 text-base text-[#2e241d] outline-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50"
             >
               <option value="">No category</option>
@@ -110,7 +122,7 @@ export function AddSubscriptionDialog({
               size="lg"
               className="rounded-xl bg-[#2e241d] text-white hover:bg-[#433226]"
             >
-              Create subscription
+              {isEdit ? "Save changes" : "Create subscription"}
             </Button>
           </DialogFooter>
         </form>

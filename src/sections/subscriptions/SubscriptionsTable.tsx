@@ -1,4 +1,4 @@
-import { Shapes, Trash2 } from "lucide-react";
+import { Pencil, Shapes, Trash2 } from "lucide-react";
 
 import { PaginationControls } from "#/components/dashboard/PaginationControls";
 import { Button } from "#/components/ui/button";
@@ -8,6 +8,7 @@ import type { Subscription } from "#/lib/dashboard/types";
 
 interface SubscriptionsTableProps {
   deleteSubscriptionAction: (formData: FormData) => Promise<void>;
+  onEdit: (subscription: Subscription) => void;
   subscriptions: Subscription[];
 }
 
@@ -19,6 +20,7 @@ function intervalLabel(billingInterval: Subscription["billingInterval"]) {
 
 export function SubscriptionsTable({
   deleteSubscriptionAction,
+  onEdit,
   subscriptions,
 }: SubscriptionsTableProps) {
   const {
@@ -85,6 +87,17 @@ export function SubscriptionsTable({
                   {intervalLabel(subscription.billingInterval)}
                 </p>
               </div>
+
+              <Button
+                type="button"
+                variant="ghost"
+                size="icon-sm"
+                className="text-muted-foreground hover:bg-muted hover:text-foreground"
+                onClick={() => onEdit(subscription)}
+              >
+                <Pencil className="size-3.5" />
+                <span className="sr-only">Edit {subscription.name}</span>
+              </Button>
 
               <form action={deleteSubscriptionAction}>
                 <input type="hidden" name="id" value={subscription.id} />

@@ -6,4 +6,6 @@ export type {
   RemoveCategoryInput as EntityIdInput,
   Subscription,
   SubscriptionStats as DashboardStats,
+  UpdateCategoryInput,
+  UpdateSubscriptionInput,
 } from "#/schemas";

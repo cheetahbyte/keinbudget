@@ -37,6 +37,27 @@ export class CategoryService {
     return category;
   }
 
+  async update(
+    userId: string,
+    input: { id: number; name: string; icon: string },
+  ) {
+    const result = await this.db
+      .update(categories)
+      .set({ name: input.name, icon: input.icon })
+      .where(and(eq(categories.id, input.id), eq(categories.userId, userId)))
+      .returning({
+        id: categories.id,
+        name: categories.name,
+        icon: categories.icon,
+      });
+
+    if (result.length === 0) {
+      throw new Error("Category not found");
+    }
+
+    return result[0];
+  }
+
   async remove(userId: string, id: number) {
     const result = await this.db
       .delete(categories)

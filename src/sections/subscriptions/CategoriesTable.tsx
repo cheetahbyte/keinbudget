@@ -1,4 +1,4 @@
-import { FolderTree, Trash2 } from "lucide-react";
+import { FolderTree, Pencil, Trash2 } from "lucide-react";
 
 import { PaginationControls } from "#/components/dashboard/PaginationControls";
 import { Button } from "#/components/ui/button";
@@ -9,11 +9,13 @@ import type { Category } from "#/lib/dashboard/types";
 interface CategoriesTableProps {
   categories: Category[];
   deleteCategoryAction: (formData: FormData) => Promise<void>;
+  onEdit: (category: Category) => void;
 }
 
 export function CategoriesTable({
   categories,
   deleteCategoryAction,
+  onEdit,
 }: CategoriesTableProps) {
   const {
     currentPage,
@@ -64,18 +66,31 @@ export function CategoriesTable({
               </div>
             </div>
 
-            <form action={deleteCategoryAction}>
-              <input type="hidden" name="id" value={category.id} />
+            <div className="flex items-center gap-1">
               <Button
-                type="submit"
+                type="button"
                 variant="ghost"
                 size="icon-sm"
                 className="text-muted-foreground hover:bg-muted hover:text-foreground"
+                onClick={() => onEdit(category)}
               >
-                <Trash2 className="size-3.5" />
-                <span className="sr-only">Delete {category.name}</span>
+                <Pencil className="size-3.5" />
+                <span className="sr-only">Edit {category.name}</span>
               </Button>
-            </form>
+
+              <form action={deleteCategoryAction}>
+                <input type="hidden" name="id" value={category.id} />
+                <Button
+                  type="submit"
+                  variant="ghost"
+                  size="icon-sm"
+                  className="text-muted-foreground hover:bg-muted hover:text-foreground"
+                >
+                  <Trash2 className="size-3.5" />
+                  <span className="sr-only">Delete {category.name}</span>
+                </Button>
+              </form>
+            </div>
           </div>
         ))}
       </div>

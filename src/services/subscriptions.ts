@@ -171,6 +171,80 @@ export class SubscriptionService {
     };
   }
 
+  async update(
+    userId: string,
+    input: {
+      id: number;
+      name: string;
+      price: number;
+      billingInterval: string;
+      categoryId: number | null;
+    },
+  ) {
+    let categoryId: number | null = null;
+
+    if (input.categoryId !== null) {
+      const [category] = await this.findCategoryById(userId, input.categoryId);
+
+      if (!category) {
+        throw new Error("Invalid category");
+      }
+
+      categoryId = category.id;
+    }
+
+    const result = await this.db
+      .update(subscriptions)
+      .set({
+        name: input.name,
+        price: input.price,
+        billingInterval: input.billingInterval as
+          | "monthly"
+          | "weekly"
+          | "yearly",
+        categoryId,
+      })
+      .where(
+        and(eq(subscriptions.id, input.id), eq(subscriptions.userId, userId)),
+      )
+      .returning({
+        id: subscriptions.id,
+        name: subscriptions.name,
+        price: subscriptions.price,
+        billingInterval: subscriptions.billingInterval,
+        categoryId: subscriptions.categoryId,
+      });
+
+    if (result.length === 0) {
+      throw new Error("Subscription not found");
+    }
+
+    const subscription = result[0];
+
+    if (subscription.categoryId == null) {
+      return {
+        id: subscription.id,
+        name: subscription.name,
+        price: subscription.price,
+        billingInterval: subscription.billingInterval,
+        category: null,
+      };
+    }
+
+    const [category] = await this.findCategoryById(
+      userId,
+      subscription.categoryId,
+    );
+
+    return {
+      id: subscription.id,
+      name: subscription.name,
+      price: subscription.price,
+      billingInterval: subscription.billingInterval,
+      category: category ?? null,
+    };
+  }
+
   async remove(userId: string, id: number) {
     const result = await this.db
       .delete(subscriptions)

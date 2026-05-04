@@ -6,15 +6,22 @@ import { AddCategoryDialog } from "#/components/dashboard/AddCategoryDialog";
 import { AddSubscriptionDialog } from "#/components/dashboard/AddSubscriptionDialog";
 import { Button } from "#/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "#/components/ui/tabs";
-import { createCategory, deleteCategory } from "#/functions/categories";
+import {
+  createCategory,
+  deleteCategory,
+  updateCategory,
+} from "#/functions/categories";
 import {
   createSubscription,
   deleteSubscription,
+  updateSubscription,
 } from "#/functions/subscriptions";
 import {
   parseCreateCategoryFormData,
   parseCreateSubscriptionFormData,
   parseEntityIdFormData,
+  parseUpdateCategoryFormData,
+  parseUpdateSubscriptionFormData,
 } from "#/lib/dashboard/mutations";
 import { dashboardQueryKeys } from "#/lib/dashboard/queries";
 import type { Category, Subscription } from "#/lib/dashboard/types";
@@ -34,28 +41,79 @@ export function ActiveSubscriptions({
   const [tab, setTab] = useState("sub");
   const [isCategoryOpen, setIsCategoryOpen] = useState(false);
   const [isSubscriptionOpen, setIsSubscriptionOpen] = useState(false);
+  const [editingCategory, setEditingCategory] = useState<Category | null>(null);
+  const [editingSubscription, setEditingSubscription] =
+    useState<Subscription | null>(null);
 
-  async function handleCreateCategory(formData: FormData) {
-    const input = parseCreateCategoryFormData(formData);
-    if (!input) return;
-    await createCategory({ data: input });
-    await queryClient.invalidateQueries({
-      queryKey: dashboardQueryKeys.categories(),
-    });
+  function openCreateCategory() {
+    setEditingCategory(null);
+    setIsCategoryOpen(true);
   }
 
-  async function handleCreateSubscription(formData: FormData) {
-    const input = parseCreateSubscriptionFormData(formData);
-    if (!input) return;
-    await createSubscription({ data: input });
-    await Promise.all([
-      queryClient.invalidateQueries({
-        queryKey: dashboardQueryKeys.subscriptions(),
-      }),
-      queryClient.invalidateQueries({
-        queryKey: dashboardQueryKeys.stats(),
-      }),
-    ]);
+  function openEditCategory(category: Category) {
+    setEditingCategory(category);
+    setIsCategoryOpen(true);
+  }
+
+  function openCreateSubscription() {
+    setEditingSubscription(null);
+    setIsSubscriptionOpen(true);
+  }
+
+  function openEditSubscription(subscription: Subscription) {
+    setEditingSubscription(subscription);
+    setIsSubscriptionOpen(true);
+  }
+
+  async function handleSubmitCategory(formData: FormData) {
+    if (editingCategory) {
+      const input = parseUpdateCategoryFormData(formData);
+      if (!input) return;
+      await updateCategory({ data: input });
+      await Promise.all([
+        queryClient.invalidateQueries({
+          queryKey: dashboardQueryKeys.categories(),
+        }),
+        queryClient.invalidateQueries({
+          queryKey: dashboardQueryKeys.subscriptions(),
+        }),
+      ]);
+    } else {
+      const input = parseCreateCategoryFormData(formData);
+      if (!input) return;
+      await createCategory({ data: input });
+      await queryClient.invalidateQueries({
+        queryKey: dashboardQueryKeys.categories(),
+      });
+    }
+  }
+
+  async function handleSubmitSubscription(formData: FormData) {
+    if (editingSubscription) {
+      const input = parseUpdateSubscriptionFormData(formData);
+      if (!input) return;
+      await updateSubscription({ data: input });
+      await Promise.all([
+        queryClient.invalidateQueries({
+          queryKey: dashboardQueryKeys.subscriptions(),
+        }),
+        queryClient.invalidateQueries({
+          queryKey: dashboardQueryKeys.stats(),
+        }),
+      ]);
+    } else {
+      const input = parseCreateSubscriptionFormData(formData);
+      if (!input) return;
+      await createSubscription({ data: input });
+      await Promise.all([
+        queryClient.invalidateQueries({
+          queryKey: dashboardQueryKeys.subscriptions(),
+        }),
+        queryClient.invalidateQueries({
+          queryKey: dashboardQueryKeys.stats(),
+        }),
+      ]);
+    }
   }
 
   async function handleDeleteCategory(formData: FormData) {
@@ -112,9 +170,9 @@ export function ActiveSubscriptions({
                   className="cursor-pointer"
                   onClick={() => {
                     if (tab === "sub") {
-                      setIsSubscriptionOpen(true);
+                      openCreateSubscription();
                     } else {
-                      setIsCategoryOpen(true);
+                      openCreateCategory();
                     }
                   }}
                 >
@@ -125,6 +183,7 @@ export function ActiveSubscriptions({
               <TabsContent value="sub">
                 <SubscriptionsTable
                   deleteSubscriptionAction={handleDeleteSubscription}
+                  onEdit={openEditSubscription}
                   subscriptions={subscriptions}
                 />
               </TabsContent>
@@ -132,6 +191,7 @@ export function ActiveSubscriptions({
                 <CategoriesTable
                   categories={categories}
                   deleteCategoryAction={handleDeleteCategory}
+                  onEdit={openEditCategory}
                 />
               </TabsContent>
             </Tabs>
@@ -140,15 +200,23 @@ export function ActiveSubscriptions({
           <div className="flex items-center gap-2">
             <AddCategoryDialog
               open={isCategoryOpen}
-              onOpenChange={setIsCategoryOpen}
-              onSubmit={handleCreateCategory}
+              onOpenChange={(open) => {
+                setIsCategoryOpen(open);
+                if (!open) setEditingCategory(null);
+              }}
+              onSubmit={handleSubmitCategory}
+              category={editingCategory ?? undefined}
             />
 
             <AddSubscriptionDialog
               categories={categories}
               open={isSubscriptionOpen}
-              onOpenChange={setIsSubscriptionOpen}
-              onSubmit={handleCreateSubscription}
+              onOpenChange={(open) => {
+                setIsSubscriptionOpen(open);
+                if (!open) setEditingSubscription(null);
+              }}
+              onSubmit={handleSubmitSubscription}
+              subscription={editingSubscription ?? undefined}
             />
           </div>
         </div>
