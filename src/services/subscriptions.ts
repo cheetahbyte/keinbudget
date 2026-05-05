@@ -1,28 +1,8 @@
 import { and, eq } from "drizzle-orm";
 import type { DrizzleClient } from "#/db";
 import { categories, subscriptions } from "#/db";
-
-function toMonthlyCost(
-  price: number,
-  billingInterval: "monthly" | "weekly" | "yearly",
-) {
-  if (billingInterval === "weekly") {
-    return (price * 52) / 12;
-  }
-
-  if (billingInterval === "yearly") {
-    return price / 12;
-  }
-
-  return price;
-}
-
-export function normalizeMonthlyPrice(
-  price: number,
-  billingInterval: "monthly" | "weekly" | "yearly",
-) {
-  return toMonthlyCost(price, billingInterval);
-}
+import type { BillingInterval } from "#/lib/billing-interval";
+import { toMonthlyPrice } from "#/lib/billing-interval";
 
 type SubInsertInput = Omit<typeof subscriptions.$inferInsert, "id" | "userId">;
 
@@ -82,7 +62,7 @@ export class SubscriptionService {
       .from(subscriptions)
       .where(eq(subscriptions.userId, userId));
     const monthlyCost = rows.reduce(
-      (sum, s) => sum + toMonthlyCost(s.price, s.billingInterval ?? "monthly"),
+      (sum, s) => sum + toMonthlyPrice(s.price, s.billingInterval ?? "monthly"),
       0,
     );
 
@@ -100,7 +80,7 @@ export class SubscriptionService {
       name: subscription.name,
       price: subscription.price,
       billingInterval: subscription.billingInterval,
-      monthlyPrice: normalizeMonthlyPrice(
+      monthlyPrice: toMonthlyPrice(
         subscription.price,
         subscription.billingInterval ?? "monthly",
       ),
@@ -123,7 +103,7 @@ export class SubscriptionService {
     input: {
       name: string;
       price: number;
-      billingInterval: string;
+      billingInterval: BillingInterval;
       categoryId: number | null;
     },
   ) {
@@ -145,10 +125,7 @@ export class SubscriptionService {
         userId,
         name: input.name,
         price: input.price,
-        billingInterval: input.billingInterval as
-          | "monthly"
-          | "weekly"
-          | "yearly",
+        billingInterval: input.billingInterval,
         categoryId,
       })
       .returning({
@@ -208,7 +185,7 @@ export class SubscriptionService {
       id: number;
       name: string;
       price: number;
-      billingInterval: string;
+      billingInterval: BillingInterval;
       categoryId: number | null;
     },
   ) {
@@ -229,10 +206,7 @@ export class SubscriptionService {
       .set({
         name: input.name,
         price: input.price,
-        billingInterval: input.billingInterval as
-          | "monthly"
-          | "weekly"
-          | "yearly",
+        billingInterval: input.billingInterval,
         categoryId,
       })
       .where(

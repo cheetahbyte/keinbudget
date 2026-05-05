@@ -6,10 +6,11 @@ import {
   serial,
   text,
 } from "drizzle-orm/pg-core";
+import { BILLING_INTERVALS } from "#/lib/billing-interval";
 import { user } from "./auth";
 import { categories } from "./categories";
 
-export const billingIntervalEnum = ["monthly", "weekly", "yearly"] as const;
+export const billingIntervalEnum = BILLING_INTERVALS;
 export const billingInterval = pgEnum("billing_interval", billingIntervalEnum);
 
 export const subscriptions = pgTable("subscriptions", {

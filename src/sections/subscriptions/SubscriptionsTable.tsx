@@ -4,18 +4,13 @@ import { PaginationControls } from "#/components/dashboard/PaginationControls";
 import { Button } from "#/components/ui/button";
 import { Card, CardContent } from "#/components/ui/card";
 import { usePaginatedItems } from "#/hooks/usePaginatedItems";
+import { getBillingIntervalShortLabel } from "#/lib/billing-interval";
 import type { Subscription } from "#/lib/dashboard/types";
 
 interface SubscriptionsTableProps {
   deleteSubscriptionAction: (formData: FormData) => Promise<void>;
   onEdit: (subscription: Subscription) => void;
   subscriptions: Subscription[];
-}
-
-function intervalLabel(billingInterval: Subscription["billingInterval"]) {
-  if (billingInterval === "weekly") return "per week";
-  if (billingInterval === "yearly") return "per year";
-  return "per month";
 }
 
 export function SubscriptionsTable({
@@ -84,7 +79,7 @@ export function SubscriptionsTable({
                   </span>
                 </p>
                 <p className="text-[10px] text-muted-foreground">
-                  {intervalLabel(subscription.billingInterval)}
+                  {getBillingIntervalShortLabel(subscription.billingInterval)}
                 </p>
               </div>
 

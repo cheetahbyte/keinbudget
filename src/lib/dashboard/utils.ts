@@ -1,4 +1,5 @@
 import type { BreakdownItem } from "#/components/Breakdown";
+import { toMonthlyPrice } from "#/lib/billing-interval";
 import type { DashboardStats, Subscription } from "#/lib/dashboard/types";
 
 const BREAKDOWN_PALETTE = [
@@ -30,21 +31,6 @@ function assignPalette<T>(
       BREAKDOWN_PALETTE[index % BREAKDOWN_PALETTE.length],
     ]),
   );
-}
-
-export function toMonthlyPrice(
-  price: number,
-  billingInterval: Subscription["billingInterval"],
-): number {
-  if (billingInterval === "weekly") {
-    return (price * 52) / 12;
-  }
-
-  if (billingInterval === "yearly") {
-    return price / 12;
-  }
-
-  return price;
 }
 
 export function buildBreakdownItems(

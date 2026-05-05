@@ -10,6 +10,10 @@ import {
 } from "#/components/ui/dialog";
 import { Input } from "#/components/ui/input";
 import { Label } from "#/components/ui/label";
+import {
+  BILLING_INTERVALS,
+  getBillingIntervalLabel,
+} from "#/lib/billing-interval";
 import type { Category, Subscription } from "#/lib/dashboard/types";
 
 interface AddSubscriptionDialogProps {
@@ -39,7 +43,7 @@ export function AddSubscriptionDialog({
           <DialogDescription>
             {isEdit
               ? "Update the details for this subscription."
-              : "Add a monthly price and optionally attach a category."}
+              : "Add a subscription price and optionally attach a category."}
           </DialogDescription>
         </DialogHeader>
         <form
@@ -88,9 +92,11 @@ export function AddSubscriptionDialog({
               defaultValue={isEdit ? subscription.billingInterval : "monthly"}
               className="h-12 rounded-xl border border-[#d8c9b6] bg-white px-4 text-base text-[#2e241d] outline-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50"
             >
-              <option value="monthly">Monthly</option>
-              <option value="weekly">Weekly</option>
-              <option value="yearly">Yearly</option>
+              {BILLING_INTERVALS.map((interval) => (
+                <option key={interval} value={interval}>
+                  {getBillingIntervalLabel(interval)}
+                </option>
+              ))}
             </select>
           </div>
 

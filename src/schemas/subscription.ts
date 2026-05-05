@@ -1,8 +1,12 @@
 import { z } from "zod";
+import type { BillingInterval } from "#/lib/billing-interval";
+import { BILLING_INTERVALS } from "#/lib/billing-interval";
 import { categorySchema } from "./category";
 import type { entityIdSchema } from "./rest";
 
-export const billingIntervalSchema = z.enum(["monthly", "weekly", "yearly"]);
+export type { BillingInterval };
+
+export const billingIntervalSchema = z.enum(BILLING_INTERVALS);
 
 export const subscriptionSchema = z.object({
   id: z.number(),
@@ -40,7 +44,6 @@ export const updateSubscriptionSchema = z.object({
   categoryId: z.number().int().positive().nullable(),
 });
 
-export type BillingInterval = z.infer<typeof billingIntervalSchema>;
 export type Subscription = z.infer<typeof subscriptionSchema>;
 export type SubscriptionStats = z.infer<typeof subscriptionStatsSchema>;
 export type MonthlyCost = z.infer<typeof monthlyCostSchema>;
