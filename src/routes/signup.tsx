@@ -80,6 +80,7 @@ function SignupPage() {
                 value={password}
                 onChange={(event) => setPassword(event.target.value)}
                 required
+                minLength={8}
               />
             </div>
             {error ? <p className="text-sm text-red-500">{error}</p> : null}

@@ -62,9 +62,26 @@ export function AccountSettings() {
           `Imported ${result.importedCategories} categories and ${result.importedSubscriptions} subscriptions.`,
         );
       } catch (err) {
-        setImportError(
-          err instanceof Error ? err.message : "Failed to import data.",
-        );
+        const message =
+          err instanceof Error ? err.message : "Failed to import data.";
+        if (
+          message === "Unsupported export version." ||
+          message.startsWith("Unsupported export version:")
+        ) {
+          setImportError(
+            "This export file is from a newer version of keinbudget and cannot be imported.",
+          );
+        } else if (message === "Failed to create category") {
+          setImportError(
+            "Could not import categories. Please check the file format.",
+          );
+        } else if (message === "Failed to create subscription") {
+          setImportError(
+            "Could not import subscriptions. Please check the file format.",
+          );
+        } else {
+          setImportError("Failed to import data.");
+        }
       }
     });
 

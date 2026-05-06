@@ -4,9 +4,17 @@ import { tanstackStartCookies } from "better-auth/tanstack-start";
 import { db } from "#/db";
 import * as schema from "#/db/schema";
 
+const baseURL =
+  process.env.BETTER_AUTH_URL ??
+  (process.env.NODE_ENV === "production"
+    ? (() => {
+        throw new Error("BETTER_AUTH_URL must be set in production");
+      })()
+    : "http://localhost:3000");
+
 export const auth = betterAuth({
   database: drizzleAdapter(db, { provider: "pg", schema }),
-  baseURL: process.env.BETTER_AUTH_URL ?? "http://localhost:3000",
+  baseURL,
   plugins: [tanstackStartCookies()],
   emailAndPassword: {
     enabled: true,
@@ -17,5 +25,5 @@ export const auth = betterAuth({
       enabled: true,
     },
   },
-  trustedOrigins: [process.env.BETTER_AUTH_URL ?? "http://localhost:3000"],
+  trustedOrigins: [baseURL],
 });

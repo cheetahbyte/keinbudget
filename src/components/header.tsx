@@ -6,6 +6,14 @@ import { Button } from "#/components/ui/button";
 import { authClient } from "#/lib/auth-client";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 
+function hashString(str: string): string {
+  let hash = 5381;
+  for (let i = 0; i < str.length; i++) {
+    hash = ((hash << 5) + hash + str.charCodeAt(i)) | 0;
+  }
+  return Math.abs(hash).toString(36);
+}
+
 function getInitials(email: string) {
   return email.slice(0, 2).toUpperCase();
 }
@@ -77,7 +85,7 @@ export function Header() {
                   <AvatarImage
                     src={
                       session.user.image ??
-                      `https://api.dicebear.com/9.x/thumbs/svg?seed=${session.user.name}`
+                      `https://api.dicebear.com/9.x/thumbs/svg?seed=${hashString(session.user.id)}`
                     }
                   />
                   <AvatarFallback>

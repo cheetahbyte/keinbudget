@@ -14,8 +14,8 @@ if (!databaseUrl) {
 }
 
 const sql = postgres(databaseUrl, {
-  idle_timeout: 30000,
-  connect_timeout: 5000,
+  idle_timeout: 30,
+  connect_timeout: 5,
 });
 
 export const db = drizzle(sql, { schema });
@@ -27,5 +27,4 @@ export type DrizzleClient =
       ExtractTablesWithRelations<typeof schema>
     >;
 export * from "./schema";
-export { sql };
 export type { PostgresJsDatabase };
