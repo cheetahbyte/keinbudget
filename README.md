@@ -9,7 +9,19 @@ Just execute the `compose.yaml`
 $ docker compose up -d
 ```
 
-For local Docker Compose usage, the auth stack defaults to `http://localhost:3000` and falls back to a development-only `BETTER_AUTH_SECRET` if none is provided. Set your own `BETTER_AUTH_SECRET` before building for any non-local deployment.
+Runs on port `3000` with a Postgres 17 database. Data is persisted in a named volume.
+
+For non-local deployments, set these environment variables before building:
+
+| Variable | Default | Notes |
+|---|---|---|
+| `BETTER_AUTH_SECRET` | `dev-only-change-me` | **Required in production** — set a strong secret |
+| `BETTER_AUTH_URL` | `http://localhost:3000` | Public URL of your instance |
+| `VITE_BETTER_AUTH_URL` | `http://localhost:3000` | Build-time URL — must match `BETTER_AUTH_URL` |
+| `POSTGRES_USER` | `keinbudget` | |
+| `POSTGRES_PASSWORD` | `keinbudget` | |
+| `POSTGRES_DB` | `keinbudget` | |
+| `DISABLE_SIGNUP` | `false` | Set to `true` to lock registration after setup |
 
 ## Development
 Install dependencies and run with `pnpm` on Node 22:

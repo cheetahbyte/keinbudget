@@ -1,8 +1,14 @@
-import { FolderTree, Pencil, Trash2 } from "lucide-react";
+import { EllipsisIcon, FolderTree, Pencil, Trash2 } from "lucide-react";
 
 import { PaginationControls } from "#/components/dashboard/PaginationControls";
 import { Button } from "#/components/ui/button";
 import { Card, CardContent } from "#/components/ui/card";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "#/components/ui/dropdown-menu";
 import { usePaginatedItems } from "#/hooks/usePaginatedItems";
 import type { Category } from "#/lib/dashboard/types";
 
@@ -66,30 +72,31 @@ export function CategoriesTable({
               </div>
             </div>
 
-            <div className="flex items-center gap-1">
-              <Button
-                type="button"
-                variant="ghost"
-                size="icon-sm"
-                className="text-muted-foreground hover:bg-muted hover:text-foreground"
-                onClick={() => onEdit(category)}
-              >
-                <Pencil className="size-3.5" />
-                <span className="sr-only">Edit {category.name}</span>
-              </Button>
-
-              <form action={deleteCategoryAction}>
-                <input type="hidden" name="id" value={category.id} />
-                <Button
-                  type="submit"
-                  variant="ghost"
-                  size="icon-sm"
-                  className="text-muted-foreground hover:bg-muted hover:text-foreground"
-                >
-                  <Trash2 className="size-3.5" />
-                  <span className="sr-only">Delete {category.name}</span>
-                </Button>
-              </form>
+            <div className="flex items-center gap-3">
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant={"outline"}>
+                    <EllipsisIcon />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent>
+                  <DropdownMenuItem onClick={() => onEdit(category)}>
+                    <Pencil className="size-3.5" />
+                    Edit
+                  </DropdownMenuItem>
+                  <DropdownMenuItem
+                    variant="destructive"
+                    onClick={() => {
+                      const formData = new FormData();
+                      formData.set("id", category.id);
+                      deleteCategoryAction(formData);
+                    }}
+                  >
+                    <Trash2 className="size-3.5" />
+                    Delete
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
             </div>
           </div>
         ))}

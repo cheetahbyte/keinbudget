@@ -1,8 +1,14 @@
-import { Pencil, Shapes, Trash2 } from "lucide-react";
+import { EllipsisIcon, Pencil, Shapes, Trash2 } from "lucide-react";
 
 import { PaginationControls } from "#/components/dashboard/PaginationControls";
 import { Button } from "#/components/ui/button";
 import { Card, CardContent } from "#/components/ui/card";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "#/components/ui/dropdown-menu";
 import { usePaginatedItems } from "#/hooks/usePaginatedItems";
 import { getBillingIntervalShortLabel } from "#/lib/billing-interval";
 import type { Subscription } from "#/lib/dashboard/types";
@@ -83,29 +89,30 @@ export function SubscriptionsTable({
                 </p>
               </div>
 
-              <Button
-                type="button"
-                variant="ghost"
-                size="icon-sm"
-                className="text-muted-foreground hover:bg-muted hover:text-foreground"
-                onClick={() => onEdit(subscription)}
-              >
-                <Pencil className="size-3.5" />
-                <span className="sr-only">Edit {subscription.name}</span>
-              </Button>
-
-              <form action={deleteSubscriptionAction}>
-                <input type="hidden" name="id" value={subscription.id} />
-                <Button
-                  type="submit"
-                  variant="ghost"
-                  size="icon-sm"
-                  className="text-muted-foreground hover:bg-muted hover:text-foreground"
-                >
-                  <Trash2 className="size-3.5" />
-                  <span className="sr-only">Delete {subscription.name}</span>
-                </Button>
-              </form>
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant={"outline"}>
+                    <EllipsisIcon />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent>
+                  <DropdownMenuItem onClick={() => onEdit(subscription)}>
+                    <Pencil className="size-3.5" />
+                    Edit
+                  </DropdownMenuItem>
+                  <DropdownMenuItem
+                    variant="destructive"
+                    onClick={() => {
+                      const formData = new FormData();
+                      formData.set("id", subscription.id.toString());
+                      deleteSubscriptionAction(formData);
+                    }}
+                  >
+                    <Trash2 className="size-3.5" />
+                    Delete
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
             </div>
           </div>
         ))}
