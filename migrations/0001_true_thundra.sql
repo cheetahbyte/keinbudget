@@ -1,0 +1,2 @@
+ALTER TABLE "preferences" ADD COLUMN "comparisonItemName" text DEFAULT 'burger' NOT NULL;--> statement-breakpoint
+ALTER TABLE "preferences" ADD COLUMN "comparisonItemPrice" double precision DEFAULT 8 NOT NULL;

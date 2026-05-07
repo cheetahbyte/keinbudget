@@ -1,8 +1,6 @@
 import { defineConfig } from "drizzle-kit";
 
-const databaseUrl =
-  process.env.DATABASE_URL?.trim() ||
-  "postgres://postgres:postgres@localhost:5432/keinbudget";
+const databaseUrl = process.env.DATABASE_URL?.trim()!;
 
 export default defineConfig({
   schema: "./src/db/schema/index.ts",

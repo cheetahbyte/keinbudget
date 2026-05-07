@@ -17,29 +17,42 @@ function SmallCard({ title, value, text }: SmallCardProps) {
 
       <h2 className="mt-3 font-mono text-3xl tracking-tight text-foreground">
         {value}
-        <span className="ml-1 text-base text-muted-foreground">EUR</span>
       </h2>
 
       <p className="mt-3 text-sm text-muted-foreground">{text}</p>
     </div>
   );
 }
+
+function formatCurrency(value: number, currency: string): string {
+  return new Intl.NumberFormat("en-US", {
+    style: "currency",
+    currency,
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  }).format(value);
+}
+
 interface StatSectionProps {
   stats: DashboardStats;
   breakdownStats: BreakdownItem[];
+  currency: string;
+  comparisonItem: { name: string; price: number };
 }
 
-export function StatsSection({ stats, breakdownStats }: StatSectionProps) {
+export function StatsSection({
+  stats,
+  breakdownStats,
+  currency,
+  comparisonItem,
+}: StatSectionProps) {
   const monthlyCost = getMonthlyCost(stats);
   const yearlyCost = getYearlyCost(stats);
   const { dailyCost } = stats;
 
-  const burgerPrice = 8;
-  const coffeePrice = 4;
-
-  const monthlyBurger = monthlyCost / burgerPrice;
-  const yearlyBurger = yearlyCost / burgerPrice;
-  const dailyCoffee = dailyCost / coffeePrice;
+  const monthlyCount = monthlyCost / comparisonItem.price;
+  const yearlyCount = yearlyCost / comparisonItem.price;
+  const dailyCount = dailyCost / comparisonItem.price;
 
   const monthlyFixed = monthlyCost.toFixed(2);
   const [monthlyEuros, monthlyCents] = monthlyFixed.split(".");
@@ -59,13 +72,13 @@ export function StatsSection({ stats, breakdownStats }: StatSectionProps) {
             <span className="font-mono text-3xl text-muted-foreground">
               .{monthlyCents}
             </span>
-            <span className="text-xl text-muted-foreground">EUR</span>
+            <span className="text-xl text-muted-foreground">{currency}</span>
           </div>
 
           <p className="mt-4 text-sm text-muted-foreground">
             That&apos;s{" "}
             <span className="mr-1 text-primary">
-              {monthlyBurger.toFixed(1)} burgers
+              {monthlyCount.toFixed(1)} {comparisonItem.name}s
             </span>
             per month you&apos;re not eating
           </p>
@@ -74,14 +87,14 @@ export function StatsSection({ stats, breakdownStats }: StatSectionProps) {
         <div className="grid gap-4 sm:grid-cols-2">
           <SmallCard
             title="Yearly"
-            value={yearlyCost.toFixed(2)}
-            text={`${yearlyBurger.toFixed(0)} burgers per year`}
+            value={formatCurrency(yearlyCost, currency)}
+            text={`${yearlyCount.toFixed(0)} ${comparisonItem.name}s per year`}
           />
 
           <SmallCard
             title="Daily"
-            value={dailyCost.toFixed(2)}
-            text={`${dailyCoffee.toFixed(1)} coffees per day`}
+            value={formatCurrency(dailyCost, currency)}
+            text={`${dailyCount.toFixed(1)} ${comparisonItem.name}s per day`}
           />
         </div>
       </div>

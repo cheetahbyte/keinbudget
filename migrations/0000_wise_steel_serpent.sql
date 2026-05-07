@@ -1,4 +1,4 @@
-CREATE TYPE "public"."billing_interval" AS ENUM('monthly', 'weekly', 'yearly');--> statement-breakpoint
+CREATE TYPE "public"."billing_interval" AS ENUM('monthly', 'weekly', 'quarterly', 'yearly');--> statement-breakpoint
 CREATE TABLE "account" (
 	"id" text PRIMARY KEY NOT NULL,
 	"userId" text NOT NULL,
@@ -15,6 +15,20 @@ CREATE TABLE "account" (
 	"updatedAt" timestamp NOT NULL
 );
 --> statement-breakpoint
+CREATE TABLE "categories" (
+	"id" serial PRIMARY KEY NOT NULL,
+	"userId" text NOT NULL,
+	"name" text NOT NULL,
+	"icon" text NOT NULL
+);
+--> statement-breakpoint
+CREATE TABLE "preferences" (
+	"id" text PRIMARY KEY NOT NULL,
+	"userId" text NOT NULL,
+	"currency" char(3) DEFAULT 'EUR' NOT NULL,
+	"locale" char(5) DEFAULT 'en-US' NOT NULL
+);
+--> statement-breakpoint
 CREATE TABLE "session" (
 	"id" text PRIMARY KEY NOT NULL,
 	"userId" text NOT NULL,
@@ -25,6 +39,15 @@ CREATE TABLE "session" (
 	"createdAt" timestamp NOT NULL,
 	"updatedAt" timestamp NOT NULL,
 	CONSTRAINT "session_token_unique" UNIQUE("token")
+);
+--> statement-breakpoint
+CREATE TABLE "subscriptions" (
+	"id" serial PRIMARY KEY NOT NULL,
+	"userId" text NOT NULL,
+	"name" text NOT NULL,
+	"price" real NOT NULL,
+	"billingInterval" "billing_interval" DEFAULT 'monthly' NOT NULL,
+	"categoryId" integer
 );
 --> statement-breakpoint
 CREATE TABLE "user" (
@@ -47,24 +70,9 @@ CREATE TABLE "verification" (
 	"updatedAt" timestamp
 );
 --> statement-breakpoint
-CREATE TABLE "categories" (
-	"id" serial PRIMARY KEY NOT NULL,
-	"userId" text NOT NULL,
-	"name" text NOT NULL,
-	"icon" text NOT NULL
-);
---> statement-breakpoint
-CREATE TABLE "subscriptions" (
-	"id" serial PRIMARY KEY NOT NULL,
-	"userId" text NOT NULL,
-	"name" text NOT NULL,
-	"price" real NOT NULL,
-	"billingInterval" "billing_interval" DEFAULT 'monthly' NOT NULL,
-	"categoryId" integer
-);
---> statement-breakpoint
 ALTER TABLE "account" ADD CONSTRAINT "account_userId_user_id_fk" FOREIGN KEY ("userId") REFERENCES "public"."user"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
-ALTER TABLE "session" ADD CONSTRAINT "session_userId_user_id_fk" FOREIGN KEY ("userId") REFERENCES "public"."user"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "categories" ADD CONSTRAINT "categories_userId_user_id_fk" FOREIGN KEY ("userId") REFERENCES "public"."user"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE "preferences" ADD CONSTRAINT "preferences_userId_user_id_fk" FOREIGN KEY ("userId") REFERENCES "public"."user"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE "session" ADD CONSTRAINT "session_userId_user_id_fk" FOREIGN KEY ("userId") REFERENCES "public"."user"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "subscriptions" ADD CONSTRAINT "subscriptions_userId_user_id_fk" FOREIGN KEY ("userId") REFERENCES "public"."user"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "subscriptions" ADD CONSTRAINT "subscriptions_categoryId_categories_id_fk" FOREIGN KEY ("categoryId") REFERENCES "public"."categories"("id") ON DELETE set null ON UPDATE no action;

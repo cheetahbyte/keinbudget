@@ -30,11 +30,13 @@ import { SubscriptionsTable } from "./subscriptions/SubscriptionsTable";
 
 interface ActiveSubscriptionsProps {
   categories: Category[];
+  currency: string;
   subscriptions: Subscription[];
 }
 
 export function ActiveSubscriptions({
   categories,
+  currency,
   subscriptions,
 }: ActiveSubscriptionsProps) {
   const queryClient = useQueryClient();
@@ -182,6 +184,7 @@ export function ActiveSubscriptions({
               </div>
               <TabsContent value="sub">
                 <SubscriptionsTable
+                  currency={currency}
                   deleteSubscriptionAction={handleDeleteSubscription}
                   onEdit={openEditSubscription}
                   subscriptions={subscriptions}

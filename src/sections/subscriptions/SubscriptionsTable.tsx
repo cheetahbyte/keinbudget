@@ -13,13 +13,24 @@ import { usePaginatedItems } from "#/hooks/usePaginatedItems";
 import { getBillingIntervalShortLabel } from "#/lib/billing-interval";
 import type { Subscription } from "#/lib/dashboard/types";
 
+function formatPrice(value: number, currency: string): string {
+  return new Intl.NumberFormat("en-US", {
+    style: "currency",
+    currency,
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  }).format(value);
+}
+
 interface SubscriptionsTableProps {
+  currency: string;
   deleteSubscriptionAction: (formData: FormData) => Promise<void>;
   onEdit: (subscription: Subscription) => void;
   subscriptions: Subscription[];
 }
 
 export function SubscriptionsTable({
+  currency,
   deleteSubscriptionAction,
   onEdit,
   subscriptions,
@@ -79,10 +90,7 @@ export function SubscriptionsTable({
             <div className="flex items-center gap-3">
               <div className="text-right">
                 <p className="font-mono text-sm text-foreground">
-                  {subscription.price.toFixed(2)}
-                  <span className="ml-1 text-xs text-muted-foreground">
-                    EUR
-                  </span>
+                  {formatPrice(subscription.price, currency)}
                 </p>
                 <p className="text-[10px] text-muted-foreground">
                   {getBillingIntervalShortLabel(subscription.billingInterval)}

@@ -1,5 +1,6 @@
 import { createFileRoute, redirect } from "@tanstack/react-router";
 import { getSession } from "#/lib/auth.functions";
+import { settingsQueryOptions } from "#/lib/settings/queries";
 import { AccountSettings } from "#/sections/settings/AccountSettings";
 import { LocalizationSettings } from "#/sections/settings/LocalizationSettings";
 
@@ -12,6 +13,9 @@ export const Route = createFileRoute("/settings")({
     }
     return { user: session.user };
   },
+  loader: async ({ context }) => {
+    await context.queryClient.ensureQueryData(settingsQueryOptions());
+  },
 });
 
 function SettingsPage() {
@@ -21,7 +25,7 @@ function SettingsPage() {
         <h1 className="text-3xl font-bold">Settings</h1>
         <p className="mt-1">Configure keinbudget</p>
       </div>
-      {/*<LocalizationSettings />*/}
+      <LocalizationSettings />
       <AccountSettings />
     </main>
   );
