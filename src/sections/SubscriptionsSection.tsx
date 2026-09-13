@@ -2,31 +2,44 @@ import { useQueryClient } from "@tanstack/react-query";
 import { Plus } from "lucide-react";
 import { useState } from "react";
 
-import { AddCategoryDialog } from "#/components/dashboard/AddCategoryDialog";
 import { AddSubscriptionDialog } from "#/components/dashboard/AddSubscriptionDialog";
 import { Button } from "#/components/ui/button";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "#/components/ui/tabs";
-import {
-  createCategory,
-  deleteCategory,
-  updateCategory,
-} from "#/functions/categories";
 import {
   createSubscription,
   deleteSubscription,
   updateSubscription,
 } from "#/functions/subscriptions";
+import type { CategoryType } from "#/lib/category-type";
 import {
-  parseCreateCategoryFormData,
   parseCreateSubscriptionFormData,
   parseEntityIdFormData,
-  parseUpdateCategoryFormData,
   parseUpdateSubscriptionFormData,
 } from "#/lib/dashboard/mutations";
 import { dashboardQueryKeys } from "#/lib/dashboard/queries";
 import type { Category, Subscription } from "#/lib/dashboard/types";
-import { CategoriesTable } from "./subscriptions/CategoriesTable";
 import { SubscriptionsTable } from "./subscriptions/SubscriptionsTable";
+
+export type SubscriptionFilter = "all" | CategoryType;
+
+export const SUBSCRIPTION_FILTERS: ReadonlyArray<{
+  value: SubscriptionFilter;
+  label: string;
+}> = [
+  { value: "all", label: "All" },
+  { value: "expense", label: "Expenses" },
+  { value: "savings", label: "Savings" },
+  { value: "income", label: "Income" },
+];
+
+export function filterSubscriptionsByType(
+  subscriptions: Subscription[],
+  filter: SubscriptionFilter,
+): Subscription[] {
+  if (filter === "all") return subscriptions;
+  return subscriptions.filter(
+    (subscription) => (subscription.category?.type ?? "expense") === filter,
+  );
+}
 
 interface ActiveSubscriptionsProps {
   categories: Category[];
@@ -38,22 +51,17 @@ export function ActiveSubscriptions({
   subscriptions,
 }: ActiveSubscriptionsProps) {
   const queryClient = useQueryClient();
-  const [tab, setTab] = useState("sub");
-  const [isCategoryOpen, setIsCategoryOpen] = useState(false);
   const [isSubscriptionOpen, setIsSubscriptionOpen] = useState(false);
-  const [editingCategory, setEditingCategory] = useState<Category | null>(null);
   const [editingSubscription, setEditingSubscription] =
     useState<Subscription | null>(null);
+  const [filter, setFilter] = useState<SubscriptionFilter>("all");
 
-  function openCreateCategory() {
-    setEditingCategory(null);
-    setIsCategoryOpen(true);
-  }
-
-  function openEditCategory(category: Category) {
-    setEditingCategory(category);
-    setIsCategoryOpen(true);
-  }
+  const filteredSubscriptions = filterSubscriptionsByType(
+    subscriptions,
+    filter,
+  );
+  const isFilteredEmpty =
+    filteredSubscriptions.length === 0 && subscriptions.length > 0;
 
   function openCreateSubscription() {
     setEditingSubscription(null);
@@ -63,29 +71,6 @@ export function ActiveSubscriptions({
   function openEditSubscription(subscription: Subscription) {
     setEditingSubscription(subscription);
     setIsSubscriptionOpen(true);
-  }
-
-  async function handleSubmitCategory(formData: FormData) {
-    if (editingCategory) {
-      const input = parseUpdateCategoryFormData(formData);
-      if (!input) return;
-      await updateCategory({ data: input });
-      await Promise.all([
-        queryClient.invalidateQueries({
-          queryKey: dashboardQueryKeys.categories(),
-        }),
-        queryClient.invalidateQueries({
-          queryKey: dashboardQueryKeys.subscriptions(),
-        }),
-      ]);
-    } else {
-      const input = parseCreateCategoryFormData(formData);
-      if (!input) return;
-      await createCategory({ data: input });
-      await queryClient.invalidateQueries({
-        queryKey: dashboardQueryKeys.categories(),
-      });
-    }
   }
 
   async function handleSubmitSubscription(formData: FormData) {
@@ -98,7 +83,7 @@ export function ActiveSubscriptions({
           queryKey: dashboardQueryKeys.subscriptions(),
         }),
         queryClient.invalidateQueries({
-          queryKey: dashboardQueryKeys.stats(),
+          queryKey: dashboardQueryKeys.projections(),
         }),
       ]);
     } else {
@@ -110,24 +95,10 @@ export function ActiveSubscriptions({
           queryKey: dashboardQueryKeys.subscriptions(),
         }),
         queryClient.invalidateQueries({
-          queryKey: dashboardQueryKeys.stats(),
+          queryKey: dashboardQueryKeys.projections(),
         }),
       ]);
     }
-  }
-
-  async function handleDeleteCategory(formData: FormData) {
-    const input = parseEntityIdFormData(formData);
-    if (!input) return;
-    await deleteCategory({ data: { id: input.id } });
-    await Promise.all([
-      queryClient.invalidateQueries({
-        queryKey: dashboardQueryKeys.categories(),
-      }),
-      queryClient.invalidateQueries({
-        queryKey: dashboardQueryKeys.subscriptions(),
-      }),
-    ]);
   }
 
   async function handleDeleteSubscription(formData: FormData) {
@@ -139,88 +110,69 @@ export function ActiveSubscriptions({
         queryKey: dashboardQueryKeys.subscriptions(),
       }),
       queryClient.invalidateQueries({
-        queryKey: dashboardQueryKeys.stats(),
+        queryKey: dashboardQueryKeys.projections(),
       }),
     ]);
   }
 
   return (
-    <div className="space-y-8">
-      <div className="space-y-4">
-        <div className="flex w-full items-center justify-between">
-          <div className="flex w-full items-center gap-3">
-            <Tabs
-              defaultValue="sub"
-              className="w-full flex flex-col"
-              value={tab}
-              onValueChange={setTab}
-            >
-              <div className="flex flex-row items-center justify-between gap-2">
-                <div className="flex flex-row items-center gap-2">
-                  <TabsList>
-                    <TabsTrigger value="sub">Subscriptions</TabsTrigger>
-                    <TabsTrigger value="cat">Categories</TabsTrigger>
-                  </TabsList>
-                  <p className="text-xs text-muted-foreground">
-                    {tab === "sub" ? subscriptions.length : categories.length}{" "}
-                    total
-                  </p>
-                </div>
-                <Button
-                  className="cursor-pointer"
-                  onClick={() => {
-                    if (tab === "sub") {
-                      openCreateSubscription();
-                    } else {
-                      openCreateCategory();
-                    }
-                  }}
-                >
-                  <Plus className="size-3.5" />
-                  Add New {tab === "sub" ? "Subscription" : "Category"}
-                </Button>
-              </div>
-              <TabsContent value="sub">
-                <SubscriptionsTable
-                  deleteSubscriptionAction={handleDeleteSubscription}
-                  onEdit={openEditSubscription}
-                  subscriptions={subscriptions}
-                />
-              </TabsContent>
-              <TabsContent value="cat">
-                <CategoriesTable
-                  categories={categories}
-                  deleteCategoryAction={handleDeleteCategory}
-                  onEdit={openEditCategory}
-                />
-              </TabsContent>
-            </Tabs>
-          </div>
+    <div className="flex flex-col gap-6">
+      <div className="flex flex-col gap-4">
+        <div className="flex w-full flex-wrap items-center justify-between gap-3">
+          <h1 className="text-3xl font-bold">Recurring entries</h1>
+          <Button className="cursor-pointer" onClick={openCreateSubscription}>
+            <Plus data-icon="inline-start" />
+            Add entry
+          </Button>
+        </div>
 
-          <div className="flex items-center gap-2">
-            <AddCategoryDialog
-              open={isCategoryOpen}
-              onOpenChange={(open) => {
-                setIsCategoryOpen(open);
-                if (!open) setEditingCategory(null);
-              }}
-              onSubmit={handleSubmitCategory}
-              category={editingCategory ?? undefined}
-            />
-
-            <AddSubscriptionDialog
-              categories={categories}
-              open={isSubscriptionOpen}
-              onOpenChange={(open) => {
-                setIsSubscriptionOpen(open);
-                if (!open) setEditingSubscription(null);
-              }}
-              onSubmit={handleSubmitSubscription}
-              subscription={editingSubscription ?? undefined}
-            />
-          </div>
+        <div className="flex items-center gap-3">
+          <label htmlFor="subscription-type-filter" className="sr-only">
+            Filter by type
+          </label>
+          <select
+            id="subscription-type-filter"
+            className="h-9 rounded-md border border-input bg-transparent px-3 py-2 text-sm shadow-xs outline-none focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50"
+            value={filter}
+            onChange={(event) =>
+              setFilter(event.target.value as SubscriptionFilter)
+            }
+          >
+            {SUBSCRIPTION_FILTERS.map((option) => (
+              <option key={option.value} value={option.value}>
+                {option.label}
+              </option>
+            ))}
+          </select>
+          <p className="text-xs text-muted-foreground">
+            {filteredSubscriptions.length} of {subscriptions.length} entries
+          </p>
         </div>
       </div>
+
+      {isFilteredEmpty ? (
+        <p className="text-sm text-muted-foreground">
+          No recurring entries match this filter.
+        </p>
+      ) : (
+        <SubscriptionsTable
+          key={`sub-${filter}`}
+          deleteSubscriptionAction={handleDeleteSubscription}
+          onEdit={openEditSubscription}
+          subscriptions={filteredSubscriptions}
+        />
+      )}
+
+      <AddSubscriptionDialog
+        categories={categories}
+        open={isSubscriptionOpen}
+        onOpenChange={(open) => {
+          setIsSubscriptionOpen(open);
+          if (!open) setEditingSubscription(null);
+        }}
+        onSubmit={handleSubmitSubscription}
+        subscription={editingSubscription ?? undefined}
+      />
     </div>
   );
 }

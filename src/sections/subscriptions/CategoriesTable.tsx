@@ -10,6 +10,7 @@ import {
   DropdownMenuTrigger,
 } from "#/components/ui/dropdown-menu";
 import { usePaginatedItems } from "#/hooks/usePaginatedItems";
+import { getCategoryTypeLabel } from "#/lib/category-type";
 import type { Category } from "#/lib/dashboard/types";
 
 interface CategoriesTableProps {
@@ -44,7 +45,7 @@ export function CategoriesTable({
             No categories yet
           </h3>
           <p className="max-w-xl text-base text-[#75685f]">
-            Create a category to group subscriptions and make the breakdown
+            Create a category to group recurring entries and make the breakdown
             easier to scan.
           </p>
         </CardContent>
@@ -66,9 +67,14 @@ export function CategoriesTable({
               </div>
 
               <div>
-                <h3 className="text-sm font-medium text-foreground">
-                  {category.name}
-                </h3>
+                <div className="flex items-center gap-2">
+                  <h3 className="text-sm font-medium text-foreground">
+                    {category.name}
+                  </h3>
+                  <span className="rounded-full bg-[#f2e1c7] px-2 py-0.5 text-[10px] font-medium uppercase tracking-wide text-[#5d4b3c]">
+                    {getCategoryTypeLabel(category.type)}
+                  </span>
+                </div>
               </div>
             </div>
 
@@ -88,7 +94,7 @@ export function CategoriesTable({
                     variant="destructive"
                     onClick={() => {
                       const formData = new FormData();
-                      formData.set("id", category.id);
+                      formData.set("id", String(category.id));
                       deleteCategoryAction(formData);
                     }}
                   >

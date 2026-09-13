@@ -42,10 +42,12 @@ export function parseCreateSubscriptionFormData(
 export function validateCreateCategoryInput(input: {
   name: string;
   icon: string;
+  type: string;
 }): CreateCategoryInput | null {
   const parsed = createCategorySchema.safeParse({
     name: input.name.trim(),
     icon: input.icon.trim(),
+    type: input.type.trim(),
   });
 
   return parsed.success ? parsed.data : null;
@@ -57,6 +59,7 @@ export function parseCreateCategoryFormData(
   return validateCreateCategoryInput({
     name: String(formData.get("name") ?? ""),
     icon: String(formData.get("icon") ?? ""),
+    type: String(formData.get("type") ?? "expense"),
   });
 }
 
@@ -75,11 +78,13 @@ export function validateUpdateCategoryInput(input: {
   id: number;
   name: string;
   icon: string;
+  type: string;
 }): UpdateCategoryInput | null {
   const parsed = updateCategorySchema.safeParse({
     id: input.id,
     name: input.name.trim(),
     icon: input.icon.trim(),
+    type: input.type.trim(),
   });
 
   return parsed.success ? parsed.data : null;
@@ -92,6 +97,7 @@ export function parseUpdateCategoryFormData(
     id: Number(formData.get("id")),
     name: String(formData.get("name") ?? ""),
     icon: String(formData.get("icon") ?? ""),
+    type: String(formData.get("type") ?? "expense"),
   });
 }
 

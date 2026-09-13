@@ -42,11 +42,10 @@ export function SubscriptionsTable({
             <Shapes className="size-8" />
           </div>
           <h3 className="text-2xl font-semibold text-[#2e241d]">
-            No subscriptions yet
+            No recurring entries yet
           </h3>
           <p className="max-w-xl text-base text-[#75685f]">
-            Create your first category and subscription above to start tracking
-            recurring costs.
+            Add your first recurring entry to track expenses, savings or income.
           </p>
         </CardContent>
       </Card>

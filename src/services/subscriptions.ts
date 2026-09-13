@@ -3,6 +3,7 @@ import type { DrizzleClient } from "#/db";
 import { categories, subscriptions } from "#/db";
 import type { BillingInterval } from "#/lib/billing-interval";
 import { toMonthlyPrice } from "#/lib/billing-interval";
+import { computeMonthlyProjections } from "#/lib/projections";
 
 type SubInsertInput = Omit<typeof subscriptions.$inferInsert, "id" | "userId">;
 
@@ -20,6 +21,7 @@ export class SubscriptionService {
           id: categories.id,
           name: categories.name,
           icon: categories.icon,
+          type: categories.type,
         },
       })
       .from(subscriptions)
@@ -35,6 +37,7 @@ export class SubscriptionService {
               id: subscription.category.id,
               name: subscription.category.name,
               icon: subscription.category.icon,
+              type: subscription.category.type,
             },
     }));
   }
@@ -53,23 +56,24 @@ export class SubscriptionService {
     return rows;
   }
 
-  async calculateStats(userId: string) {
+  async calculateMonthlyProjections(userId: string) {
     const rows = await this.db
       .select({
         price: subscriptions.price,
         billingInterval: subscriptions.billingInterval,
+        type: categories.type,
       })
       .from(subscriptions)
+      .leftJoin(categories, eq(subscriptions.categoryId, categories.id))
       .where(eq(subscriptions.userId, userId));
-    const monthlyCost = rows.reduce(
-      (sum, s) => sum + toMonthlyPrice(s.price, s.billingInterval ?? "monthly"),
-      0,
-    );
 
-    return {
-      averagePerSub: rows.length === 0 ? 0 : monthlyCost / rows.length,
-      dailyCost: monthlyCost / 30,
-    };
+    return computeMonthlyProjections(
+      rows.map((row) => ({
+        price: row.price,
+        billingInterval: row.billingInterval ?? "monthly",
+        type: row.type,
+      })),
+    );
   }
 
   async calculateMonthlyCosts(userId: string) {
@@ -93,6 +97,7 @@ export class SubscriptionService {
         id: categories.id,
         name: categories.name,
         icon: categories.icon,
+        type: categories.type,
       })
       .from(categories)
       .where(and(eq(categories.id, categoryId), eq(categories.userId, userId)));

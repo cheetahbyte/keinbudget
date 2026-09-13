@@ -2,7 +2,7 @@ import { queryOptions } from "@tanstack/react-query";
 import { getCategories } from "#/functions/categories";
 import {
   getMonthlyCosts,
-  getSubscriptionStats,
+  getMonthlyProjections,
   getSubscriptions,
 } from "#/functions/subscriptions";
 
@@ -10,7 +10,7 @@ export const dashboardQueryKeys = {
   all: ["dashboard"] as const,
   subscriptions: () => [...dashboardQueryKeys.all, "subscriptions"] as const,
   categories: () => [...dashboardQueryKeys.all, "categories"] as const,
-  stats: () => [...dashboardQueryKeys.all, "stats"] as const,
+  projections: () => [...dashboardQueryKeys.all, "projections"] as const,
   monthlyCosts: () => [...dashboardQueryKeys.all, "monthly-costs"] as const,
 };
 
@@ -28,10 +28,10 @@ export function categoriesQueryOptions() {
   });
 }
 
-export function subscriptionStatsQueryOptions() {
+export function monthlyProjectionsQueryOptions() {
   return queryOptions({
-    queryKey: dashboardQueryKeys.stats(),
-    queryFn: () => getSubscriptionStats(),
+    queryKey: dashboardQueryKeys.projections(),
+    queryFn: () => getMonthlyProjections(),
   });
 }
 

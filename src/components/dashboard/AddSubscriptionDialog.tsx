@@ -14,6 +14,7 @@ import {
   BILLING_INTERVALS,
   getBillingIntervalLabel,
 } from "#/lib/billing-interval";
+import { getCategoryTypeLabel } from "#/lib/category-type";
 import type { Category, Subscription } from "#/lib/dashboard/types";
 
 interface AddSubscriptionDialogProps {
@@ -38,12 +39,12 @@ export function AddSubscriptionDialog({
       <DialogContent>
         <DialogHeader>
           <DialogTitle>
-            {isEdit ? "Edit subscription" : "Create a new subscription"}
+            {isEdit ? "Edit recurring entry" : "Create a new recurring entry"}
           </DialogTitle>
           <DialogDescription>
             {isEdit
-              ? "Update the details for this subscription."
-              : "Add a subscription price and optionally attach a category."}
+              ? "Update the details for this recurring entry."
+              : "Add a recurring entry and optionally attach a category."}
           </DialogDescription>
         </DialogHeader>
         <form
@@ -60,7 +61,7 @@ export function AddSubscriptionDialog({
             <Input
               id="subscription-name"
               name="name"
-              placeholder="Netflix, Spotify, iCloud+..."
+              placeholder="Rent, savings plan, salary..."
               defaultValue={isEdit ? subscription.name : undefined}
               required
               className="h-12 rounded-xl border-[#d8c9b6] bg-white px-4 text-base"
@@ -68,7 +69,7 @@ export function AddSubscriptionDialog({
           </div>
 
           <div className="grid gap-2">
-            <Label htmlFor="subscription-price">Price</Label>
+            <Label htmlFor="subscription-price">Amount</Label>
             <Input
               id="subscription-price"
               name="price"
@@ -83,9 +84,7 @@ export function AddSubscriptionDialog({
           </div>
 
           <div className="grid gap-2">
-            <Label htmlFor="subscription-billing-interval">
-              Billing interval
-            </Label>
+            <Label htmlFor="subscription-billing-interval">Interval</Label>
             <select
               id="subscription-billing-interval"
               name="billingInterval"
@@ -108,10 +107,13 @@ export function AddSubscriptionDialog({
               defaultValue={isEdit ? (subscription.category?.id ?? "") : ""}
               className="h-12 rounded-xl border border-[#d8c9b6] bg-white px-4 text-base text-[#2e241d] outline-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50"
             >
-              <option value="">No category</option>
+              <option value="">No category (Expense)</option>
               {categories.map((category) => (
                 <option key={category.id} value={category.id}>
                   {category.icon} {category.name}
+                  {category.type !== "expense"
+                    ? ` (${getCategoryTypeLabel(category.type)})`
+                    : ""}
                 </option>
               ))}
             </select>
@@ -128,7 +130,7 @@ export function AddSubscriptionDialog({
               size="lg"
               className="rounded-xl bg-[#2e241d] text-white hover:bg-[#433226]"
             >
-              {isEdit ? "Save changes" : "Create subscription"}
+              {isEdit ? "Save changes" : "Create recurring entry"}
             </Button>
           </DialogFooter>
         </form>

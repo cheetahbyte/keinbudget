@@ -51,7 +51,7 @@ export function Breakdown({ items }: BreakdownProps) {
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-5">
           <h2 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-            Breakdown
+            Expense breakdown
           </h2>
           <div className="flex items-center gap-3 text-xs">
             <button
@@ -63,7 +63,7 @@ export function Breakdown({ items }: BreakdownProps) {
               }
               onClick={() => setBreakdownType("subscription")}
             >
-              By Subscription
+              By Recurring Expense
             </button>
             <button
               type="button"
@@ -80,7 +80,9 @@ export function Breakdown({ items }: BreakdownProps) {
         </div>
         <p className="text-sm text-muted-foreground">
           {visibleItems.length}{" "}
-          {breakdownType === "subscription" ? "subscriptions" : "categories"}
+          {breakdownType === "subscription"
+            ? "recurring expenses"
+            : "categories"}
         </p>
       </div>
 

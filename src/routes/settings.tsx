@@ -1,12 +1,15 @@
 import { createFileRoute, redirect } from "@tanstack/react-router";
-import { getSession } from "#/lib/auth.functions";
+import { sessionQueryOptions } from "#/lib/session-query";
 import { AccountSettings } from "#/sections/settings/AccountSettings";
-import { LocalizationSettings } from "#/sections/settings/LocalizationSettings";
 
 export const Route = createFileRoute("/settings")({
   component: SettingsPage,
-  beforeLoad: async () => {
-    const session = await getSession();
+  head: () => ({ meta: [{ title: "Settings · keinbudget" }] }),
+  beforeLoad: async ({ context }) => {
+    const session = await context.queryClient.ensureQueryData({
+      ...sessionQueryOptions(),
+      revalidateIfStale: true,
+    });
     if (!session) {
       throw redirect({ to: "/login" });
     }
@@ -21,7 +24,6 @@ function SettingsPage() {
         <h1 className="text-3xl font-bold">Settings</h1>
         <p className="mt-1">Configure keinbudget</p>
       </div>
-      {/*<LocalizationSettings />*/}
       <AccountSettings />
     </main>
   );

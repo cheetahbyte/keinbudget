@@ -15,6 +15,13 @@
       "when": 1777954842876,
       "tag": "0001_clean_ken_ellis",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1789151457845,
+      "tag": "0002_flippant_nightshade",
+      "breakpoints": true
     }
   ]
 }

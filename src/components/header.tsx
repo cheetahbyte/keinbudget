@@ -1,4 +1,10 @@
-import { Link, useNavigate, useRouter } from "@tanstack/react-router";
+import { useQueryClient } from "@tanstack/react-query";
+import {
+  Link,
+  useNavigate,
+  useRouter,
+  useRouterState,
+} from "@tanstack/react-router";
 import { ChevronDown, LogOut, Settings } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 
@@ -21,6 +27,10 @@ function getInitials(email: string) {
 export function Header() {
   const navigate = useNavigate();
   const router = useRouter();
+  const queryClient = useQueryClient();
+  const pathname = useRouterState({
+    select: (state) => state.location.pathname,
+  });
   const { data: session, isPending } = authClient.useSession();
   const [isAccountMenuOpen, setIsAccountMenuOpen] = useState(false);
   const accountMenuRef = useRef<HTMLDivElement | null>(null);
@@ -53,6 +63,7 @@ export function Header() {
   async function handleSignOut() {
     setIsAccountMenuOpen(false);
     await authClient.signOut();
+    queryClient.clear();
     await navigate({ to: "/login" });
     await router.invalidate();
   }
@@ -66,7 +77,7 @@ export function Header() {
               keinbudget
             </p>
             <p className="text-sm text-[#7a6a5d]">
-              Track the subscriptions eating your salary
+              Track the recurring expenses eating your salary
             </p>
           </div>
         </Link>
@@ -154,6 +165,33 @@ export function Header() {
           )}
         </div>
       </div>
+      {pathname !== "/login" && pathname !== "/signup" && (
+        <nav
+          aria-label="Main navigation"
+          className="mx-auto flex w-full max-w-6xl flex-wrap gap-1 px-6 pb-3"
+        >
+          {[
+            { to: "/", label: "Overview" },
+            { to: "/entries", label: "Recurring entries" },
+            { to: "/categories", label: "Categories" },
+            { to: "/settings", label: "Settings" },
+          ].map(({ to, label }) => (
+            <Link
+              key={to}
+              to={to}
+              activeOptions={{ exact: true }}
+              activeProps={{
+                className: "bg-accent text-accent-foreground",
+                "aria-current": "page",
+              }}
+              inactiveProps={{ className: "text-muted-foreground" }}
+              className="rounded-lg px-3 py-2 text-sm font-medium hover:bg-accent hover:text-accent-foreground focus-visible:outline-2 focus-visible:outline-ring"
+            >
+              {label}
+            </Link>
+          ))}
+        </nav>
+      )}
     </header>
   );
 }

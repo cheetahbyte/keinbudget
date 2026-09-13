@@ -1,16 +1,17 @@
 import { createServerFn } from "@tanstack/react-start";
-import { db } from "#/db";
+import { getDb } from "#/db";
 import { ensureSession } from "#/lib/auth.functions";
 import { dataExportSchema } from "#/schemas";
 import { CategoryService } from "#/services/categories";
 import { SubscriptionService } from "#/services/subscriptions";
 
-const subService = new SubscriptionService(db);
-const catService = new CategoryService(db);
-
 export const exportAccountData = createServerFn({ method: "GET" }).handler(
   async () => {
     const { user } = await ensureSession();
+    // Created per request: on Workers, env vars and connections only exist
+    // within the request lifecycle.
+    const subService = new SubscriptionService(getDb());
+    const catService = new CategoryService(getDb());
     const [subscriptions, categories] = await Promise.all([
       subService.findAllForExport(user.id),
       catService.findAll(user.id),
@@ -25,6 +26,8 @@ export const importAccountData = createServerFn({
   .inputValidator(dataExportSchema)
   .handler(async ({ data }) => {
     const { user } = await ensureSession();
+    const catService = new CategoryService(getDb());
+    const subService = new SubscriptionService(getDb());
     if (data.version === "1.0") {
       const newCategories = await catService.bulkCreate(
         user.id,

@@ -1,6 +1,7 @@
 import { and, eq } from "drizzle-orm";
 import type { DrizzleClient } from "#/db";
 import { categories } from "#/db";
+import type { CategoryType } from "#/lib/category-type";
 import type { Category } from "#/schemas";
 
 export class CategoryService {
@@ -12,6 +13,7 @@ export class CategoryService {
         id: categories.id,
         name: categories.name,
         icon: categories.icon,
+        type: categories.type,
       })
       .from(categories)
       .where(eq(categories.userId, userId));
@@ -21,27 +23,40 @@ export class CategoryService {
     if (input.length === 0) return [];
     const rows = await this.db
       .insert(categories)
-      .values(input.map((c) => ({ userId, name: c.name, icon: c.icon })))
+      .values(
+        input.map((c) => ({
+          userId,
+          name: c.name,
+          icon: c.icon,
+          type: c.type,
+        })),
+      )
       .returning({
         id: categories.id,
         name: categories.name,
         icon: categories.icon,
+        type: categories.type,
       });
     return rows;
   }
 
-  async create(userId: string, input: { name: string; icon: string }) {
+  async create(
+    userId: string,
+    input: { name: string; icon: string; type: CategoryType },
+  ) {
     const [category] = await this.db
       .insert(categories)
       .values({
         userId,
         name: input.name,
         icon: input.icon,
+        type: input.type,
       })
       .returning({
         id: categories.id,
         name: categories.name,
         icon: categories.icon,
+        type: categories.type,
       });
 
     if (!category) {
@@ -53,16 +68,17 @@ export class CategoryService {
 
   async update(
     userId: string,
-    input: { id: number; name: string; icon: string },
+    input: { id: number; name: string; icon: string; type: CategoryType },
   ) {
     const result = await this.db
       .update(categories)
-      .set({ name: input.name, icon: input.icon })
+      .set({ name: input.name, icon: input.icon, type: input.type })
       .where(and(eq(categories.id, input.id), eq(categories.userId, userId)))
       .returning({
         id: categories.id,
         name: categories.name,
         icon: categories.icon,
+        type: categories.type,
       });
 
     if (result.length === 0) {

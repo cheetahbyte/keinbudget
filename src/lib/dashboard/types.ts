@@ -3,9 +3,9 @@ export type {
   Category,
   CreateCategoryInput,
   CreateSubscriptionInput,
+  MonthlyProjections,
   RemoveCategoryInput as EntityIdInput,
   Subscription,
-  SubscriptionStats as DashboardStats,
   UpdateCategoryInput,
   UpdateSubscriptionInput,
 } from "#/schemas";

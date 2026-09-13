@@ -1,3 +1,4 @@
+import { useQueryClient } from "@tanstack/react-query";
 import { useNavigate, useRouter } from "@tanstack/react-router";
 import { Download, Trash2, Upload } from "lucide-react";
 import { useRef, useState, useTransition } from "react";
@@ -5,11 +6,13 @@ import { Button } from "#/components/ui/button";
 import { Separator } from "#/components/ui/separator";
 import { exportAccountData, importAccountData } from "#/functions/account";
 import { authClient } from "#/lib/auth-client";
+import { dashboardQueryKeys } from "#/lib/dashboard/queries";
 import { SettingsSection } from "./SettingsSection";
 
 export function AccountSettings() {
   const navigate = useNavigate();
   const router = useRouter();
+  const queryClient = useQueryClient();
   const [isConfirmingDelete, setIsConfirmingDelete] = useState(false);
   const [isDeleting, startDeleting] = useTransition();
   const [isExporting, startExporting] = useTransition();
@@ -22,6 +25,7 @@ export function AccountSettings() {
     startDeleting(async () => {
       await authClient.deleteUser();
       await authClient.signOut().catch(() => undefined);
+      queryClient.clear();
       await router.invalidate();
       await navigate({ to: "/signup" });
     });
@@ -58,8 +62,11 @@ export function AccountSettings() {
         const text = await file.text();
         const parsed = JSON.parse(text);
         const result = await importAccountData({ data: parsed });
+        await queryClient.invalidateQueries({
+          queryKey: dashboardQueryKeys.all,
+        });
         setImportResult(
-          `Imported ${result.importedCategories} categories and ${result.importedSubscriptions} subscriptions.`,
+          `Imported ${result.importedCategories} categories and ${result.importedSubscriptions} recurring entries.`,
         );
       } catch (err) {
         const message =
@@ -77,7 +84,7 @@ export function AccountSettings() {
           );
         } else if (message === "Failed to create subscription") {
           setImportError(
-            "Could not import subscriptions. Please check the file format.",
+            "Could not import recurring entries. Please check the file format.",
           );
         } else {
           setImportError("Failed to import data.");
@@ -144,7 +151,7 @@ export function AccountSettings() {
               Export account data
             </h3>
             <p className="max-w-2xl text-sm leading-6 text-[#7a6a5d]">
-              Download a copy of your subscriptions and other data.
+              Download a copy of your recurring entries and other data.
             </p>
           </div>
 

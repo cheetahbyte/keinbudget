@@ -1,6 +1,6 @@
 import type { BreakdownItem } from "#/components/Breakdown";
 import { toMonthlyPrice } from "#/lib/billing-interval";
-import type { DashboardStats, Subscription } from "#/lib/dashboard/types";
+import type { Subscription } from "#/lib/dashboard/types";
 
 const BREAKDOWN_PALETTE = [
   "#c96b2c",
@@ -36,18 +36,23 @@ function assignPalette<T>(
 export function buildBreakdownItems(
   subscriptions: Subscription[],
 ): BreakdownItem[] {
+  // Breakdown shows expense-only amounts; income/savings entries have a
+  // category of type income/savings, uncategorized entries count as expense.
+  const expenseSubscriptions = subscriptions.filter(
+    (subscription) => (subscription.category?.type ?? "expense") === "expense",
+  );
   const subscriptionColors = assignPalette(
-    subscriptions,
+    expenseSubscriptions,
     (subscription) => subscription.id,
   );
   const categoryColors = assignPalette(
-    subscriptions.map(
+    expenseSubscriptions.map(
       (subscription) => subscription.category?.name ?? "Uncategorized",
     ),
     (categoryName) => categoryName,
   );
 
-  return subscriptions
+  return expenseSubscriptions
     .map((subscription) => {
       const categoryName = subscription.category?.name ?? "Uncategorized";
 
@@ -62,12 +67,4 @@ export function buildBreakdownItems(
       };
     })
     .sort((left, right) => right.value - left.value);
-}
-
-export function getMonthlyCost(stats: DashboardStats): number {
-  return stats.dailyCost * 30;
-}
-
-export function getYearlyCost(stats: DashboardStats): number {
-  return stats.dailyCost * 365;
 }

@@ -16,9 +16,11 @@ export const subscriptionSchema = z.object({
   category: categorySchema.nullable(),
 });
 
-export const subscriptionStatsSchema = z.object({
-  averagePerSub: z.number(),
-  dailyCost: z.number(),
+export const monthlyProjectionsSchema = z.object({
+  income: z.number(),
+  expenses: z.number(),
+  savings: z.number(),
+  remaining: z.number(),
 });
 
 export const monthlyCostSchema = z.object({
@@ -45,7 +47,7 @@ export const updateSubscriptionSchema = z.object({
 });
 
 export type Subscription = z.infer<typeof subscriptionSchema>;
-export type SubscriptionStats = z.infer<typeof subscriptionStatsSchema>;
+export type MonthlyProjections = z.infer<typeof monthlyProjectionsSchema>;
 export type MonthlyCost = z.infer<typeof monthlyCostSchema>;
 export type CreateSubscriptionInput = z.infer<typeof createSubscriptionSchema>;
 export type UpdateSubscriptionInput = z.infer<typeof updateSubscriptionSchema>;

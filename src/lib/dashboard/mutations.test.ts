@@ -44,6 +44,7 @@ describe("dashboard mutation parsing", () => {
     expect(parseCreateCategoryFormData(categoryFormData)).toEqual({
       name: "Streaming",
       icon: "📺",
+      type: "expense",
     });
     expect(parseEntityIdFormData(deleteFormData)).toEqual({ id: 3 });
   });
@@ -58,6 +59,7 @@ describe("dashboard mutation parsing", () => {
       id: 5,
       name: "Entertainment",
       icon: "🎬",
+      type: "expense",
     });
   });
 
@@ -93,6 +95,53 @@ describe("dashboard mutation parsing", () => {
       billingInterval: "monthly",
       categoryId: null,
     });
+  });
+
+  it("parses category form data with income or savings type", () => {
+    for (const type of ["income", "savings"]) {
+      const createFormData = new FormData();
+      createFormData.set("name", "Type");
+      createFormData.set("icon", "💡");
+      createFormData.set("type", type);
+
+      expect(parseCreateCategoryFormData(createFormData)).toEqual({
+        name: "Type",
+        icon: "💡",
+        type,
+      });
+
+      const updateFormData = new FormData();
+      updateFormData.set("id", "1");
+      updateFormData.set("name", "Type");
+      updateFormData.set("icon", "💡");
+      updateFormData.set("type", type);
+
+      expect(parseUpdateCategoryFormData(updateFormData)).toEqual({
+        id: 1,
+        name: "Type",
+        icon: "💡",
+        type,
+      });
+    }
+  });
+
+  it("rejects create category form data with invalid type", () => {
+    const formData = new FormData();
+    formData.set("name", "Type");
+    formData.set("icon", "💡");
+    formData.set("type", "investment");
+
+    expect(parseCreateCategoryFormData(formData)).toBeNull();
+  });
+
+  it("rejects update category form data with invalid type", () => {
+    const formData = new FormData();
+    formData.set("id", "1");
+    formData.set("name", "Type");
+    formData.set("icon", "💡");
+    formData.set("type", "investment");
+
+    expect(parseUpdateCategoryFormData(formData)).toBeNull();
   });
 
   it("rejects invalid update category form data", () => {

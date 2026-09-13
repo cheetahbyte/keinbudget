@@ -1,89 +1,90 @@
 import { Breakdown, type BreakdownItem } from "#/components/Breakdown";
-import type { DashboardStats } from "#/lib/dashboard/types";
-import { getMonthlyCost, getYearlyCost } from "#/lib/dashboard/utils";
+import type { MonthlyProjections } from "#/lib/dashboard/types";
 
-interface SmallCardProps {
+interface ValueCardProps {
   title: string;
-  value: string;
-  text: string;
+  value: number;
+  text?: string;
 }
 
-function SmallCard({ title, value, text }: SmallCardProps) {
+function ValueCard({ title, value, text }: ValueCardProps) {
+  const isNegative = value < 0;
+
   return (
-    <div className="hidden min-h-36 flex-col justify-center rounded-xl border border-border bg-card/50 p-7 lg:flex">
+    <div className="flex min-h-36 flex-col justify-center rounded-xl border border-border bg-card/50 p-7">
       <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
         {title}
       </p>
 
-      <h2 className="mt-3 font-mono text-3xl tracking-tight text-foreground">
-        {value}
+      <h2
+        className={`mt-3 font-mono text-3xl tracking-tight ${
+          isNegative ? "text-destructive" : "text-foreground"
+        }`}
+      >
+        {value.toFixed(2)}
         <span className="ml-1 text-base text-muted-foreground">EUR</span>
       </h2>
 
-      <p className="mt-3 text-sm text-muted-foreground">{text}</p>
+      {text && <p className="mt-3 text-sm text-muted-foreground">{text}</p>}
     </div>
   );
 }
+
 interface StatSectionProps {
-  stats: DashboardStats;
+  projections: MonthlyProjections;
   breakdownStats: BreakdownItem[];
 }
 
-export function StatsSection({ stats, breakdownStats }: StatSectionProps) {
-  const monthlyCost = getMonthlyCost(stats);
-  const yearlyCost = getYearlyCost(stats);
-  const { dailyCost } = stats;
+export function StatsSection({
+  projections,
+  breakdownStats,
+}: StatSectionProps) {
+  const { income, expenses, savings, remaining } = projections;
 
-  const burgerPrice = 8;
-  const coffeePrice = 4;
+  const yearlyExpenses = expenses * 12;
+  const dailyExpenses = yearlyExpenses / 365;
 
-  const monthlyBurger = monthlyCost / burgerPrice;
-  const yearlyBurger = yearlyCost / burgerPrice;
-  const dailyCoffee = dailyCost / coffeePrice;
-
-  const monthlyFixed = monthlyCost.toFixed(2);
-  const [monthlyEuros, monthlyCents] = monthlyFixed.split(".");
+  const yearlyBurger = yearlyExpenses / 8;
+  const dailyCoffee = dailyExpenses / 4;
 
   return (
     <div className="flex flex-col gap-8">
-      <div className="grid items-center gap-8 lg:grid-cols-2">
-        <div>
-          <p className="mb-3 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-            Monthly Spending
-          </p>
+      <div className="flex flex-col gap-4">
+        <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+          Monthly projections
+        </p>
 
-          <div className="flex items-baseline gap-2">
-            <span className="font-mono text-7xl font-light tracking-tight text-foreground">
-              {monthlyEuros}
-            </span>
-            <span className="font-mono text-3xl text-muted-foreground">
-              .{monthlyCents}
-            </span>
-            <span className="text-xl text-muted-foreground">EUR</span>
-          </div>
-
-          <p className="mt-4 text-sm text-muted-foreground">
-            That&apos;s{" "}
-            <span className="mr-1 text-primary">
-              {monthlyBurger.toFixed(1)} burgers
-            </span>
-            per month you&apos;re not eating
-          </p>
-        </div>
-
-        <div className="grid gap-4 sm:grid-cols-2">
-          <SmallCard
-            title="Yearly"
-            value={yearlyCost.toFixed(2)}
-            text={`${yearlyBurger.toFixed(0)} burgers per year`}
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+          <ValueCard title="Income" value={income} text="from income entries" />
+          <ValueCard
+            title="Expenses"
+            value={expenses}
+            text="from expense entries"
           />
-
-          <SmallCard
-            title="Daily"
-            value={dailyCost.toFixed(2)}
-            text={`${dailyCoffee.toFixed(1)} coffees per day`}
+          <ValueCard
+            title="Savings"
+            value={savings}
+            text="from savings entries"
+          />
+          <ValueCard
+            title="Remaining"
+            value={remaining}
+            text="income minus expenses and savings"
           />
         </div>
+      </div>
+
+      <div className="grid gap-4 sm:grid-cols-2">
+        <ValueCard
+          title="Yearly expenses"
+          value={yearlyExpenses}
+          text={`${yearlyBurger.toFixed(0)} burgers per year`}
+        />
+        <ValueCard
+          title="Daily expenses"
+          value={dailyExpenses}
+          text={`${dailyCoffee.toFixed(1)} coffees per day`}
+        />
       </div>
 
       <Breakdown items={breakdownStats} />

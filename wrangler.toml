@@ -1,0 +1,15 @@
+# Cloudflare Workers — keinbudget
+# Secrets must NOT live here. Set them per environment instead:
+#   production: wrangler secret put <NAME>   (or Cloudflare dashboard)
+#   local preview: .dev.vars (gitignored)    (see README)
+name = "keinbudget"
+main = "dist/server/index.mjs"
+compatibility_date = "2025-09-01"
+
+# postgres.js talks to PostgreSQL over TCP sockets (connect()), which needs
+# Node.js compatibility APIs in the Workers runtime.
+compatibility_flags = ["nodejs_compat"]
+
+# Static assets emitted by the Vite build (dist/public).
+[assets]
+directory = "dist/public"
