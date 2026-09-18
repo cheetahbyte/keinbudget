@@ -23,6 +23,12 @@ function SettingsPage() {
     <main className="mx-auto flex w-full max-w-5xl flex-col gap-8 px-6 py-12">
       <h1 className="text-2xl font-medium tracking-tight">Settings</h1>
       <AccountSettings />
+      <p className="text-sm text-muted-foreground">
+        Version:{" "}
+        <code title={import.meta.env.VITE_COMMIT_SHA}>
+          {import.meta.env.VITE_COMMIT_SHA.slice(0, 7)}
+        </code>
+      </p>
     </main>
   );
 }
