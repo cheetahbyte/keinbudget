@@ -5,7 +5,7 @@
 
 ## Stack
 
-- **Runtime:** Node.js >=22.15.0, pnpm v10.11.0
+- **Runtime:** Node.js >=22.15.0; package manager: Bun 1.4.0
 - **Framework:** TanStack Start (SSR) + React 19 + React Compiler (Babel plugin)
 - **UI:** Tailwind CSS 4 (`@tailwindcss/vite`), Radix UI, shadcn/new-york components
 - **DB:** Drizzle ORM + `postgres` driver + PostgreSQL
@@ -19,16 +19,18 @@
 
 | command | what |
 |---|---|
-| `pnpm dev` | dev server on port 3000 |
-| `pnpm build` | production build |
-| `pnpm test` | vitest (unit tests only, no DB needed) |
-| `pnpm lint` | `biome check .` |
-| `pnpm format` | `biome format --write .` |
-| `pnpm db:generate` | generate Drizzle migration |
-| `pnpm db:push` | push schema directly (no migration file) |
-| `pnpm db:migrate` | apply pending migrations |
+| `bun run dev` | dev server on port 3000 |
+| `bun run build` | production build |
+| `bun run test` | vitest (unit tests only, no DB needed) |
+| `bun run lint` | `biome check .` |
+| `bun run format` | `biome format --write .` |
+| `bun run db:generate` | generate Drizzle migration |
+| `bun run db:push` | push schema directly (no migration file) |
+| `bun run db:migrate` | apply pending migrations |
 
-Required order: `pnpm lint && pnpm build && pnpm test`
+Required order: `bun run lint && bun run build && bun run test`
+
+Install with `bun install --frozen-lockfile`. Use `bun run test`, not Bun's built-in `bun test`.
 
 ## Architecture
 
@@ -65,7 +67,7 @@ src/
 
 - Unit tests only (no DB required)
 - Test files co-located with source (`*.test.ts`)
-- Run: `pnpm test`
+- Run: `bun run test`
 
 ## Docker
 

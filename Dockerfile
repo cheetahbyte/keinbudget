@@ -1,17 +1,14 @@
 FROM node:22-alpine AS builder
 
-ENV PNPM_HOME="/pnpm"
-ENV PATH="$PNPM_HOME:$PATH"
+COPY --from=oven/bun:1.4.0-alpine /usr/local/bin/bun /usr/local/bin/bun
 
 WORKDIR /app
-RUN corepack enable
-
-COPY package.json pnpm-lock.yaml tsconfig.json ./
-RUN pnpm install --frozen-lockfile
+COPY package.json bun.lock tsconfig.json ./
+RUN bun install --frozen-lockfile
 
 COPY . .
 
-RUN pnpm build
+RUN bun run build
 
 FROM cgr.dev/chainguard/node AS runner
 
