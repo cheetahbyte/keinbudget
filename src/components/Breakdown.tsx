@@ -12,6 +12,8 @@ export interface BreakdownItem {
 
 interface BreakdownProps {
   items: BreakdownItem[];
+  period?: "daily" | "monthly" | "yearly";
+  onPeriodChange?: (period: "daily" | "monthly" | "yearly") => void;
 }
 
 type BreakdownType = "category" | "subscription";
@@ -21,7 +23,13 @@ const VIEWS: ReadonlyArray<{ value: BreakdownType; label: string }> = [
   { value: "category", label: "By category" },
 ];
 
-export function Breakdown({ items }: BreakdownProps) {
+export function Breakdown({
+  items,
+  period = "monthly",
+  onPeriodChange,
+}: BreakdownProps) {
+  const multiplier =
+    period === "daily" ? 12 / 365 : period === "yearly" ? 12 : 1;
   const [breakdownType, setBreakdownType] =
     useState<BreakdownType>("subscription");
 
@@ -80,7 +88,23 @@ export function Breakdown({ items }: BreakdownProps) {
         </div>
         <p className="text-sm text-muted-foreground">
           {visibleItems.length}{" "}
-          {breakdownType === "subscription" ? "entries" : "categories"}, monthly
+          {breakdownType === "subscription" ? "entries" : "categories"},{" "}
+          <button
+            type="button"
+            aria-label={`Breakdown period: ${period}. Switch to ${period === "monthly" ? "daily" : period === "daily" ? "yearly" : "monthly"}`}
+            onClick={() =>
+              onPeriodChange?.(
+                period === "monthly"
+                  ? "daily"
+                  : period === "daily"
+                    ? "yearly"
+                    : "monthly",
+              )
+            }
+            className="cursor-pointer rounded-sm border-0 bg-transparent p-0 font-bold text-inherit underline underline-offset-4 hover:text-foreground focus-visible:outline-2 focus-visible:outline-ring"
+          >
+            {period}
+          </button>
         </p>
       </div>
 
@@ -101,7 +125,7 @@ export function Breakdown({ items }: BreakdownProps) {
               >
                 <span className="truncate text-sm">{item.name}</span>
                 <span className="amount text-sm sm:order-last">
-                  {formatEur(item.value)}
+                  {formatEur(item.value * multiplier)}
                   <span className="ml-3 inline-block w-14 text-right text-muted-foreground">
                     {formatShare(share)}
                   </span>
