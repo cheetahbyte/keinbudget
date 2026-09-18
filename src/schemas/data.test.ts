@@ -1,42 +1,64 @@
 import { describe, expect, it } from "vitest";
 
-import { dataExportSchema, dataExportV1Schema } from "#/schemas/data";
+import { dataExportSchema } from "#/schemas/data";
+
+const data = {
+  version: "2.0",
+  categories: ["expense", "savings", "income"].map((type, id) => ({
+    id,
+    name: type,
+    icon: "icon",
+    type,
+  })),
+  entries: [0, 1, 2, null].map((categoryId, id) => ({
+    id,
+    name: `Entry ${id}`,
+    price: 100,
+    billingInterval: "monthly",
+    categoryId,
+  })),
+};
 
 describe("data export parsing", () => {
-  it("defaults legacy categories without type to expense", () => {
-    const result = dataExportSchema.safeParse({
-      version: "1.0",
-      categories: [{ id: 1, name: "Streaming", icon: "tv" }],
-    });
-
-    expect(result.success).toBe(true);
-    if (!result.success) return;
-    expect(result.data.categories).toEqual([
-      { id: 1, name: "Streaming", icon: "tv", type: "expense" },
-    ]);
-    expect(result.data.subscriptions).toEqual([]);
+  it("round-trips all category types and uncategorized entries", () => {
+    expect(dataExportSchema.parse(JSON.parse(JSON.stringify(data)))).toEqual(
+      data,
+    );
   });
 
-  it("preserves all category types on export", () => {
-    const types = ["expense", "income", "savings"] as const;
-    for (const type of types) {
-      const parsed = dataExportV1Schema.parse({
+  it("accepts empty modern exports", () => {
+    expect(
+      dataExportSchema.parse({ version: "2.0", entries: [], categories: [] }),
+    ).toEqual({ version: "2.0", entries: [], categories: [] });
+  });
+
+  it.each(["1.0", "3.0", undefined])("rejects version %s", (version) => {
+    expect(dataExportSchema.safeParse({ ...data, version }).success).toBe(
+      false,
+    );
+  });
+
+  it("rejects legacy exports", () => {
+    expect(
+      dataExportSchema.safeParse({
         version: "1.0",
-        categories: [{ id: 1, name: "Type", icon: "icon", type }],
-      });
-
-      expect(parsed.categories[0]?.type).toBe(type);
-    }
+        subscriptions: [],
+        categories: [],
+      }).success,
+    ).toBe(false);
   });
 
-  it("rejects invalid category type", () => {
-    const result = dataExportV1Schema.safeParse({
-      version: "1.0",
-      categories: [
-        { id: 1, name: "Streaming", icon: "tv", type: "investment" },
-      ],
-    });
-
-    expect(result.success).toBe(false);
+  it("rejects legacy fields, missing collections, and missing or invalid types", () => {
+    for (const invalid of [
+      { ...data, subscriptions: [] },
+      { ...data, entries: undefined },
+      { ...data, categories: undefined },
+      ...[undefined, "investment"].map((type) => ({
+        ...data,
+        categories: [{ ...data.categories[0], type }],
+      })),
+    ]) {
+      expect(dataExportSchema.safeParse(invalid).success).toBe(false);
+    }
   });
 });

@@ -13,11 +13,16 @@ export const exportAccountData = createServerFn({ method: "GET" }).handler(
     // within the request lifecycle.
     const subService = new SubscriptionService(getDb());
     const catService = new CategoryService(getDb());
-    const [subscriptions, categories] = await Promise.all([
+    const [entries, categories] = await Promise.all([
       subService.findAllForExport(user.id),
       catService.findAll(user.id),
     ]);
-    return { version: "1.0", subscriptions, categories };
+    return dataExportSchema.parse({
+      version: "2.0",
+      entries,
+      categories,
+      exportedAt: new Date().toISOString(),
+    });
   },
 );
 
@@ -29,36 +34,30 @@ export const importAccountData = createServerFn({
     const { user } = await ensureSession();
     const catService = new CategoryService(getDb());
     const subService = new SubscriptionService(getDb());
-    if (data.version === "1.0") {
-      const newCategories = await catService.bulkCreate(
-        user.id,
-        data.categories,
-      );
+    const newCategories = await catService.bulkCreate(user.id, data.categories);
 
-      const oldToNewId = new Map<number, number>();
-      for (let i = 0; i < data.categories.length; i++) {
-        oldToNewId.set(data.categories[i].id, newCategories[i].id);
-      }
-
-      const subscriptions = data.subscriptions.map((sub) => ({
-        name: sub.name,
-        price: sub.price,
-        billingInterval: sub.billingInterval,
-        categoryId:
-          sub.categoryId !== null
-            ? (oldToNewId.get(sub.categoryId) ?? null)
-            : null,
-      }));
-
-      const newSubscriptions = await subService.bulkCreate(
-        user.id,
-        subscriptions,
-      );
-
-      return {
-        importedCategories: newCategories.length,
-        importedSubscriptions: newSubscriptions.length,
-      };
+    const oldToNewId = new Map<number, number>();
+    for (let i = 0; i < data.categories.length; i++) {
+      oldToNewId.set(data.categories[i].id, newCategories[i].id);
     }
-    return { importedCategories: 0, importedSubscriptions: 0 };
+
+    const subscriptions = data.entries.map((sub) => ({
+      name: sub.name,
+      price: sub.price,
+      billingInterval: sub.billingInterval,
+      categoryId:
+        sub.categoryId !== null
+          ? (oldToNewId.get(sub.categoryId) ?? null)
+          : null,
+    }));
+
+    const newSubscriptions = await subService.bulkCreate(
+      user.id,
+      subscriptions,
+    );
+
+    return {
+      importedCategories: newCategories.length,
+      importedSubscriptions: newSubscriptions.length,
+    };
   });

@@ -1,14 +1,9 @@
 import { z } from "zod";
 
-import { categorySchema, categoryTypeSchema } from "./category";
+import { categorySchema } from "./category";
 import { billingIntervalSchema } from "./subscription";
 
-// Old exports have no `type` on categories; default them to "expense".
-const exportCategorySchema = categorySchema.extend({
-  type: categoryTypeSchema.default("expense"),
-});
-
-export const accountSubscriptionSchema = z.object({
+export const accountEntrySchema = z.object({
   id: z.number(),
   name: z.string(),
   price: z.number(),
@@ -16,19 +11,14 @@ export const accountSubscriptionSchema = z.object({
   categoryId: z.number().nullable(),
 });
 
-export const dataExportV1Schema = z
+export const dataExportSchema = z
   .object({
-    version: z.literal("1.0"),
-    subscriptions: z.array(accountSubscriptionSchema).default([]),
-    categories: z.array(exportCategorySchema).default([]),
+    version: z.literal("2.0"),
+    entries: z.array(accountEntrySchema),
+    categories: z.array(categorySchema),
     exportedAt: z.iso.datetime().optional(),
   })
   .strict();
 
-export const dataExportSchema = z.discriminatedUnion("version", [
-  dataExportV1Schema,
-]);
-
-export type AccountSubscription = z.infer<typeof accountSubscriptionSchema>;
+export type AccountEntry = z.infer<typeof accountEntrySchema>;
 export type DataExport = z.infer<typeof dataExportSchema>;
-export type DataExportV1 = z.infer<typeof dataExportV1Schema>;
