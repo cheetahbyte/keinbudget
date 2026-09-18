@@ -20,10 +20,17 @@ function LedgerRow({ label, value }: { label: string; value: number }) {
 
 export function StatsSection({
   projections,
+  period = "monthly",
 }: {
   projections: MonthlyProjections;
+  period?: "daily" | "monthly" | "yearly";
 }) {
-  const { income, expenses, savings, remaining } = projections;
+  const multiplier =
+    period === "daily" ? 12 / 365 : period === "yearly" ? 12 : 1;
+  const income = projections.income * multiplier;
+  const expenses = projections.expenses * multiplier;
+  const savings = projections.savings * multiplier;
+  const remaining = projections.remaining * multiplier;
   const month = new Date().toLocaleDateString("en-US", {
     month: "long",
     year: "numeric",
@@ -31,9 +38,28 @@ export function StatsSection({
 
   return (
     <div className="flex flex-col gap-12">
+      <nav aria-label="Projection period" className="flex gap-4 text-sm">
+        {(["daily", "monthly", "yearly"] as const).map((option) => (
+          <Link
+            key={option}
+            to="/"
+            search={{ period: option }}
+            aria-current={period === option ? "page" : undefined}
+            className="rounded-sm capitalize text-muted-foreground underline-offset-4 hover:underline focus-visible:outline-2 focus-visible:outline-ring aria-[current=page]:text-foreground aria-[current=page]:underline"
+          >
+            {option}
+          </Link>
+        ))}
+      </nav>
       <section className="flex flex-col gap-6">
         <div>
-          <p className="text-sm text-muted-foreground">{month}</p>
+          <p className="text-sm text-muted-foreground">
+            {period === "monthly"
+              ? month
+              : period === "daily"
+                ? "Daily average"
+                : "Yearly projection"}
+          </p>
           <h1 className="mt-1 text-xl font-medium">Left after fixed costs</h1>
           <p
             className={`amount-hero mt-3 text-[clamp(2rem,7vw,3.5rem)] ${
@@ -43,6 +69,13 @@ export function StatsSection({
             <Scritto value={formatEur(remaining)} transition={transition} />
           </p>
         </div>
+        {period !== "monthly" && (
+          <p className="text-sm text-muted-foreground">
+            {period === "daily"
+              ? "Based on monthly projections × 12 ÷ 365, not payments due today."
+              : "Based on monthly projections × 12, not a payment schedule."}
+          </p>
+        )}
         <SalaryBar
           income={income}
           expenses={expenses}
