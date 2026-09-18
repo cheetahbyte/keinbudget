@@ -22,6 +22,20 @@
       "when": 1789151457845,
       "tag": "0002_flippant_nightshade",
       "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1789750406889,
+      "tag": "0003_clammy_moondragon",
+      "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1789750539890,
+      "tag": "0004_reflective_pestilence",
+      "breakpoints": true
     }
   ]
 }

@@ -17,10 +17,13 @@ describe("computeMonthlyProjections", () => {
       { price: 12, billingInterval: "monthly", type: "expense" },
       { price: 52, billingInterval: "weekly", type: "expense" },
       { price: 30, billingInterval: "quarterly", type: "expense" },
+      { price: 60, billingInterval: "semiannual", type: "expense" },
       { price: 120, billingInterval: "yearly", type: "expense" },
     ]);
 
-    expect(projections.expenses).toBeCloseTo(12 + (52 * 52) / 12 + 10 + 10);
+    expect(projections.expenses).toBeCloseTo(
+      12 + (52 * 52) / 12 + 10 + 10 + 10,
+    );
   });
 
   it("splits income, expenses and savings by entry type", () => {
