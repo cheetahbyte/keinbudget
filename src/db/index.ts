@@ -21,6 +21,8 @@ function createDb(): DB {
     // per-process client from leaking connections.
     idle_timeout: 30,
     connect_timeout: 5,
+    // Supabase transaction pooler (port 6543) rejects prepared statements
+    prepare: false,
   });
 
   return drizzle(sql, { schema });

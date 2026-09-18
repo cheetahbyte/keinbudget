@@ -83,16 +83,18 @@ export function CategoriesSection({ categories }: CategoriesSectionProps) {
   }
 
   return (
-    <div className="flex flex-col gap-6">
-      <div className="flex w-full flex-wrap items-center justify-between gap-3">
-        <h1 className="text-3xl font-bold">Categories</h1>
+    <div className="flex flex-col gap-5">
+      <div className="flex w-full flex-wrap items-baseline justify-between gap-3">
+        <h1 className="text-2xl font-medium tracking-tight">Categories</h1>
         <Button className="cursor-pointer" onClick={openCreateCategory}>
           <Plus data-icon="inline-start" />
           Add category
         </Button>
       </div>
 
-      <p className="text-xs text-muted-foreground">{categories.length} total</p>
+      <p className="text-sm text-muted-foreground">
+        {categories.length} categories
+      </p>
 
       <CategoriesTable
         categories={categories}

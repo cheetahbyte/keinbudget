@@ -1,8 +1,7 @@
-import { EllipsisIcon, Pencil, Shapes, Trash2 } from "lucide-react";
+import { EllipsisIcon, Pencil, Trash2 } from "lucide-react";
 
 import { PaginationControls } from "#/components/dashboard/PaginationControls";
 import { Button } from "#/components/ui/button";
-import { Card, CardContent } from "#/components/ui/card";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -12,6 +11,7 @@ import {
 import { usePaginatedItems } from "#/hooks/usePaginatedItems";
 import { getBillingIntervalShortLabel } from "#/lib/billing-interval";
 import type { Subscription } from "#/lib/dashboard/types";
+import { formatEur } from "#/lib/money";
 
 interface SubscriptionsTableProps {
   deleteSubscriptionAction: (formData: FormData) => Promise<void>;
@@ -36,65 +36,59 @@ export function SubscriptionsTable({
 
   if (subscriptions.length === 0) {
     return (
-      <Card className="rounded-[2rem] border border-dashed border-[#d7c8b3] bg-[#fdf8f1] py-0 shadow-none">
-        <CardContent className="flex flex-col items-center justify-center gap-3 px-8 py-14 text-center">
-          <div className="flex size-16 items-center justify-center rounded-[1.5rem] bg-[#f2e1c7] text-[#5d4b3c]">
-            <Shapes className="size-8" />
-          </div>
-          <h3 className="text-2xl font-semibold text-[#2e241d]">
-            No recurring entries yet
-          </h3>
-          <p className="max-w-xl text-base text-[#75685f]">
-            Add your first recurring entry to track expenses, savings or income.
-          </p>
-        </CardContent>
-      </Card>
+      <div className="rounded-md bg-card px-6 py-10 ring-1 ring-border">
+        <h3 className="text-lg font-medium">Nothing recurring yet</h3>
+        <p className="mt-1 max-w-prose text-muted-foreground">
+          Add rent, subscriptions, salary and savings plans. The overview then
+          shows what is left each month.
+        </p>
+      </div>
     );
   }
 
   return (
     <div className="space-y-4">
-      <div className="overflow-hidden rounded-xl border border-border bg-card/50">
-        {visibleSubscriptions.map((subscription) => (
-          <div
-            key={subscription.id}
-            className="flex items-center justify-between gap-4 border-border px-5 py-4 not-last:border-b"
-          >
-            <div className="flex items-center gap-4">
-              <div className="flex size-11 items-center justify-center rounded-xl bg-amber-50 text-lg">
-                {subscription.category?.icon ?? "🧾"}
-              </div>
+      <ul className="divide-y divide-border rounded-md bg-card ring-1 ring-border">
+        {visibleSubscriptions.map((subscription) => {
+          const isIncome = subscription.category?.type === "income";
 
-              <div>
-                <h3 className="text-sm font-medium text-foreground">
-                  {subscription.name}
-                </h3>
-                <p className="text-xs text-muted-foreground">
+          return (
+            <li
+              key={subscription.id}
+              className="flex items-center gap-4 px-5 py-3.5"
+            >
+              <span aria-hidden className="w-6 text-center text-lg">
+                {subscription.category?.icon ?? "🧾"}
+              </span>
+
+              <div className="min-w-0 flex-1">
+                <h3 className="truncate font-medium">{subscription.name}</h3>
+                <p className="text-sm text-muted-foreground">
                   {subscription.category?.name ?? "Uncategorized"}
                 </p>
               </div>
-            </div>
 
-            <div className="flex items-center gap-3">
               <div className="text-right">
-                <p className="font-mono text-sm text-foreground">
-                  {subscription.price.toFixed(2)}
-                  <span className="ml-1 text-xs text-muted-foreground">
-                    EUR
-                  </span>
+                <p className="amount text-base">
+                  {isIncome ? "+" : ""}
+                  {formatEur(subscription.price)}
                 </p>
-                <p className="text-[10px] text-muted-foreground">
+                <p className="text-sm text-muted-foreground">
                   {getBillingIntervalShortLabel(subscription.billingInterval)}
                 </p>
               </div>
 
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <Button variant={"outline"}>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    aria-label={`Actions for ${subscription.name}`}
+                  >
                     <EllipsisIcon />
                   </Button>
                 </DropdownMenuTrigger>
-                <DropdownMenuContent>
+                <DropdownMenuContent align="end">
                   <DropdownMenuItem onClick={() => onEdit(subscription)}>
                     <Pencil className="size-3.5" />
                     Edit
@@ -112,10 +106,10 @@ export function SubscriptionsTable({
                   </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
-            </div>
-          </div>
-        ))}
-      </div>
+            </li>
+          );
+        })}
+      </ul>
       <PaginationControls
         anchorId="subscriptions"
         currentPage={currentPage}

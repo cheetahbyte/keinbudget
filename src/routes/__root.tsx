@@ -44,7 +44,7 @@ function RootDocument({ children }: { children: React.ReactNode }) {
       <head>
         <HeadContent />
       </head>
-      <body className="min-h-full flex h-full flex-col bg-[#FAF8F5] antialiased">
+      <body className="flex h-full min-h-full flex-col bg-background antialiased">
         <Header />
         {children}
         {import.meta.env.DEV && (

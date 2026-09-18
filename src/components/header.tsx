@@ -10,19 +10,14 @@ import { useEffect, useRef, useState } from "react";
 
 import { Button } from "#/components/ui/button";
 import { authClient } from "#/lib/auth-client";
-import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 
-function hashString(str: string): string {
-  let hash = 5381;
-  for (let i = 0; i < str.length; i++) {
-    hash = ((hash << 5) + hash + str.charCodeAt(i)) | 0;
-  }
-  return Math.abs(hash).toString(36);
-}
-
-function getInitials(email: string) {
-  return email.slice(0, 2).toUpperCase();
-}
+const NAV = [
+  { to: "/", label: "Overview" },
+  { to: "/breakdown", label: "Breakdown" },
+  { to: "/entries", label: "Recurring entries" },
+  { to: "/categories", label: "Categories" },
+  { to: "/settings", label: "Settings" },
+] as const;
 
 export function Header() {
   const navigate = useNavigate();
@@ -68,124 +63,92 @@ export function Header() {
     await router.invalidate();
   }
 
+  const isAuthPage = pathname === "/login" || pathname === "/signup";
+
   return (
-    <header className="mx-auto w-full border-b border-[#e9dccd] bg-[#fdf9f4]">
-      <div className="mx-auto flex w-full max-w-6xl items-center justify-between gap-4 px-6 py-5">
-        <Link to="/" className="flex items-center gap-3">
-          <div>
-            <p className="text-lg font-semibold tracking-tight text-[#2e241d]">
-              keinbudget
-            </p>
-            <p className="text-sm text-[#7a6a5d]">
-              Track the recurring expenses eating your salary
-            </p>
-          </div>
+    <header className="w-full border-b border-border">
+      <div className="mx-auto flex w-full max-w-5xl items-center justify-between gap-4 px-6 pt-6 pb-4">
+        <Link
+          to="/"
+          className="text-xl font-bold tracking-tight text-foreground focus-visible:outline-2 focus-visible:outline-ring"
+        >
+          keinbudget
         </Link>
 
-        <div className="flex items-center gap-3">
-          {isPending ? null : session ? (
-            <div className="relative" ref={accountMenuRef}>
-              <button
-                type="button"
-                onClick={() => setIsAccountMenuOpen((open) => !open)}
-                className="flex items-center gap-3 rounded-full border border-[#e5d7c8] bg-white px-3 py-2 text-left text-[#2e241d] transition-colors hover:bg-[#f8f1e7]"
-                aria-expanded={isAccountMenuOpen}
-                aria-haspopup="menu"
-              >
-                <Avatar>
-                  <AvatarImage
-                    src={
-                      session.user.image ??
-                      `https://api.dicebear.com/9.x/thumbs/svg?seed=${hashString(session.user.id)}`
-                    }
-                  />
-                  <AvatarFallback>
-                    {getInitials(session.user.name)}
-                  </AvatarFallback>
-                </Avatar>
-                <div className="min-w-0">
-                  <p className="max-w-40 truncate pr-1 text-sm font-medium">
-                    {session.user.name}
-                  </p>
-                </div>
-                <ChevronDown
-                  className={`size-4 text-[#7a6a5d] transition-transform ${
-                    isAccountMenuOpen ? "rotate-180" : ""
-                  }`}
-                />
-              </button>
+        {isPending ? null : session ? (
+          <div className="relative" ref={accountMenuRef}>
+            <button
+              type="button"
+              onClick={() => setIsAccountMenuOpen((open) => !open)}
+              className="flex h-9 items-center gap-1.5 rounded-md px-2 text-sm text-foreground hover:bg-muted focus-visible:outline-2 focus-visible:outline-ring"
+              aria-expanded={isAccountMenuOpen}
+              aria-haspopup="menu"
+            >
+              <span className="max-w-40 truncate">{session.user.name}</span>
+              <ChevronDown
+                className={`size-4 text-muted-foreground transition-transform ${
+                  isAccountMenuOpen ? "rotate-180" : ""
+                }`}
+              />
+            </button>
 
-              {isAccountMenuOpen ? (
-                <div className="absolute right-0 top-[calc(100%+0.75rem)] z-20 w-56 rounded-2xl border border-[#e5d7c8] bg-white p-2 shadow-[0_18px_40px_rgba(46,36,29,0.12)]">
-                  <Button
-                    variant="ghost"
-                    size="lg"
-                    asChild
-                    className="h-11 w-full justify-start rounded-xl px-3 text-[#2e241d] hover:bg-[#f8f1e7]"
+            {isAccountMenuOpen ? (
+              <div className="absolute top-[calc(100%+0.25rem)] right-0 z-20 w-48 rounded-md bg-popover p-1 ring-1 ring-foreground/10 shadow-[0_8px_24px_rgba(27,29,34,0.08)]">
+                <Button
+                  variant="ghost"
+                  asChild
+                  className="h-9 w-full justify-start"
+                >
+                  <Link
+                    to="/settings"
+                    onClick={() => setIsAccountMenuOpen(false)}
                   >
-                    <Link
-                      to="/settings"
-                      onClick={() => setIsAccountMenuOpen(false)}
-                    >
-                      <Settings className="size-4" />
-                      Settings
-                    </Link>
-                  </Button>
-
-                  <Button
-                    variant="ghost"
-                    size="lg"
-                    onClick={handleSignOut}
-                    className="h-11 w-full justify-start rounded-xl px-3 text-[#2e241d] hover:bg-[#f8f1e7]"
-                  >
-                    <LogOut className="size-4" />
-                    Sign out
-                  </Button>
-                </div>
-              ) : null}
-            </div>
-          ) : (
-            <>
-              <Button
-                variant="ghost"
-                asChild
-                size="lg"
-                className="h-11 rounded-full px-5 "
-              >
-                <Link to="/login">Sign in</Link>
-              </Button>
-              <Button
-                asChild
-                size="lg"
-                className="h-11 rounded-full bg-[#2e241d] px-5 text-white hover:bg-[#433226]"
-              >
-                <Link to="/signup">Sign up</Link>
-              </Button>
-            </>
-          )}
-        </div>
+                    <Settings className="size-4" />
+                    Settings
+                  </Link>
+                </Button>
+                <Button
+                  variant="ghost"
+                  onClick={handleSignOut}
+                  className="h-9 w-full justify-start"
+                >
+                  <LogOut className="size-4" />
+                  Sign out
+                </Button>
+              </div>
+            ) : null}
+          </div>
+        ) : (
+          <div className="flex items-center gap-1">
+            <Button variant="ghost" asChild size="lg">
+              <Link to="/login">Sign in</Link>
+            </Button>
+            <Button asChild size="lg">
+              <Link to="/signup">Create account</Link>
+            </Button>
+          </div>
+        )}
       </div>
-      {pathname !== "/login" && pathname !== "/signup" && (
+
+      {!isAuthPage && (
         <nav
           aria-label="Main navigation"
-          className="mx-auto flex w-full max-w-6xl flex-wrap gap-1 px-6 pb-3"
+          className="mx-auto flex w-full max-w-5xl flex-wrap gap-x-5 gap-y-2 px-6"
         >
-          {[
-            { to: "/", label: "Overview" },
-            { to: "/entries", label: "Recurring entries" },
-            { to: "/categories", label: "Categories" },
-            { to: "/settings", label: "Settings" },
-          ].map(({ to, label }) => (
+          {NAV.map(({ to, label }) => (
             <Link
               key={to}
               to={to}
               activeOptions={{ exact: true }}
               activeProps={{
-                className: "bg-accent text-accent-foreground",
+                className: "border-pen text-foreground",
                 "aria-current": "page",
               }}
-              inactiveProps={{ className: "text-muted-foreground" }}
-              className="rounded-lg px-3 py-2 text-sm font-medium hover:bg-accent hover:text-accent-foreground focus-visible:outline-2 focus-visible:outline-ring"
+              inactiveProps={{
+                className:
+                  "border-transparent text-muted-foreground hover:text-foreground",
+              }}
+              className="shrink-0 border-b-2 pb-3 text-sm font-medium focus-visible:outline-2 focus-visible:outline-ring"
             >
               {label}
             </Link>

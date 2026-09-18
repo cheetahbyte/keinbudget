@@ -1,93 +1,69 @@
-import { Breakdown, type BreakdownItem } from "#/components/Breakdown";
+import Scritto from "@scritto/react";
+import { Link } from "@tanstack/react-router";
+import { SalaryBar } from "#/components/SalaryBar";
 import type { MonthlyProjections } from "#/lib/dashboard/types";
+import { formatEur } from "#/lib/money";
 
-interface ValueCardProps {
-  title: string;
-  value: number;
-  text?: string;
-}
+const transition = { duration: 300, easing: "ease-out" };
 
-function ValueCard({ title, value, text }: ValueCardProps) {
-  const isNegative = value < 0;
-
+function LedgerRow({ label, value }: { label: string; value: number }) {
   return (
-    <div className="flex min-h-36 flex-col justify-center rounded-xl border border-border bg-card/50 p-7">
-      <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-        {title}
-      </p>
-
-      <h2
-        className={`mt-3 font-mono text-3xl tracking-tight ${
-          isNegative ? "text-destructive" : "text-foreground"
-        }`}
-      >
-        {value.toFixed(2)}
-        <span className="ml-1 text-base text-muted-foreground">EUR</span>
-      </h2>
-
-      {text && <p className="mt-3 text-sm text-muted-foreground">{text}</p>}
+    <div className="flex items-baseline py-2.5">
+      <dt className="text-muted-foreground">{label}</dt>
+      <span aria-hidden className="leader" />
+      <dd className={`amount text-base ${value < 0 ? "text-destructive" : ""}`}>
+        <Scritto value={formatEur(value)} transition={transition} />
+      </dd>
     </div>
   );
 }
 
-interface StatSectionProps {
-  projections: MonthlyProjections;
-  breakdownStats: BreakdownItem[];
-}
-
 export function StatsSection({
   projections,
-  breakdownStats,
-}: StatSectionProps) {
+}: {
+  projections: MonthlyProjections;
+}) {
   const { income, expenses, savings, remaining } = projections;
-
-  const yearlyExpenses = expenses * 12;
-  const dailyExpenses = yearlyExpenses / 365;
-
-  const yearlyBurger = yearlyExpenses / 8;
-  const dailyCoffee = dailyExpenses / 4;
+  const month = new Date().toLocaleDateString("en-US", {
+    month: "long",
+    year: "numeric",
+  });
 
   return (
-    <div className="flex flex-col gap-8">
-      <div className="flex flex-col gap-4">
-        <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-          Monthly projections
-        </p>
-
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-          <ValueCard title="Income" value={income} text="from income entries" />
-          <ValueCard
-            title="Expenses"
-            value={expenses}
-            text="from expense entries"
-          />
-          <ValueCard
-            title="Savings"
-            value={savings}
-            text="from savings entries"
-          />
-          <ValueCard
-            title="Remaining"
-            value={remaining}
-            text="income minus expenses and savings"
-          />
+    <div className="flex flex-col gap-12">
+      <section className="flex flex-col gap-6">
+        <div>
+          <p className="text-sm text-muted-foreground">{month}</p>
+          <h1 className="mt-1 text-xl font-medium">Left after fixed costs</h1>
+          <p
+            className={`amount-hero mt-3 text-[clamp(2rem,7vw,3.5rem)] ${
+              remaining < 0 ? "text-destructive" : "text-foreground"
+            }`}
+          >
+            <Scritto value={formatEur(remaining)} transition={transition} />
+          </p>
         </div>
-      </div>
-
-      <div className="grid gap-4 sm:grid-cols-2">
-        <ValueCard
-          title="Yearly expenses"
-          value={yearlyExpenses}
-          text={`${yearlyBurger.toFixed(0)} burgers per year`}
+        <SalaryBar
+          income={income}
+          expenses={expenses}
+          savings={savings}
+          remaining={remaining}
         />
-        <ValueCard
-          title="Daily expenses"
-          value={dailyExpenses}
-          text={`${dailyCoffee.toFixed(1)} coffees per day`}
-        />
-      </div>
+      </section>
 
-      <Breakdown items={breakdownStats} />
+      <div className="flex w-full max-w-md flex-col gap-6">
+        <dl className="flex flex-col divide-y divide-border">
+          <LedgerRow label="Income" value={income} />
+          <LedgerRow label="Expenses" value={expenses} />
+          <LedgerRow label="Savings" value={savings} />
+        </dl>
+        <Link
+          to="/breakdown"
+          className="w-fit text-sm text-pen underline underline-offset-4 focus-visible:outline-2 focus-visible:outline-ring"
+        >
+          View breakdown
+        </Link>
+      </div>
     </div>
   );
 }

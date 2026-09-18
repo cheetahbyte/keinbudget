@@ -30,7 +30,7 @@ export function AddCategoryDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent>
+      <DialogContent className="sm:max-w-md">
         <DialogHeader>
           <DialogTitle>
             {isEdit ? "Edit category" : "Create a category"}
@@ -58,7 +58,6 @@ export function AddCategoryDialog({
               placeholder="Streaming"
               defaultValue={isEdit ? category.name : undefined}
               required
-              className="h-12 rounded-xl border-[#d8c9b6] bg-white px-4 text-base"
             />
           </div>
 
@@ -70,7 +69,6 @@ export function AddCategoryDialog({
               placeholder="📺"
               defaultValue={isEdit ? category.icon : undefined}
               required
-              className="h-12 rounded-xl border-[#d8c9b6] bg-white px-4 text-base"
             />
           </div>
 
@@ -80,7 +78,7 @@ export function AddCategoryDialog({
               id="category-type"
               name="type"
               defaultValue={isEdit ? category.type : "expense"}
-              className="h-12 rounded-xl border border-[#d8c9b6] bg-white px-4 text-base text-[#2e241d] outline-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50"
+              className="h-9 rounded-md border border-input bg-transparent px-3 text-sm outline-none focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50"
             >
               {CATEGORY_TYPES.map((type) => (
                 <option key={type} value={type}>
@@ -92,15 +90,11 @@ export function AddCategoryDialog({
 
           <DialogFooter>
             <DialogClose asChild>
-              <Button variant="outline" size="lg" className="rounded-xl">
+              <Button variant="outline" size="lg">
                 Cancel
               </Button>
             </DialogClose>
-            <Button
-              type="submit"
-              size="lg"
-              className="rounded-xl bg-[#2e241d] text-white hover:bg-[#433226]"
-            >
+            <Button type="submit" size="lg">
               {isEdit ? "Save changes" : "Create category"}
             </Button>
           </DialogFooter>

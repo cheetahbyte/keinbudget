@@ -7,12 +7,11 @@ interface SettingsSectionProps {
 
 export function SettingsSection({ title, children }: SettingsSectionProps) {
   return (
-    <section
-      id={title.toLowerCase()}
-      className="mt-6 rounded-2xl border border-[#e5d7c8] bg-white"
-    >
-      <h2 className="text-2xl font-semibold px-5 pt-5">{title}</h2>
-      {children}
+    <section id={title.toLowerCase()} className="mt-8">
+      <h2 className="text-xl font-medium">{title}</h2>
+      <div className="mt-4 rounded-md bg-card ring-1 ring-border">
+        {children}
+      </div>
     </section>
   );
 }

@@ -1,4 +1,5 @@
 import { useMemo, useState } from "react";
+import { formatEur, formatShare } from "#/lib/money";
 
 export interface BreakdownItem {
   name: string;
@@ -12,10 +13,16 @@ interface BreakdownProps {
   items: BreakdownItem[];
 }
 
+type BreakdownType = "category" | "subscription";
+
+const VIEWS: ReadonlyArray<{ value: BreakdownType; label: string }> = [
+  { value: "subscription", label: "By entry" },
+  { value: "category", label: "By category" },
+];
+
 export function Breakdown({ items }: BreakdownProps) {
-  const [breakdownType, setBreakdownType] = useState<
-    "category" | "subscription"
-  >("subscription");
+  const [breakdownType, setBreakdownType] =
+    useState<BreakdownType>("subscription");
 
   const visibleItems = useMemo(() => {
     if (breakdownType === "subscription") {
@@ -45,77 +52,73 @@ export function Breakdown({ items }: BreakdownProps) {
   }, [breakdownType, items]);
 
   const total = visibleItems.reduce((sum, item) => sum + item.value, 0);
+  const largest = visibleItems[0]?.value ?? 0;
 
   return (
-    <section className="space-y-5">
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-5">
-          <h2 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-            Expense breakdown
-          </h2>
-          <div className="flex items-center gap-3 text-xs">
-            <button
-              type="button"
-              className={
-                breakdownType === "subscription"
-                  ? "cursor-pointer font-medium text-foreground underline"
-                  : "cursor-pointer text-muted-foreground hover:text-foreground"
-              }
-              onClick={() => setBreakdownType("subscription")}
-            >
-              By Recurring Expense
-            </button>
-            <button
-              type="button"
-              className={
-                breakdownType === "category"
-                  ? "cursor-pointer font-medium text-foreground underline"
-                  : "cursor-pointer text-muted-foreground hover:text-foreground"
-              }
-              onClick={() => setBreakdownType("category")}
-            >
-              By Category
-            </button>
+    <section className="flex flex-col gap-5">
+      <div className="flex flex-wrap items-baseline justify-between gap-x-6 gap-y-2">
+        <div className="flex flex-wrap items-baseline gap-x-5 gap-y-3">
+          <h2 className="text-lg font-medium">Where it goes</h2>
+          <div className="flex gap-4 text-sm">
+            {VIEWS.map((view) => (
+              <button
+                key={view.value}
+                type="button"
+                aria-pressed={breakdownType === view.value}
+                className={`-mb-px cursor-pointer border-b-2 pb-0.5 focus-visible:outline-2 focus-visible:outline-ring ${
+                  breakdownType === view.value
+                    ? "border-pen text-foreground"
+                    : "border-transparent text-muted-foreground hover:text-foreground"
+                }`}
+                onClick={() => setBreakdownType(view.value)}
+              >
+                {view.label}
+              </button>
+            ))}
           </div>
         </div>
         <p className="text-sm text-muted-foreground">
           {visibleItems.length}{" "}
-          {breakdownType === "subscription"
-            ? "recurring expenses"
-            : "categories"}
+          {breakdownType === "subscription" ? "entries" : "categories"}, monthly
         </p>
       </div>
 
-      <div className="flex h-3 overflow-hidden rounded-full bg-muted">
-        {visibleItems.map((item) => (
-          <div
-            key={item.name}
-            className="h-full"
-            style={{
-              width: `${total > 0 ? (item.value / total) * 100 : 0}%`,
-              backgroundColor: item.color,
-            }}
-          />
-        ))}
-      </div>
+      {visibleItems.length === 0 ? (
+        <p className="text-muted-foreground">
+          No expenses yet. Add a recurring entry and it shows up here.
+        </p>
+      ) : (
+        <ol className="flex flex-col divide-y divide-border">
+          {visibleItems.map((item) => {
+            const share = total > 0 ? item.value / total : 0;
+            const width = largest > 0 ? (item.value / largest) * 100 : 0;
 
-      <div className="flex flex-wrap gap-x-6 gap-y-3">
-        {visibleItems.map((item) => (
-          <div key={item.name} className="flex items-center gap-2">
-            <span
-              className="size-2.5 rounded-full"
-              style={{ backgroundColor: item.color }}
-            />
-            <span className="text-sm" style={{ color: item.color }}>
-              {item.name} (
-              {total > 0
-                ? parseFloat(((item.value / total) * 100).toFixed(1))
-                : 0}
-              %)
-            </span>
-          </div>
-        ))}
-      </div>
+            return (
+              <li
+                key={item.name}
+                className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-x-6 gap-y-1.5 py-3 sm:grid-cols-[minmax(7rem,14rem)_minmax(0,1fr)_auto]"
+              >
+                <span className="truncate text-sm">{item.name}</span>
+                <span className="amount text-sm sm:order-last">
+                  {formatEur(item.value)}
+                  <span className="ml-3 inline-block w-14 text-right text-muted-foreground">
+                    {formatShare(share)}
+                  </span>
+                </span>
+                <span className="col-span-2 h-1 w-full sm:col-span-1">
+                  <span
+                    className="block h-full rounded-xs"
+                    style={{
+                      width: `${width}%`,
+                      backgroundColor: `color-mix(in oklab, ${item.color} 40%, var(--chart-3))`,
+                    }}
+                  />
+                </span>
+              </li>
+            );
+          })}
+        </ol>
+      )}
     </section>
   );
 }

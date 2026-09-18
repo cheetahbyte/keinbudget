@@ -116,10 +116,12 @@ export function ActiveSubscriptions({
   }
 
   return (
-    <div className="flex flex-col gap-6">
-      <div className="flex flex-col gap-4">
-        <div className="flex w-full flex-wrap items-center justify-between gap-3">
-          <h1 className="text-3xl font-bold">Recurring entries</h1>
+    <div className="flex flex-col gap-8">
+      <div className="flex flex-col gap-5">
+        <div className="flex w-full flex-wrap items-baseline justify-between gap-3">
+          <h1 className="text-2xl font-medium tracking-tight">
+            Recurring entries
+          </h1>
           <Button className="cursor-pointer" onClick={openCreateSubscription}>
             <Plus data-icon="inline-start" />
             Add entry
@@ -132,7 +134,7 @@ export function ActiveSubscriptions({
           </label>
           <select
             id="subscription-type-filter"
-            className="h-9 rounded-md border border-input bg-transparent px-3 py-2 text-sm shadow-xs outline-none focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50"
+            className="h-9 rounded-md border border-input bg-card px-3 py-1.5 text-sm outline-none focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50"
             value={filter}
             onChange={(event) =>
               setFilter(event.target.value as SubscriptionFilter)
@@ -144,16 +146,14 @@ export function ActiveSubscriptions({
               </option>
             ))}
           </select>
-          <p className="text-xs text-muted-foreground">
+          <p className="text-sm text-muted-foreground">
             {filteredSubscriptions.length} of {subscriptions.length} entries
           </p>
         </div>
       </div>
 
       {isFilteredEmpty ? (
-        <p className="text-sm text-muted-foreground">
-          No recurring entries match this filter.
-        </p>
+        <p className="text-muted-foreground">No entries of this type yet.</p>
       ) : (
         <SubscriptionsTable
           key={`sub-${filter}`}

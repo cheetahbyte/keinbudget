@@ -1,8 +1,7 @@
-import { EllipsisIcon, FolderTree, Pencil, Trash2 } from "lucide-react";
+import { EllipsisIcon, Pencil, Trash2 } from "lucide-react";
 
 import { PaginationControls } from "#/components/dashboard/PaginationControls";
 import { Button } from "#/components/ui/button";
-import { Card, CardContent } from "#/components/ui/card";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -36,77 +35,64 @@ export function CategoriesTable({
 
   if (categories.length === 0) {
     return (
-      <Card className="rounded-[2rem] border border-dashed border-[#d7c8b3] bg-[#fdf8f1] py-0 shadow-none">
-        <CardContent className="flex flex-col items-center justify-center gap-3 px-8 py-14 text-center">
-          <div className="flex size-16 items-center justify-center rounded-[1.5rem] bg-[#f2e1c7] text-[#5d4b3c]">
-            <FolderTree className="size-8" />
-          </div>
-          <h3 className="text-2xl font-semibold text-[#2e241d]">
-            No categories yet
-          </h3>
-          <p className="max-w-xl text-base text-[#75685f]">
-            Create a category to group recurring entries and make the breakdown
-            easier to scan.
-          </p>
-        </CardContent>
-      </Card>
+      <div className="rounded-md bg-card px-6 py-10 ring-1 ring-border">
+        <h3 className="text-lg font-medium">No categories yet</h3>
+        <p className="mt-1 max-w-prose text-muted-foreground">
+          Categories group entries in the breakdown and decide whether an entry
+          counts as an expense, savings or income.
+        </p>
+      </div>
     );
   }
 
   return (
     <div className="space-y-4">
-      <div className="overflow-hidden rounded-xl border border-border bg-card/50">
+      <ul className="divide-y divide-border rounded-md bg-card ring-1 ring-border">
         {visibleCategories.map((category) => (
-          <div
-            key={category.id}
-            className="flex items-center justify-between gap-4 border-border px-5 py-4 not-last:border-b"
-          >
-            <div className="flex items-center gap-4">
-              <div className="flex size-11 items-center justify-center rounded-xl bg-amber-50 text-lg">
-                {category.icon}
-              </div>
+          <li key={category.id} className="flex items-center gap-4 px-5 py-3.5">
+            <span aria-hidden className="w-6 text-center text-lg">
+              {category.icon}
+            </span>
 
-              <div>
-                <div className="flex items-center gap-2">
-                  <h3 className="text-sm font-medium text-foreground">
-                    {category.name}
-                  </h3>
-                  <span className="rounded-full bg-[#f2e1c7] px-2 py-0.5 text-[10px] font-medium uppercase tracking-wide text-[#5d4b3c]">
-                    {getCategoryTypeLabel(category.type)}
-                  </span>
-                </div>
-              </div>
-            </div>
+            <h3 className="min-w-0 flex-1 truncate font-medium">
+              {category.name}
+            </h3>
 
-            <div className="flex items-center gap-3">
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button variant={"outline"}>
-                    <EllipsisIcon />
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent>
-                  <DropdownMenuItem onClick={() => onEdit(category)}>
-                    <Pencil className="size-3.5" />
-                    Edit
-                  </DropdownMenuItem>
-                  <DropdownMenuItem
-                    variant="destructive"
-                    onClick={() => {
-                      const formData = new FormData();
-                      formData.set("id", String(category.id));
-                      deleteCategoryAction(formData);
-                    }}
-                  >
-                    <Trash2 className="size-3.5" />
-                    Delete
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
-            </div>
-          </div>
+            <p className="text-sm text-muted-foreground">
+              {getCategoryTypeLabel(category.type)}
+            </p>
+
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  aria-label={`Actions for ${category.name}`}
+                >
+                  <EllipsisIcon />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                <DropdownMenuItem onClick={() => onEdit(category)}>
+                  <Pencil className="size-3.5" />
+                  Edit
+                </DropdownMenuItem>
+                <DropdownMenuItem
+                  variant="destructive"
+                  onClick={() => {
+                    const formData = new FormData();
+                    formData.set("id", String(category.id));
+                    deleteCategoryAction(formData);
+                  }}
+                >
+                  <Trash2 className="size-3.5" />
+                  Delete
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </li>
         ))}
-      </div>
+      </ul>
 
       <PaginationControls
         anchorId="categories"

@@ -1,10 +1,6 @@
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { createFileRoute, redirect } from "@tanstack/react-router";
-import {
-  monthlyProjectionsQueryOptions,
-  subscriptionsQueryOptions,
-} from "#/lib/dashboard/queries";
-import { buildBreakdownItems } from "#/lib/dashboard/utils";
+import { monthlyProjectionsQueryOptions } from "#/lib/dashboard/queries";
 import { sessionQueryOptions } from "#/lib/session-query";
 import { StatsSection } from "#/sections/StatsSection";
 
@@ -18,10 +14,7 @@ export const Route = createFileRoute("/")({
     return { user: session.user };
   },
   loader: async ({ context }) => {
-    await Promise.all([
-      context.queryClient.ensureQueryData(subscriptionsQueryOptions()),
-      context.queryClient.ensureQueryData(monthlyProjectionsQueryOptions()),
-    ]);
+    await context.queryClient.ensureQueryData(monthlyProjectionsQueryOptions());
   },
   head: () => ({ meta: [{ title: "Overview · keinbudget" }] }),
   component: OverviewPage,
@@ -31,15 +24,10 @@ function OverviewPage() {
   const { data: projections } = useSuspenseQuery(
     monthlyProjectionsQueryOptions(),
   );
-  const { data: subscriptions } = useSuspenseQuery(subscriptionsQueryOptions());
 
   return (
-    <main className="mx-auto flex w-full max-w-6xl flex-col gap-8 px-6 py-10">
-      <h1 className="text-3xl font-bold">Overview</h1>
-      <StatsSection
-        breakdownStats={buildBreakdownItems(subscriptions)}
-        projections={projections}
-      />
+    <main className="mx-auto flex w-full max-w-5xl flex-col px-6 py-12">
+      <StatsSection projections={projections} />
     </main>
   );
 }

@@ -1,13 +1,13 @@
 import { useQueryClient } from "@tanstack/react-query";
 import {
   createFileRoute,
+  Link,
   useNavigate,
   useRouter,
 } from "@tanstack/react-router";
 import { useState } from "react";
 
 import { Button } from "#/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "#/components/ui/card";
 import { Input } from "#/components/ui/input";
 import { Label } from "#/components/ui/label";
 import { authClient } from "#/lib/auth-client";
@@ -47,19 +47,17 @@ function SignupPage() {
   }
 
   return (
-    <div className="flex flex-1 items-center justify-center p-4">
-      <Card className="w-full max-w-sm">
-        <CardHeader>
-          <CardTitle>Sign up</CardTitle>
-        </CardHeader>
-        <CardContent>
+    <div className="mx-auto w-full max-w-5xl px-6 py-16">
+      <div className="w-full max-w-sm rounded-md bg-card p-6 ring-1 ring-border">
+        <h1 className="text-2xl font-bold tracking-tight">Create account</h1>
+        <div className="mt-6">
           <form onSubmit={handleSubmit} className="flex flex-col gap-4">
             <div className="flex flex-col gap-1.5">
               <Label htmlFor="name">Name</Label>
               <Input
                 id="name"
                 type="text"
-                placeholder="Ben Dover"
+                placeholder="Your name"
                 value={name}
                 onChange={(event) => setName(event.target.value)}
                 required
@@ -88,13 +86,23 @@ function SignupPage() {
                 minLength={8}
               />
             </div>
-            {error ? <p className="text-sm text-red-500">{error}</p> : null}
+            {error ? <p className="text-sm text-destructive">{error}</p> : null}
             <Button type="submit" disabled={loading} className="w-full">
-              {loading ? "Signing up…" : "Sign up"}
+              {loading ? "Creating account…" : "Create account"}
             </Button>
           </form>
-        </CardContent>
-      </Card>
+        </div>
+        <p className="mt-6 text-sm text-muted-foreground">
+          Already have an account?{" "}
+          <Link
+            to="/login"
+            className="text-pen underline-offset-4 hover:underline"
+          >
+            Sign in
+          </Link>
+          .
+        </p>
+      </div>
     </div>
   );
 }
