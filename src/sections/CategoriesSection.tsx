@@ -16,6 +16,7 @@ import {
 } from "#/lib/dashboard/mutations";
 import { dashboardQueryKeys } from "#/lib/dashboard/queries";
 import type { Category } from "#/lib/dashboard/types";
+
 import { CategoriesTable } from "./subscriptions/CategoriesTable";
 
 interface CategoriesSectionProps {
@@ -83,18 +84,20 @@ export function CategoriesSection({ categories }: CategoriesSectionProps) {
   }
 
   return (
-    <div className="flex flex-col gap-5">
-      <div className="flex w-full flex-wrap items-baseline justify-between gap-3">
-        <h1 className="text-2xl font-medium tracking-tight">Categories</h1>
-        <Button className="cursor-pointer" onClick={openCreateCategory}>
-          <Plus data-icon="inline-start" />
-          Add category
-        </Button>
-      </div>
+    <div className="flex flex-col gap-8">
+      <div className="flex flex-col gap-5">
+        <div className="flex w-full flex-wrap items-baseline justify-between gap-3">
+          <h1 className="text-2xl font-medium tracking-tight">Categories</h1>
+          <Button className="cursor-pointer" onClick={openCreateCategory}>
+            <Plus data-icon="inline-start" />
+            Add category
+          </Button>
+        </div>
 
-      <p className="text-sm text-muted-foreground">
-        {categories.length} categories
-      </p>
+        <p className="text-sm text-muted-foreground">
+          {categories.length} categories
+        </p>
+      </div>
 
       <CategoriesTable
         categories={categories}

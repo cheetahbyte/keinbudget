@@ -2,10 +2,12 @@ import { useQueryClient } from "@tanstack/react-query";
 import { useNavigate, useRouter } from "@tanstack/react-router";
 import { Download, Trash2, Upload } from "lucide-react";
 import { useRef, useState, useTransition } from "react";
+
 import { Button } from "#/components/ui/button";
 import { exportAccountData, importAccountData } from "#/functions/account";
 import { authClient } from "#/lib/auth-client";
 import { dashboardQueryKeys } from "#/lib/dashboard/queries";
+
 import { SettingsSection } from "./SettingsSection";
 
 export function AccountSettings() {
@@ -99,9 +101,9 @@ export function AccountSettings() {
   return (
     <SettingsSection title="Account">
       <div className="divide-y divide-border">
-        <div className="flex flex-col gap-4 px-5 py-5 sm:flex-row sm:items-center sm:justify-between sm:px-6">
-          <div className="space-y-1.5">
-            <h3 className="text-base font-medium">Import account data</h3>
+        <div className="flex flex-col gap-4 py-4 sm:flex-row sm:items-center sm:justify-between">
+          <div className="flex flex-col gap-1">
+            <h3 className="text-sm font-medium">Import account data</h3>
             <p className="max-w-2xl text-sm leading-6 text-muted-foreground">
               Import previously exported data.
             </p>
@@ -129,19 +131,19 @@ export function AccountSettings() {
         </div>
 
         {importResult && (
-          <div className="px-5 pb-4 sm:px-6">
+          <div className="py-4" aria-live="polite">
             <p className="text-sm text-foreground">{importResult}</p>
           </div>
         )}
         {importError && (
-          <div className="px-5 pb-4 sm:px-6">
+          <div className="py-4" role="alert">
             <p className="text-sm text-destructive">{importError}</p>
           </div>
         )}
 
-        <div className="flex flex-col gap-4 px-5 py-5 sm:flex-row sm:items-center sm:justify-between sm:px-6">
-          <div className="space-y-1.5">
-            <h3 className="text-base font-medium">Export account data</h3>
+        <div className="flex flex-col gap-4 py-4 sm:flex-row sm:items-center sm:justify-between">
+          <div className="flex flex-col gap-1">
+            <h3 className="text-sm font-medium">Export account data</h3>
             <p className="max-w-2xl text-sm leading-6 text-muted-foreground">
               Download a copy of your recurring entries and other data.
             </p>
@@ -160,9 +162,9 @@ export function AccountSettings() {
             </Button>
           </div>
         </div>
-        <div className="flex flex-col gap-4 px-5 py-5 sm:flex-row sm:items-center sm:justify-between sm:px-6">
-          <div className="space-y-1.5">
-            <h3 className="text-base font-medium">Delete account</h3>
+        <div className="flex flex-col gap-4 py-4 sm:flex-row sm:items-center sm:justify-between">
+          <div className="flex flex-col gap-1">
+            <h3 className="text-sm font-medium">Delete account</h3>
             <p className="max-w-2xl text-sm leading-6 text-muted-foreground">
               Permanently remove this account and all associated data. This is
               not reversible.
@@ -171,7 +173,7 @@ export function AccountSettings() {
 
           <div className="shrink-0">
             {isConfirmingDelete ? (
-              <div className="flex items-center gap-2">
+              <div className="flex flex-wrap items-center gap-2">
                 <Button
                   type="button"
                   variant="outline"

@@ -1,5 +1,7 @@
 import { z } from "zod";
+
 import { CATEGORY_TYPES } from "#/lib/category-type";
+
 import type { entityIdSchema } from "./rest";
 
 export const categoryTypeSchema = z.enum(CATEGORY_TYPES);

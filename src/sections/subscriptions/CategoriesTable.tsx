@@ -35,9 +35,9 @@ export function CategoriesTable({
 
   if (categories.length === 0) {
     return (
-      <div className="rounded-md bg-card px-6 py-10 ring-1 ring-border">
+      <div className="flex flex-col gap-1">
         <h3 className="text-lg font-medium">No categories yet</h3>
-        <p className="mt-1 max-w-prose text-muted-foreground">
+        <p className="max-w-prose text-muted-foreground">
           Categories group entries in the breakdown and decide whether an entry
           counts as an expense, savings or income.
         </p>
@@ -46,19 +46,20 @@ export function CategoriesTable({
   }
 
   return (
-    <div className="space-y-4">
-      <ul className="divide-y divide-border rounded-md bg-card ring-1 ring-border">
+    <div id="categories" className="flex flex-col gap-6">
+      <ul className="divide-y divide-border">
         {visibleCategories.map((category) => (
-          <li key={category.id} className="flex items-center gap-4 px-5 py-3.5">
-            <span aria-hidden className="w-6 text-center text-lg">
+          <li
+            key={category.id}
+            className="flex items-center gap-3 py-3 sm:gap-6"
+          >
+            <span aria-hidden className="w-5 shrink-0 text-center text-sm">
               {category.icon}
             </span>
 
-            <h3 className="min-w-0 flex-1 truncate font-medium">
-              {category.name}
-            </h3>
+            <h3 className="min-w-0 flex-1 truncate text-sm">{category.name}</h3>
 
-            <p className="text-sm text-muted-foreground">
+            <p className="shrink-0 text-sm text-muted-foreground">
               {getCategoryTypeLabel(category.type)}
             </p>
 

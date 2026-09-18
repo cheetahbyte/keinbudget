@@ -36,9 +36,9 @@ export function SubscriptionsTable({
 
   if (subscriptions.length === 0) {
     return (
-      <div className="rounded-md bg-card px-6 py-10 ring-1 ring-border">
+      <div className="flex flex-col gap-1">
         <h3 className="text-lg font-medium">Nothing recurring yet</h3>
-        <p className="mt-1 max-w-prose text-muted-foreground">
+        <p className="max-w-prose text-muted-foreground">
           Add rent, subscriptions, salary and savings plans. The overview then
           shows what is left each month.
         </p>
@@ -47,29 +47,25 @@ export function SubscriptionsTable({
   }
 
   return (
-    <div className="space-y-4">
-      <ul className="divide-y divide-border rounded-md bg-card ring-1 ring-border">
+    <div id="subscriptions" className="flex flex-col gap-6">
+      <ul className="divide-y divide-border">
         {visibleSubscriptions.map((subscription) => {
           const isIncome = subscription.category?.type === "income";
 
           return (
             <li
               key={subscription.id}
-              className="flex items-center gap-4 px-5 py-3.5"
+              className="flex items-center gap-3 py-3 sm:gap-6"
             >
-              <span aria-hidden className="w-6 text-center text-lg">
-                {subscription.category?.icon ?? "🧾"}
-              </span>
-
               <div className="min-w-0 flex-1">
-                <h3 className="truncate font-medium">{subscription.name}</h3>
+                <h3 className="truncate text-sm">{subscription.name}</h3>
                 <p className="text-sm text-muted-foreground">
                   {subscription.category?.name ?? "Uncategorized"}
                 </p>
               </div>
 
               <div className="text-right">
-                <p className="amount text-base">
+                <p className="amount text-sm">
                   {isIncome ? "+" : ""}
                   {formatEur(subscription.price)}
                 </p>

@@ -139,7 +139,7 @@ export function Header() {
             <Link
               key={to}
               to={to}
-              activeOptions={{ exact: true }}
+              activeOptions={{ exact: true, includeSearch: false }}
               activeProps={{
                 className: "border-pen text-foreground",
                 "aria-current": "page",

@@ -5,7 +5,9 @@ import type {
 } from "drizzle-orm/postgres-js";
 import { drizzle } from "drizzle-orm/postgres-js";
 import postgres from "postgres";
+
 import { getRequestResource, isCloudflareWorkers } from "#/lib/request-store";
+
 import * as schema from "./schema";
 
 function createDb(): DB {

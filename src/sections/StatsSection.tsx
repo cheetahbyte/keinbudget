@@ -1,5 +1,6 @@
 import Scritto from "@scritto/react";
 import { Link } from "@tanstack/react-router";
+
 import { SalaryBar } from "#/components/SalaryBar";
 import type { MonthlyProjections } from "#/lib/dashboard/types";
 import { formatEur } from "#/lib/money";
@@ -38,19 +39,6 @@ export function StatsSection({
 
   return (
     <div className="flex flex-col gap-12">
-      <nav aria-label="Projection period" className="flex gap-4 text-sm">
-        {(["daily", "monthly", "yearly"] as const).map((option) => (
-          <Link
-            key={option}
-            to="/"
-            search={{ period: option }}
-            aria-current={period === option ? "page" : undefined}
-            className="rounded-sm capitalize text-muted-foreground underline-offset-4 hover:underline focus-visible:outline-2 focus-visible:outline-ring aria-[current=page]:text-foreground aria-[current=page]:underline"
-          >
-            {option}
-          </Link>
-        ))}
-      </nav>
       <section className="flex flex-col gap-6">
         <div>
           <p className="text-sm text-muted-foreground">
@@ -69,13 +57,19 @@ export function StatsSection({
             <Scritto value={formatEur(remaining)} transition={transition} />
           </p>
         </div>
-        {period !== "monthly" && (
-          <p className="text-sm text-muted-foreground">
-            {period === "daily"
-              ? "Based on monthly projections × 12 ÷ 365, not payments due today."
-              : "Based on monthly projections × 12, not a payment schedule."}
-          </p>
-        )}
+        <nav aria-label="Projection period" className="flex gap-4 text-sm">
+          {(["daily", "monthly", "yearly"] as const).map((option) => (
+            <Link
+              key={option}
+              to="/"
+              search={{ period: option }}
+              aria-current={period === option ? "page" : undefined}
+              className="rounded-sm capitalize text-muted-foreground underline-offset-4 hover:underline focus-visible:outline-2 focus-visible:outline-ring aria-[current=page]:text-foreground aria-[current=page]:underline"
+            >
+              {option}
+            </Link>
+          ))}
+        </nav>
         <SalaryBar
           income={income}
           expenses={expenses}

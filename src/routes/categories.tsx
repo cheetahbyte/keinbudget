@@ -1,5 +1,6 @@
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { createFileRoute, redirect } from "@tanstack/react-router";
+
 import { categoriesQueryOptions } from "#/lib/dashboard/queries";
 import { sessionQueryOptions } from "#/lib/session-query";
 import { CategoriesSection } from "#/sections/CategoriesSection";

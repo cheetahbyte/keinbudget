@@ -1,4 +1,5 @@
 import { queryOptions } from "@tanstack/react-query";
+
 import { getSession } from "#/lib/auth.functions";
 
 export const sessionQueryKey = ["session"] as const;

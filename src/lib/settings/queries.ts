@@ -1,4 +1,5 @@
 import { queryOptions } from "@tanstack/react-query";
+
 import { exportAccountData } from "#/functions/account";
 
 export const settingsQueryKeys = {

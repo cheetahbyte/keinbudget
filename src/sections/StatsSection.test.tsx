@@ -1,7 +1,9 @@
 import type { ComponentProps } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 import { expect, it, vi } from "vitest";
+
 import { formatEur } from "#/lib/money";
+
 import { StatsSection } from "./StatsSection";
 
 vi.mock("@tanstack/react-router", () => ({
@@ -59,6 +61,9 @@ it.each([
     ];
     expect(amounts.map((match) => match[1])).toEqual(
       [-100, 2000, 1800, 300].map((value) => formatEur(value * factor)),
+    );
+    expect(html.indexOf('aria-label="Projection period"')).toBeGreaterThan(
+      html.indexOf("</scritto-text>"),
     );
     expect(html).toContain(label);
     expect(html).toContain(`href="/?period=${period}" aria-current="page"`);

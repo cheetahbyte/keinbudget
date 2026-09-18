@@ -1,5 +1,6 @@
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { createFileRoute, redirect } from "@tanstack/react-router";
+
 import { monthlyProjectionsQueryOptions } from "#/lib/dashboard/queries";
 import { sessionQueryOptions } from "#/lib/session-query";
 import { StatsSection } from "#/sections/StatsSection";

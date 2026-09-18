@@ -12,7 +12,7 @@
 - **Auth:** Better Auth (email/password)
 - **Validation:** Zod v4
 - **Routing:** TanStack Router (file-based, `src/routes/`)
-- **Lint/Format:** Biome 2 (auto-organizes imports on save)
+- **Lint/Format:** Oxlint + Oxfmt (sorts imports when formatting)
 - **Test:** Vitest
 
 ## Key Commands
@@ -22,8 +22,9 @@
 | `bun run dev` | dev server on port 3000 |
 | `bun run build` | production build |
 | `bun run test` | vitest (unit tests only, no DB needed) |
-| `bun run lint` | `biome check .` |
-| `bun run format` | `biome format --write .` |
+| `bun run lint` | `oxlint .` |
+| `bun run format` | `oxfmt --write .` |
+| `bun run format:check` | check formatting without writing files |
 | `bun run db:generate` | generate Drizzle migration |
 | `bun run db:push` | push schema directly (no migration file) |
 | `bun run db:migrate` | apply pending migrations |

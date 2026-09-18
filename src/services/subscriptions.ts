@@ -1,4 +1,5 @@
 import { and, eq } from "drizzle-orm";
+
 import type { DrizzleClient } from "#/db";
 import { categories, subscriptions } from "#/db";
 import type { BillingInterval } from "#/lib/billing-interval";

@@ -1,4 +1,5 @@
 import { queryOptions } from "@tanstack/react-query";
+
 import { getCategories } from "#/functions/categories";
 import {
   getMonthlyCosts,

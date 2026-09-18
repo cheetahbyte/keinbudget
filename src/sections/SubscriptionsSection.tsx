@@ -17,6 +17,7 @@ import {
 } from "#/lib/dashboard/mutations";
 import { dashboardQueryKeys } from "#/lib/dashboard/queries";
 import type { Category, Subscription } from "#/lib/dashboard/types";
+
 import { SubscriptionsTable } from "./subscriptions/SubscriptionsTable";
 
 export type SubscriptionFilter = "all" | CategoryType;
@@ -128,24 +129,25 @@ export function ActiveSubscriptions({
           </Button>
         </div>
 
-        <div className="flex items-center gap-3">
-          <label htmlFor="subscription-type-filter" className="sr-only">
-            Filter by type
-          </label>
-          <select
-            id="subscription-type-filter"
-            className="h-9 rounded-md border border-input bg-card px-3 py-1.5 text-sm outline-none focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50"
-            value={filter}
-            onChange={(event) =>
-              setFilter(event.target.value as SubscriptionFilter)
-            }
-          >
+        <div className="flex flex-wrap items-baseline justify-between gap-x-6 gap-y-3">
+          <fieldset className="flex flex-wrap gap-4 text-sm">
+            <legend className="sr-only">Filter by type</legend>
             {SUBSCRIPTION_FILTERS.map((option) => (
-              <option key={option.value} value={option.value}>
-                {option.label}
-              </option>
+              <label key={option.value} className="cursor-pointer">
+                <input
+                  type="radio"
+                  name="subscription-type-filter"
+                  value={option.value}
+                  checked={filter === option.value}
+                  onChange={() => setFilter(option.value)}
+                  className="peer sr-only"
+                />
+                <span className="inline-block border-b-2 border-transparent pb-0.5 text-muted-foreground hover:text-foreground peer-checked:border-pen peer-checked:text-foreground peer-focus-visible:outline-2 peer-focus-visible:outline-ring">
+                  {option.label}
+                </span>
+              </label>
             ))}
-          </select>
+          </fieldset>
           <p className="text-sm text-muted-foreground">
             {filteredSubscriptions.length} of {subscriptions.length} entries
           </p>

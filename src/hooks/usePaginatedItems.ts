@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
 import { getPageItems, type PageSize } from "#/lib/dashboard/pagination";
 
@@ -11,11 +11,9 @@ export function usePaginatedItems<T>(
 
   const totalPages = Math.max(1, Math.ceil(items.length / pageSize));
 
-  useEffect(() => {
-    if (currentPage > totalPages) {
-      setCurrentPage(totalPages);
-    }
-  }, [currentPage, totalPages]);
+  if (currentPage > totalPages) {
+    setCurrentPage(totalPages);
+  }
 
   const startIndex = (currentPage - 1) * pageSize;
 

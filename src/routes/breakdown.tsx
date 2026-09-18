@@ -1,5 +1,6 @@
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { createFileRoute, redirect } from "@tanstack/react-router";
+
 import { Breakdown } from "#/components/Breakdown";
 import { subscriptionsQueryOptions } from "#/lib/dashboard/queries";
 import { buildBreakdownItems } from "#/lib/dashboard/utils";

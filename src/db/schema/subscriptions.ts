@@ -6,7 +6,9 @@ import {
   serial,
   text,
 } from "drizzle-orm/pg-core";
+
 import { BILLING_INTERVALS } from "#/lib/billing-interval";
+
 import { user } from "./auth";
 import { categories } from "./categories";
 
