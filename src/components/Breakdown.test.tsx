@@ -1,9 +1,30 @@
+// @vitest-environment jsdom
+import { cleanup, fireEvent, render, screen } from "@testing-library/react";
+import { useState } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
-import { expect, it } from "vitest";
+import { afterEach, expect, it } from "vitest";
 
 import { formatEur, formatShare } from "#/lib/money";
 
 import { Breakdown } from "./Breakdown";
+
+afterEach(cleanup);
+
+it("cycles monthly → daily → yearly → monthly on click", () => {
+  function Example() {
+    const [period, setPeriod] = useState<"daily" | "monthly" | "yearly">(
+      "monthly",
+    );
+    return <Breakdown items={[]} period={period} onPeriodChange={setPeriod} />;
+  }
+  render(<Example />);
+  for (const next of ["daily", "yearly", "monthly"]) {
+    fireEvent.click(screen.getByRole("button", { name: /^Breakdown period:/ }));
+    expect(
+      screen.getByRole("button", { name: /^Breakdown period:/ }).textContent,
+    ).toBe(next);
+  }
+});
 
 it.each([
   [undefined, 1],
@@ -26,7 +47,8 @@ it.each([
       />,
     );
 
-    expect(html).toContain(`entries, ${period ?? "monthly"}`);
+    expect(html).toContain("entries, <button");
+    expect(html).toContain(`Breakdown period: ${period ?? "monthly"}.`);
     for (const value of [240, 120]) {
       expect(html).toContain(formatEur(value * multiplier));
       expect(html).toContain(formatShare(value / 360));

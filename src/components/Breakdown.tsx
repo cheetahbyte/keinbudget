@@ -67,7 +67,6 @@ export function Breakdown({
     <section className="flex flex-col gap-5">
       <div className="flex flex-wrap items-baseline justify-between gap-x-6 gap-y-2">
         <div className="flex flex-wrap items-baseline gap-x-5 gap-y-3">
-          <h2 className="text-lg font-medium">Where it goes</h2>
           <div className="flex gap-4 text-sm">
             {VIEWS.map((view) => (
               <button
