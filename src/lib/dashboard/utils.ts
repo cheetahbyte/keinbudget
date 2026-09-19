@@ -17,13 +17,10 @@ const BREAKDOWN_PALETTE = [
   "#3c6f78",
 ] as const;
 
-function assignPalette<T>(
-  values: T[],
-  getKey: (value: T) => string | number,
-): Map<string, string> {
-  const uniqueKeys = [
-    ...new Set(values.map((value) => String(getKey(value)))),
-  ].sort((left, right) => left.localeCompare(right));
+function assignPalette(keys: (string | number)[]): Map<string, string> {
+  const uniqueKeys = [...new Set(keys.map(String))].sort((left, right) =>
+    left.localeCompare(right),
+  );
 
   return new Map(
     uniqueKeys.map((key, index) => [
@@ -42,14 +39,12 @@ export function buildBreakdownItems(
     (subscription) => (subscription.category?.type ?? "expense") === "expense",
   );
   const subscriptionColors = assignPalette(
-    expenseSubscriptions,
-    (subscription) => subscription.id,
+    expenseSubscriptions.map((subscription) => subscription.id),
   );
   const categoryColors = assignPalette(
     expenseSubscriptions.map(
       (subscription) => subscription.category?.name ?? "Uncategorized",
     ),
-    (categoryName) => categoryName,
   );
 
   return expenseSubscriptions

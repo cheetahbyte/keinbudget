@@ -79,27 +79,20 @@ export function ActiveSubscriptions({
       const input = parseUpdateSubscriptionFormData(formData);
       if (!input) return;
       await updateSubscription({ data: input });
-      await Promise.all([
-        queryClient.invalidateQueries({
-          queryKey: dashboardQueryKeys.subscriptions(),
-        }),
-        queryClient.invalidateQueries({
-          queryKey: dashboardQueryKeys.projections(),
-        }),
-      ]);
     } else {
       const input = parseCreateSubscriptionFormData(formData);
       if (!input) return;
       await createSubscription({ data: input });
-      await Promise.all([
-        queryClient.invalidateQueries({
-          queryKey: dashboardQueryKeys.subscriptions(),
-        }),
-        queryClient.invalidateQueries({
-          queryKey: dashboardQueryKeys.projections(),
-        }),
-      ]);
     }
+
+    await Promise.all([
+      queryClient.invalidateQueries({
+        queryKey: dashboardQueryKeys.subscriptions(),
+      }),
+      queryClient.invalidateQueries({
+        queryKey: dashboardQueryKeys.projections(),
+      }),
+    ]);
   }
 
   async function handleDeleteSubscription(formData: FormData) {

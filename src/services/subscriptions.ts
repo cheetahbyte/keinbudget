@@ -146,20 +146,10 @@ export class SubscriptionService {
       throw new Error("Failed to create subscription");
     }
 
-    if (subscription.categoryId == null) {
-      return {
-        id: subscription.id,
-        name: subscription.name,
-        price: subscription.price,
-        billingInterval: subscription.billingInterval,
-        category: null,
-      };
-    }
-
-    const [category] = await this.findCategoryById(
-      userId,
-      subscription.categoryId,
-    );
+    const [category] =
+      subscription.categoryId == null
+        ? []
+        : await this.findCategoryById(userId, subscription.categoryId);
 
     return {
       id: subscription.id,
@@ -231,21 +221,10 @@ export class SubscriptionService {
     }
 
     const subscription = result[0];
-
-    if (subscription.categoryId == null) {
-      return {
-        id: subscription.id,
-        name: subscription.name,
-        price: subscription.price,
-        billingInterval: subscription.billingInterval,
-        category: null,
-      };
-    }
-
-    const [category] = await this.findCategoryById(
-      userId,
-      subscription.categoryId,
-    );
+    const [category] =
+      subscription.categoryId == null
+        ? []
+        : await this.findCategoryById(userId, subscription.categoryId);
 
     return {
       id: subscription.id,

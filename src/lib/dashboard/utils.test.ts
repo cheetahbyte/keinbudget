@@ -45,6 +45,26 @@ describe("buildBreakdownItems", () => {
     ]);
   });
 
+  it("assigns colors by sorted unique keys regardless of entry order", () => {
+    const entries = [
+      subscription({ id: 2 }),
+      subscription({ id: 10 }),
+      subscription({ id: 1, category: null }),
+    ];
+    const items = buildBreakdownItems(entries);
+
+    expect(
+      items.map(({ color, categoryColor }) => ({ color, categoryColor })),
+    ).toEqual([
+      { color: "#2f8f63", categoryColor: "#c96b2c" },
+      { color: "#9a7a17", categoryColor: "#c96b2c" },
+      { color: "#c96b2c", categoryColor: "#9a7a17" },
+    ]);
+    expect(buildBreakdownItems([...entries].reverse())).toEqual(
+      [...items].reverse(),
+    );
+  });
+
   it("sorts items by monthly value descending", () => {
     const items = buildBreakdownItems([
       subscription({
