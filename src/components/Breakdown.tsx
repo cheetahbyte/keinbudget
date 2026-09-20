@@ -19,8 +19,8 @@ interface BreakdownProps {
 type BreakdownType = "category" | "subscription";
 
 const VIEWS: ReadonlyArray<{ value: BreakdownType; label: string }> = [
-  { value: "subscription", label: "By entry" },
   { value: "category", label: "By category" },
+  { value: "subscription", label: "By entry" },
 ];
 
 export function Breakdown({
@@ -32,7 +32,7 @@ export function Breakdown({
   const multiplier =
     period === "daily" ? 12 / 365 : period === "yearly" ? 12 : 1;
   const [breakdownType, setBreakdownType] =
-    useState<BreakdownType>("subscription");
+    useState<BreakdownType>("category");
 
   const visibleItems = useMemo(() => {
     if (breakdownType === "subscription") {

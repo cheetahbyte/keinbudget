@@ -41,13 +41,13 @@ it.each([
           name: `Entry ${index}`,
           value,
           color: "#123456",
-          category: "Utilities",
+          category: `Category ${index}`,
           categoryColor: "#123456",
         }))}
       />,
     );
 
-    expect(html).toContain("entries, <button");
+    expect(html).toContain("categories, <button");
     expect(html).toContain(`Breakdown period: ${period ?? "monthly"}.`);
     for (const value of [240, 120]) {
       expect(html).toContain(formatEur(value * multiplier));
