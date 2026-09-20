@@ -21,9 +21,27 @@ const data = {
 
 describe("data export parsing", () => {
   it("round-trips all category types and uncategorized entries", () => {
-    expect(dataExportSchema.parse(JSON.parse(JSON.stringify(data)))).toEqual(
-      data,
-    );
+    expect(dataExportSchema.parse(JSON.parse(JSON.stringify(data)))).toEqual({
+      ...data,
+      entries: data.entries.map((entry) => ({
+        ...entry,
+        notes: "",
+        isActive: true,
+        nextBillingDate: null,
+      })),
+    });
+  });
+
+  it("keeps notes, paused state and next billing date", () => {
+    const entry = {
+      ...data.entries[0],
+      notes: "shared with flatmate",
+      isActive: false,
+      nextBillingDate: "2026-11-15",
+    };
+    expect(
+      dataExportSchema.parse({ ...data, entries: [entry] }).entries[0],
+    ).toEqual(entry);
   });
 
   it("accepts empty modern exports", () => {

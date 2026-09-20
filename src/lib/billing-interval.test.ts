@@ -22,6 +22,9 @@ it.each([
       price: 120,
       billingInterval: interval,
       categoryId: null,
+      notes: "",
+      isActive: true,
+      nextBillingDate: null,
     };
 
     expect(createSubscriptionSchema.parse(entry)).toEqual(entry);

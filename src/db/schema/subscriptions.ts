@@ -1,4 +1,6 @@
 import {
+  boolean,
+  date,
   integer,
   pgEnum,
   pgTable,
@@ -28,4 +30,7 @@ export const subscriptions = pgTable("subscriptions", {
   categoryId: integer("categoryId").references(() => categories.id, {
     onDelete: "set null",
   }),
+  notes: text("notes").notNull().default(""),
+  isActive: boolean("isActive").notNull().default(true),
+  nextBillingDate: date("nextBillingDate", { mode: "string" }),
 });

@@ -12,6 +12,14 @@ import {
 
 afterEach(cleanup);
 
+// Radix Switch measures its thumb; jsdom has no ResizeObserver
+class ResizeObserverStub {
+  observe() {}
+  unobserve() {}
+  disconnect() {}
+}
+globalThis.ResizeObserver ??= ResizeObserverStub as typeof ResizeObserver;
+
 function subscription(
   name: string,
   categoryType: Category["type"] | null,
@@ -24,6 +32,10 @@ function subscription(
     category: categoryType
       ? { id: 1, name, icon: "☕", type: categoryType }
       : null,
+    notes: "",
+    isActive: true,
+    nextBillingDate: null,
+    priceHistory: [],
   };
 }
 

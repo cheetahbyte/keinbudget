@@ -45,6 +45,9 @@ export const importAccountData = createServerFn({
       name: sub.name,
       price: sub.price,
       billingInterval: sub.billingInterval,
+      notes: sub.notes,
+      isActive: sub.isActive,
+      nextBillingDate: sub.nextBillingDate,
       categoryId:
         sub.categoryId !== null
           ? (oldToNewId.get(sub.categoryId) ?? null)

@@ -1,6 +1,6 @@
 import { useMemo, useState } from "react";
 
-import { formatEur, formatShare } from "#/lib/money";
+import { useFormatters } from "#/lib/preferences-context";
 
 export interface BreakdownItem {
   name: string;
@@ -28,6 +28,7 @@ export function Breakdown({
   period = "monthly",
   onPeriodChange,
 }: BreakdownProps) {
+  const { formatMoney, formatShare } = useFormatters();
   const multiplier =
     period === "daily" ? 12 / 365 : period === "yearly" ? 12 : 1;
   const [breakdownType, setBreakdownType] =
@@ -124,7 +125,7 @@ export function Breakdown({
               >
                 <span className="truncate text-sm">{item.name}</span>
                 <span className="amount text-sm sm:order-last">
-                  {formatEur(item.value * multiplier)}
+                  {formatMoney(item.value * multiplier)}
                   <span className="ml-3 inline-block w-14 text-right text-muted-foreground">
                     {formatShare(share)}
                   </span>

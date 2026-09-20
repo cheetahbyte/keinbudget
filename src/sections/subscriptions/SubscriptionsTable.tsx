@@ -1,4 +1,10 @@
-import { EllipsisIcon, Pencil, Trash2 } from "lucide-react";
+import {
+  EllipsisIcon,
+  Pencil,
+  PlayIcon,
+  PauseIcon,
+  Trash2,
+} from "lucide-react";
 
 import { PaginationControls } from "#/components/dashboard/PaginationControls";
 import { Button } from "#/components/ui/button";
@@ -11,19 +17,24 @@ import {
 import { usePaginatedItems } from "#/hooks/usePaginatedItems";
 import { getBillingIntervalShortLabel } from "#/lib/billing-interval";
 import type { Subscription } from "#/lib/dashboard/types";
-import { formatEur } from "#/lib/money";
+import { useFormatters } from "#/lib/preferences-context";
+import { daysUntil, formatRelativeDays, todayIso } from "#/lib/renewals";
 
 interface SubscriptionsTableProps {
   deleteSubscriptionAction: (formData: FormData) => Promise<void>;
   onEdit: (subscription: Subscription) => void;
+  onToggleActive: (subscription: Subscription) => void;
   subscriptions: Subscription[];
 }
 
 export function SubscriptionsTable({
   deleteSubscriptionAction,
   onEdit,
+  onToggleActive,
   subscriptions,
 }: SubscriptionsTableProps) {
+  const { formatMoney, formatDate } = useFormatters();
+  const today = todayIso();
   const {
     currentPage,
     pageItems,
@@ -51,23 +62,51 @@ export function SubscriptionsTable({
       <ul className="divide-y divide-border">
         {visibleSubscriptions.map((subscription) => {
           const isIncome = subscription.category?.type === "income";
+          const previousPrice = subscription.priceHistory[1]?.price;
+          const details = [subscription.category?.name ?? "Uncategorized"];
+          if (!subscription.isActive) details.push("Paused");
+          else if (subscription.nextBillingDate) {
+            const days = daysUntil(subscription.nextBillingDate, today);
+            details.push(
+              `Renews ${formatRelativeDays(days)} (${formatDate(subscription.nextBillingDate)})`,
+            );
+          }
 
           return (
             <li
               key={subscription.id}
-              className="flex items-center gap-3 py-3 sm:gap-6"
+              className={`flex items-center gap-3 py-3 sm:gap-6 ${
+                subscription.isActive ? "" : "opacity-60"
+              }`}
             >
               <div className="min-w-0 flex-1">
-                <h3 className="truncate text-sm">{subscription.name}</h3>
-                <p className="text-sm text-muted-foreground">
-                  {subscription.category?.name ?? "Uncategorized"}
+                <h3 className="truncate text-sm">
+                  {subscription.name}
+                  {subscription.notes && (
+                    <span
+                      title={subscription.notes}
+                      className="ml-2 text-xs text-muted-foreground"
+                    >
+                      note
+                    </span>
+                  )}
+                </h3>
+                <p className="truncate text-sm text-muted-foreground">
+                  {details.join(" · ")}
                 </p>
               </div>
 
               <div className="text-right">
-                <p className="amount text-sm">
+                <p
+                  className="amount text-sm"
+                  title={
+                    previousPrice === undefined
+                      ? undefined
+                      : `Previously ${formatMoney(previousPrice)}`
+                  }
+                >
                   {isIncome ? "+" : ""}
-                  {formatEur(subscription.price)}
+                  {formatMoney(subscription.price)}
                 </p>
                 <p className="text-sm text-muted-foreground">
                   {getBillingIntervalShortLabel(subscription.billingInterval)}
@@ -88,6 +127,16 @@ export function SubscriptionsTable({
                   <DropdownMenuItem onClick={() => onEdit(subscription)}>
                     <Pencil className="size-3.5" />
                     Edit
+                  </DropdownMenuItem>
+                  <DropdownMenuItem
+                    onClick={() => onToggleActive(subscription)}
+                  >
+                    {subscription.isActive ? (
+                      <PauseIcon className="size-3.5" />
+                    ) : (
+                      <PlayIcon className="size-3.5" />
+                    )}
+                    {subscription.isActive ? "Pause" : "Resume"}
                   </DropdownMenuItem>
                   <DropdownMenuItem
                     variant="destructive"

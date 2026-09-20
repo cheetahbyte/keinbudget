@@ -1,23 +1,56 @@
-import { and, eq } from "drizzle-orm";
+import { and, desc, eq, inArray } from "drizzle-orm";
 
 import type { DrizzleClient } from "#/db";
-import { categories, subscriptions } from "#/db";
+import { categories, priceHistory, subscriptions } from "#/db";
 import type { BillingInterval } from "#/lib/billing-interval";
 import { toMonthlyPrice } from "#/lib/billing-interval";
 import { computeMonthlyProjections } from "#/lib/projections";
+import { nextOccurrence, todayIso } from "#/lib/renewals";
+import type { Category, PriceChange, Subscription } from "#/schemas";
 
 type SubInsertInput = Omit<typeof subscriptions.$inferInsert, "id" | "userId">;
+
+interface EntryInput {
+  name: string;
+  price: number;
+  billingInterval: BillingInterval;
+  categoryId: number | null;
+  notes: string;
+  isActive: boolean;
+  nextBillingDate: string | null;
+}
+
+const entryColumns = {
+  id: subscriptions.id,
+  name: subscriptions.name,
+  price: subscriptions.price,
+  billingInterval: subscriptions.billingInterval,
+  categoryId: subscriptions.categoryId,
+  notes: subscriptions.notes,
+  isActive: subscriptions.isActive,
+  nextBillingDate: subscriptions.nextBillingDate,
+};
+
+interface EntryRow extends EntryInput {
+  id: number;
+}
+
+function upcoming(row: {
+  nextBillingDate: string | null;
+  billingInterval: BillingInterval;
+}): string | null {
+  return row.nextBillingDate === null
+    ? null
+    : nextOccurrence(row.nextBillingDate, row.billingInterval, todayIso());
+}
 
 export class SubscriptionService {
   constructor(private readonly db: DrizzleClient) {}
 
-  async findAll(userId: string) {
+  async findAll(userId: string): Promise<Subscription[]> {
     const rows = await this.db
       .select({
-        id: subscriptions.id,
-        name: subscriptions.name,
-        price: subscriptions.price,
-        billingInterval: subscriptions.billingInterval,
+        ...entryColumns,
         category: {
           id: categories.id,
           name: categories.name,
@@ -29,32 +62,56 @@ export class SubscriptionService {
       .leftJoin(categories, eq(subscriptions.categoryId, categories.id))
       .where(eq(subscriptions.userId, userId));
 
-    return rows.map((subscription) => ({
-      ...subscription,
+    const history = await this.findPriceHistory(rows.map((row) => row.id));
+
+    return rows.map((row) => ({
+      id: row.id,
+      name: row.name,
+      price: row.price,
+      billingInterval: row.billingInterval,
+      notes: row.notes,
+      isActive: row.isActive,
+      nextBillingDate: upcoming(row),
+      priceHistory: history.get(row.id) ?? [],
       category:
-        subscription.category?.id == null
+        row.category?.id == null
           ? null
           : {
-              id: subscription.category.id,
-              name: subscription.category.name,
-              icon: subscription.category.icon,
-              type: subscription.category.type,
+              id: row.category.id,
+              name: row.category.name,
+              icon: row.category.icon,
+              type: row.category.type,
             },
     }));
   }
 
-  async findAllForExport(userId: string) {
+  private async findPriceHistory(
+    subscriptionIds: number[],
+  ): Promise<Map<number, PriceChange[]>> {
+    const grouped = new Map<number, PriceChange[]>();
+    if (subscriptionIds.length === 0) return grouped;
     const rows = await this.db
       .select({
-        id: subscriptions.id,
-        name: subscriptions.name,
-        price: subscriptions.price,
-        billingInterval: subscriptions.billingInterval,
-        categoryId: subscriptions.categoryId,
+        subscriptionId: priceHistory.subscriptionId,
+        price: priceHistory.price,
+        changedAt: priceHistory.changedAt,
       })
+      .from(priceHistory)
+      .where(inArray(priceHistory.subscriptionId, subscriptionIds))
+      .orderBy(desc(priceHistory.changedAt), desc(priceHistory.id));
+    for (const row of rows) {
+      const list = grouped.get(row.subscriptionId) ?? [];
+      list.push({ price: row.price, changedAt: row.changedAt.toISOString() });
+      grouped.set(row.subscriptionId, list);
+    }
+    return grouped;
+  }
+
+  async findAllForExport(userId: string) {
+    return this.db
+      .select(entryColumns)
       .from(subscriptions)
       .where(eq(subscriptions.userId, userId));
-    return rows;
   }
 
   async calculateMonthlyProjections(userId: string) {
@@ -66,7 +123,9 @@ export class SubscriptionService {
       })
       .from(subscriptions)
       .leftJoin(categories, eq(subscriptions.categoryId, categories.id))
-      .where(eq(subscriptions.userId, userId));
+      .where(
+        and(eq(subscriptions.userId, userId), eq(subscriptions.isActive, true)),
+      );
 
     return computeMonthlyProjections(
       rows.map((row) => ({
@@ -80,16 +139,18 @@ export class SubscriptionService {
   async calculateMonthlyCosts(userId: string) {
     const rows = await this.findAll(userId);
 
-    return rows.map((subscription) => ({
-      id: subscription.id,
-      name: subscription.name,
-      price: subscription.price,
-      billingInterval: subscription.billingInterval,
-      monthlyPrice: toMonthlyPrice(
-        subscription.price,
-        subscription.billingInterval ?? "monthly",
-      ),
-    }));
+    return rows
+      .filter((subscription) => subscription.isActive)
+      .map((subscription) => ({
+        id: subscription.id,
+        name: subscription.name,
+        price: subscription.price,
+        billingInterval: subscription.billingInterval,
+        monthlyPrice: toMonthlyPrice(
+          subscription.price,
+          subscription.billingInterval ?? "monthly",
+        ),
+      }));
   }
 
   private findCategoryById(userId: string, categoryId: number) {
@@ -104,60 +165,66 @@ export class SubscriptionService {
       .where(and(eq(categories.id, categoryId), eq(categories.userId, userId)));
   }
 
-  async create(
+  private async resolveCategoryId(
     userId: string,
-    input: {
-      name: string;
-      price: number;
-      billingInterval: BillingInterval;
-      categoryId: number | null;
-    },
-  ) {
-    let categoryId: number | null = null;
+    categoryId: number | null,
+  ): Promise<number | null> {
+    if (categoryId === null) return null;
+    const [category] = await this.findCategoryById(userId, categoryId);
+    if (!category) throw new Error("Invalid category");
+    return category.id;
+  }
 
-    if (input.categoryId !== null) {
-      const [category] = await this.findCategoryById(userId, input.categoryId);
+  private async toSubscription(
+    userId: string,
+    row: EntryRow,
+    history: PriceChange[],
+  ): Promise<Subscription> {
+    const [category] =
+      row.categoryId == null
+        ? []
+        : await this.findCategoryById(userId, row.categoryId);
+    return {
+      id: row.id,
+      name: row.name,
+      price: row.price,
+      billingInterval: row.billingInterval,
+      notes: row.notes,
+      isActive: row.isActive,
+      nextBillingDate: upcoming(row),
+      priceHistory: history,
+      category: (category as Category | undefined) ?? null,
+    };
+  }
 
-      if (!category) {
-        throw new Error("Invalid category");
-      }
+  private async recordPrice(
+    subscriptionId: number,
+    price: number,
+  ): Promise<PriceChange> {
+    const [row] = await this.db
+      .insert(priceHistory)
+      .values({ subscriptionId, price })
+      .returning({
+        price: priceHistory.price,
+        changedAt: priceHistory.changedAt,
+      });
+    return { price: row.price, changedAt: row.changedAt.toISOString() };
+  }
 
-      categoryId = category.id;
-    }
+  async create(userId: string, input: EntryInput): Promise<Subscription> {
+    const categoryId = await this.resolveCategoryId(userId, input.categoryId);
 
     const [subscription] = await this.db
       .insert(subscriptions)
-      .values({
-        userId,
-        name: input.name,
-        price: input.price,
-        billingInterval: input.billingInterval,
-        categoryId,
-      })
-      .returning({
-        id: subscriptions.id,
-        name: subscriptions.name,
-        price: subscriptions.price,
-        billingInterval: subscriptions.billingInterval,
-        categoryId: subscriptions.categoryId,
-      });
+      .values({ userId, ...input, categoryId })
+      .returning(entryColumns);
 
     if (!subscription) {
       throw new Error("Failed to create subscription");
     }
 
-    const [category] =
-      subscription.categoryId == null
-        ? []
-        : await this.findCategoryById(userId, subscription.categoryId);
-
-    return {
-      id: subscription.id,
-      name: subscription.name,
-      price: subscription.price,
-      billingInterval: subscription.billingInterval,
-      category: category ?? null,
-    };
+    const change = await this.recordPrice(subscription.id, subscription.price);
+    return this.toSubscription(userId, subscription, [change]);
   }
 
   async bulkCreate(userId: string, input: SubInsertInput[]) {
@@ -165,37 +232,22 @@ export class SubscriptionService {
     const rows = await this.db
       .insert(subscriptions)
       .values(input.map((s) => ({ userId, ...s })))
-      .returning({
-        id: subscriptions.id,
-        name: subscriptions.name,
-        price: subscriptions.price,
-        billingInterval: subscriptions.billingInterval,
-        categoryId: subscriptions.categoryId,
-      });
+      .returning(entryColumns);
+    if (rows.length > 0) {
+      await this.db
+        .insert(priceHistory)
+        .values(
+          rows.map((row) => ({ subscriptionId: row.id, price: row.price })),
+        );
+    }
     return rows;
   }
 
   async update(
     userId: string,
-    input: {
-      id: number;
-      name: string;
-      price: number;
-      billingInterval: BillingInterval;
-      categoryId: number | null;
-    },
-  ) {
-    let categoryId: number | null = null;
-
-    if (input.categoryId !== null) {
-      const [category] = await this.findCategoryById(userId, input.categoryId);
-
-      if (!category) {
-        throw new Error("Invalid category");
-      }
-
-      categoryId = category.id;
-    }
+    input: EntryInput & { id: number },
+  ): Promise<Subscription> {
+    const categoryId = await this.resolveCategoryId(userId, input.categoryId);
 
     const result = await this.db
       .update(subscriptions)
@@ -204,35 +256,29 @@ export class SubscriptionService {
         price: input.price,
         billingInterval: input.billingInterval,
         categoryId,
+        notes: input.notes,
+        isActive: input.isActive,
+        nextBillingDate: input.nextBillingDate,
       })
       .where(
         and(eq(subscriptions.id, input.id), eq(subscriptions.userId, userId)),
       )
-      .returning({
-        id: subscriptions.id,
-        name: subscriptions.name,
-        price: subscriptions.price,
-        billingInterval: subscriptions.billingInterval,
-        categoryId: subscriptions.categoryId,
-      });
+      .returning(entryColumns);
 
     if (result.length === 0) {
       throw new Error("Subscription not found");
     }
 
     const subscription = result[0];
-    const [category] =
-      subscription.categoryId == null
-        ? []
-        : await this.findCategoryById(userId, subscription.categoryId);
-
-    return {
-      id: subscription.id,
-      name: subscription.name,
-      price: subscription.price,
-      billingInterval: subscription.billingInterval,
-      category: category ?? null,
-    };
+    const history =
+      (await this.findPriceHistory([subscription.id])).get(subscription.id) ??
+      [];
+    if (history[0]?.price !== subscription.price) {
+      history.unshift(
+        await this.recordPrice(subscription.id, subscription.price),
+      );
+    }
+    return this.toSubscription(userId, subscription, history);
   }
 
   async remove(userId: string, id: number) {

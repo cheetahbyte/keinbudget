@@ -3,17 +3,18 @@ import { Link } from "@tanstack/react-router";
 
 import { SalaryBar } from "#/components/SalaryBar";
 import type { MonthlyProjections } from "#/lib/dashboard/types";
-import { formatEur } from "#/lib/money";
+import { useFormatters } from "#/lib/preferences-context";
 
 const transition = { duration: 300, easing: "ease-out" };
 
 function LedgerRow({ label, value }: { label: string; value: number }) {
+  const { formatMoney } = useFormatters();
   return (
     <div className="flex items-baseline py-2.5">
       <dt className="text-muted-foreground">{label}</dt>
       <span aria-hidden className="leader" />
       <dd className={`amount text-base ${value < 0 ? "text-destructive" : ""}`}>
-        <Scritto value={formatEur(value)} transition={transition} />
+        <Scritto value={formatMoney(value)} transition={transition} />
       </dd>
     </div>
   );
@@ -26,6 +27,7 @@ export function StatsSection({
   projections: MonthlyProjections;
   period?: "daily" | "monthly" | "yearly";
 }) {
+  const { formatMoney } = useFormatters();
   const multiplier =
     period === "daily" ? 12 / 365 : period === "yearly" ? 12 : 1;
   const income = projections.income * multiplier;
@@ -54,7 +56,7 @@ export function StatsSection({
               remaining < 0 ? "text-destructive" : "text-foreground"
             }`}
           >
-            <Scritto value={formatEur(remaining)} transition={transition} />
+            <Scritto value={formatMoney(remaining)} transition={transition} />
           </p>
         </div>
         <nav aria-label="Projection period" className="flex gap-4 text-sm">

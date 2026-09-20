@@ -95,6 +95,22 @@ export function ActiveSubscriptions({
     ]);
   }
 
+  async function handleToggleActive(subscription: Subscription) {
+    await updateSubscription({
+      data: {
+        id: subscription.id,
+        name: subscription.name,
+        price: subscription.price,
+        billingInterval: subscription.billingInterval,
+        categoryId: subscription.category?.id ?? null,
+        notes: subscription.notes,
+        isActive: !subscription.isActive,
+        nextBillingDate: subscription.nextBillingDate,
+      },
+    });
+    await queryClient.invalidateQueries({ queryKey: dashboardQueryKeys.all });
+  }
+
   async function handleDeleteSubscription(formData: FormData) {
     const input = parseEntityIdFormData(formData);
     if (!input) return;
@@ -154,6 +170,7 @@ export function ActiveSubscriptions({
           key={`sub-${filter}`}
           deleteSubscriptionAction={handleDeleteSubscription}
           onEdit={openEditSubscription}
+          onToggleActive={handleToggleActive}
           subscriptions={filteredSubscriptions}
         />
       )}

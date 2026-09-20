@@ -1,13 +1,17 @@
 import { TanStackDevtools } from "@tanstack/react-devtools";
 import type { QueryClient } from "@tanstack/react-query";
+import { useSuspenseQuery } from "@tanstack/react-query";
 import {
   createRootRouteWithContext,
   HeadContent,
+  Outlet,
   Scripts,
 } from "@tanstack/react-router";
 import { TanStackRouterDevtoolsPanel } from "@tanstack/react-router-devtools";
 
 import { Header } from "#/components/header";
+import { PreferencesProvider } from "#/lib/preferences-context";
+import { preferencesQueryOptions } from "#/lib/settings/queries";
 
 import TanStackQueryDevtools from "../lib/query/devtools";
 
@@ -38,8 +42,21 @@ export const Route = createRootRouteWithContext<MyRouterContext>()({
       },
     ],
   }),
+  loader: async ({ context }) => {
+    await context.queryClient.ensureQueryData(preferencesQueryOptions());
+  },
   shellComponent: RootDocument,
+  component: RootLayout,
 });
+
+function RootLayout() {
+  const { data: preferences } = useSuspenseQuery(preferencesQueryOptions());
+  return (
+    <PreferencesProvider preferences={preferences}>
+      <Outlet />
+    </PreferencesProvider>
+  );
+}
 
 function RootDocument({ children }: { children: React.ReactNode }) {
   return (

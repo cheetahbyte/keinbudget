@@ -10,12 +10,31 @@ export type { BillingInterval };
 
 export const billingIntervalSchema = z.enum(BILLING_INTERVALS);
 
+export const priceChangeSchema = z.object({
+  price: z.number(),
+  changedAt: z.iso.datetime(),
+});
+
+const entryFieldsSchema = z.object({
+  name: z.string().min(1),
+  price: z.number().positive(),
+  billingInterval: billingIntervalSchema,
+  categoryId: z.number().int().positive().nullable(),
+  notes: z.string().max(2000).default(""),
+  isActive: z.boolean().default(true),
+  nextBillingDate: z.iso.date().nullable().default(null),
+});
+
 export const subscriptionSchema = z.object({
   id: z.number(),
   name: z.string(),
   price: z.number(),
   billingInterval: billingIntervalSchema,
   category: categorySchema.nullable(),
+  notes: z.string(),
+  isActive: z.boolean(),
+  nextBillingDate: z.iso.date().nullable(),
+  priceHistory: z.array(priceChangeSchema),
 });
 
 export const monthlyProjectionsSchema = z.object({
@@ -33,22 +52,14 @@ export const monthlyCostSchema = z.object({
   monthlyPrice: z.number(),
 });
 
-export const createSubscriptionSchema = z.object({
-  name: z.string().min(1),
-  price: z.number().positive(),
-  billingInterval: billingIntervalSchema,
-  categoryId: z.number().int().positive().nullable(),
-});
+export const createSubscriptionSchema = entryFieldsSchema;
 
-export const updateSubscriptionSchema = z.object({
+export const updateSubscriptionSchema = entryFieldsSchema.extend({
   id: z.number().int().positive(),
-  name: z.string().min(1),
-  price: z.number().positive(),
-  billingInterval: billingIntervalSchema,
-  categoryId: z.number().int().positive().nullable(),
 });
 
 export type Subscription = z.infer<typeof subscriptionSchema>;
+export type PriceChange = z.infer<typeof priceChangeSchema>;
 export type MonthlyProjections = z.infer<typeof monthlyProjectionsSchema>;
 export type MonthlyCost = z.infer<typeof monthlyCostSchema>;
 export type CreateSubscriptionInput = z.infer<typeof createSubscriptionSchema>;

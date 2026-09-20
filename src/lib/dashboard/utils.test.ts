@@ -10,6 +10,10 @@ function subscription(overrides: Partial<Subscription> = {}): Subscription {
     price: 10,
     billingInterval: "monthly",
     category: { id: 1, name: "Category", icon: "icon", type: "expense" },
+    notes: "",
+    isActive: true,
+    nextBillingDate: null,
+    priceHistory: [],
     ...overrides,
   };
 }

@@ -36,7 +36,9 @@ export function buildBreakdownItems(
   // Breakdown shows expense-only amounts; income/savings entries have a
   // category of type income/savings, uncategorized entries count as expense.
   const expenseSubscriptions = subscriptions.filter(
-    (subscription) => (subscription.category?.type ?? "expense") === "expense",
+    (subscription) =>
+      subscription.isActive &&
+      (subscription.category?.type ?? "expense") === "expense",
   );
   const subscriptionColors = assignPalette(
     expenseSubscriptions.map((subscription) => subscription.id),

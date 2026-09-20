@@ -1,4 +1,4 @@
-import { formatEur } from "#/lib/money";
+import { useFormatters } from "#/lib/preferences-context";
 
 interface SalaryBarProps {
   income: number;
@@ -15,6 +15,7 @@ export function SalaryBar({
   savings,
   remaining,
 }: SalaryBarProps) {
+  const { formatMoney } = useFormatters();
   const overspent = remaining < 0 ? -remaining : 0;
   const total = Math.max(income, expenses + savings, 1);
   const pct = (value: number) => `${(value / total) * 100}%`;
@@ -36,7 +37,7 @@ export function SalaryBar({
         className="flex h-2 w-full overflow-hidden rounded-sm"
         role="img"
         aria-label={segments
-          .map((segment) => `${segment.label} ${formatEur(segment.value)}`)
+          .map((segment) => `${segment.label} ${formatMoney(segment.value)}`)
           .join(", ")}
       >
         {segments.map((segment) => (

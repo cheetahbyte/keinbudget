@@ -21,7 +21,37 @@ describe("dashboard mutation parsing", () => {
       price: 9.99,
       billingInterval: "monthly",
       categoryId: 4,
+      notes: "",
+      isActive: true,
+      nextBillingDate: null,
     });
+  });
+
+  it("parses notes, paused state and an optional next billing date", () => {
+    const formData = new FormData();
+    formData.set("name", "Gym");
+    formData.set("price", "30");
+    formData.set("billingInterval", "monthly");
+    formData.set("categoryId", "");
+    formData.set("notes", " cancel before summer ");
+    formData.append("isActive", "off");
+    formData.set("nextBillingDate", "2026-10-01");
+
+    expect(parseCreateSubscriptionFormData(formData)).toMatchObject({
+      notes: "cancel before summer",
+      isActive: false,
+      nextBillingDate: "2026-10-01",
+    });
+
+    formData.append("isActive", "on");
+    formData.set("nextBillingDate", "");
+    expect(parseCreateSubscriptionFormData(formData)).toMatchObject({
+      isActive: true,
+      nextBillingDate: null,
+    });
+
+    formData.set("nextBillingDate", "01.10.2026");
+    expect(parseCreateSubscriptionFormData(formData)).toBeNull();
   });
 
   it("rejects invalid subscription form data", () => {
@@ -77,6 +107,9 @@ describe("dashboard mutation parsing", () => {
       price: 12.99,
       billingInterval: "monthly",
       categoryId: 2,
+      notes: "",
+      isActive: true,
+      nextBillingDate: null,
     });
   });
 
@@ -94,6 +127,9 @@ describe("dashboard mutation parsing", () => {
       price: 15.99,
       billingInterval: "monthly",
       categoryId: null,
+      notes: "",
+      isActive: true,
+      nextBillingDate: null,
     });
   });
 

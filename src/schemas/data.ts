@@ -9,6 +9,9 @@ export const accountEntrySchema = z.object({
   price: z.number(),
   billingInterval: billingIntervalSchema,
   categoryId: z.number().nullable(),
+  notes: z.string().default(""),
+  isActive: z.boolean().default(true),
+  nextBillingDate: z.iso.date().nullable().default(null),
 });
 
 export const dataExportSchema = z
