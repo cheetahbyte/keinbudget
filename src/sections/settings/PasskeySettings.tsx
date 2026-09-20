@@ -70,25 +70,26 @@ export function PasskeySettings() {
       </p>
       <ul className="divide-y divide-border">
         {passkeys === null ? (
-          <li className="py-3 text-sm text-muted-foreground">Loading…</li>
+          <li className="py-4 text-sm leading-6 text-muted-foreground">
+            Loading…
+          </li>
         ) : passkeys.length === 0 ? (
-          <li className="py-3 text-sm text-muted-foreground">
+          <li className="py-4 text-sm leading-6 text-muted-foreground">
             No passkeys yet.
           </li>
         ) : (
           passkeys.map((passkey) => (
             <li
               key={passkey.id}
-              className="flex items-center justify-between gap-4 py-3"
+              className="flex items-center justify-between gap-4 py-4"
             >
               <div className="flex min-w-0 items-center gap-3">
-                <KeyRound className="size-4 shrink-0 text-muted-foreground" />
-                <div className="min-w-0">
-                  <p className="truncate text-sm">
+                <div className="flex min-w-0 flex-col gap-1">
+                  <p className="text-sm font-medium wrap-anywhere">
                     {passkey.name || "Unnamed passkey"}
                   </p>
                   {passkey.createdAt && (
-                    <p className="text-sm text-muted-foreground">
+                    <p className="text-sm leading-6 text-muted-foreground">
                       Added{" "}
                       {formatDate(
                         new Date(passkey.createdAt).toISOString().slice(0, 10),
@@ -99,13 +100,13 @@ export function PasskeySettings() {
               </div>
               <Button
                 type="button"
-                variant="ghost"
-                size="icon"
+                variant="outline"
+                size="icon-lg"
                 aria-label={`Remove ${passkey.name || "passkey"}`}
                 disabled={removingId === passkey.id}
                 onClick={() => handleRemove(passkey.id)}
               >
-                <Trash2 className="size-4" />
+                <Trash2 />
               </Button>
             </li>
           ))
@@ -113,7 +114,7 @@ export function PasskeySettings() {
       </ul>
       <form
         onSubmit={handleAdd}
-        className="flex flex-col gap-3 sm:flex-row sm:items-end"
+        className="flex flex-col gap-4 sm:flex-row sm:items-end"
       >
         <div className="grid flex-1 gap-2">
           <Label htmlFor="passkey-name">Name (optional)</Label>
@@ -124,8 +125,8 @@ export function PasskeySettings() {
             onChange={(event) => setName(event.target.value)}
           />
         </div>
-        <Button type="submit" size="lg" disabled={isAdding}>
-          <KeyRound className="size-4" />
+        <Button type="submit" variant="outline" size="lg" disabled={isAdding}>
+          <KeyRound data-icon="inline-start" />
           {isAdding ? "Waiting for device…" : "Add passkey"}
         </Button>
       </form>

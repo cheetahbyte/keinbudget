@@ -43,7 +43,9 @@ export function ConnectedAppsSettings() {
         cuts them off immediately; they have to sign in and ask again.
       </p>
       {apps.length === 0 ? (
-        <p className="text-sm text-muted-foreground">No apps are connected.</p>
+        <p className="py-4 text-sm leading-6 text-muted-foreground">
+          No apps are connected.
+        </p>
       ) : (
         <ul className="divide-y divide-border">
           {apps.map((app) => {
@@ -53,11 +55,13 @@ export function ConnectedAppsSettings() {
             return (
               <li
                 key={app.id}
-                className="flex items-center justify-between gap-4 py-3"
+                className="flex flex-col gap-4 py-4 sm:flex-row sm:items-center sm:justify-between"
               >
-                <div className="min-w-0">
-                  <p className="truncate text-sm">{app.name || app.clientId}</p>
-                  <p className="truncate text-sm text-muted-foreground">
+                <div className="flex min-w-0 flex-col gap-1">
+                  <p className="text-sm font-medium wrap-anywhere">
+                    {app.name || app.clientId}
+                  </p>
+                  <p className="text-sm leading-6 wrap-anywhere text-muted-foreground">
                     {[
                       app.uri ?? app.clientId,
                       permissions.join(", "),
@@ -72,11 +76,12 @@ export function ConnectedAppsSettings() {
                 <Button
                   type="button"
                   variant="outline"
-                  size="sm"
+                  size="lg"
+                  className="self-start sm:self-auto"
                   disabled={pendingId === app.id}
                   onClick={() => handleRevoke(app.id)}
                 >
-                  <Unplug className="size-3.5" />
+                  <Unplug data-icon="inline-start" />
                   {pendingId === app.id ? "Revoking…" : "Revoke"}
                 </Button>
               </li>
