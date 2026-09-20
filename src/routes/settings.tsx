@@ -1,21 +1,18 @@
-import { createFileRoute, redirect } from "@tanstack/react-router";
-import { createServerFn } from "@tanstack/react-start";
-
-import { getBaseURL } from "#/lib/auth";
-import { sessionQueryOptions } from "#/lib/session-query";
 import {
-  connectedAppsQueryOptions,
-  preferencesQueryOptions,
-} from "#/lib/settings/queries";
-import { AccountSettings } from "#/sections/settings/AccountSettings";
-import { ConnectedAppsSettings } from "#/sections/settings/ConnectedAppsSettings";
-import { LocalizationSettings } from "#/sections/settings/LocalizationSettings";
-import { McpSettings } from "#/sections/settings/McpSettings";
-import { PasskeySettings } from "#/sections/settings/PasskeySettings";
+  createFileRoute,
+  Link,
+  Outlet,
+  redirect,
+} from "@tanstack/react-router";
 
-const getPublicBaseUrl = createServerFn({ method: "GET" }).handler(() =>
-  getBaseURL(),
-);
+import { sessionQueryOptions } from "#/lib/session-query";
+
+const tabs = [
+  { to: "/settings", label: "General" },
+  { to: "/settings/security", label: "Security" },
+  { to: "/settings/integrations", label: "Integrations" },
+  { to: "/settings/account", label: "Account" },
+] as const;
 
 export const Route = createFileRoute("/settings")({
   component: SettingsPage,
@@ -30,26 +27,36 @@ export const Route = createFileRoute("/settings")({
     }
     return { user: session.user };
   },
-  loader: async ({ context }) => {
-    const [baseUrl] = await Promise.all([
-      getPublicBaseUrl(),
-      context.queryClient.ensureQueryData(preferencesQueryOptions()),
-      context.queryClient.ensureQueryData(connectedAppsQueryOptions()),
-    ]);
-    return { baseUrl };
-  },
 });
 
 function SettingsPage() {
-  const { baseUrl } = Route.useLoaderData();
   return (
     <main className="mx-auto flex w-full max-w-5xl flex-col gap-8 px-6 py-12">
       <h1 className="text-2xl font-medium tracking-tight">Settings</h1>
-      <LocalizationSettings />
-      <PasskeySettings />
-      <McpSettings baseUrl={baseUrl} />
-      <ConnectedAppsSettings />
-      <AccountSettings />
+      <nav
+        aria-label="Settings"
+        className="flex flex-wrap gap-x-5 gap-y-2 border-b border-border"
+      >
+        {tabs.map(({ to, label }) => (
+          <Link
+            key={to}
+            to={to}
+            activeOptions={{ exact: true, includeSearch: false }}
+            activeProps={{
+              className: "border-pen text-foreground",
+              "aria-current": "page",
+            }}
+            inactiveProps={{
+              className:
+                "border-transparent text-muted-foreground hover:text-foreground",
+            }}
+            className="shrink-0 border-b-2 pb-3 text-sm font-medium focus-visible:outline-2 focus-visible:outline-ring"
+          >
+            {label}
+          </Link>
+        ))}
+      </nav>
+      <Outlet />
       <p className="text-sm text-muted-foreground">
         Version:{" "}
         <code title={import.meta.env.VITE_COMMIT_SHA}>

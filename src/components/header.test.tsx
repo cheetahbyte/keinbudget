@@ -18,6 +18,34 @@ vi.mock("#/lib/auth-client", () => ({
 
 afterEach(cleanup);
 
+it.each([
+  "/settings",
+  "/settings/security",
+  "/settings/integrations",
+  "/settings/account",
+])("keeps Settings active at %s", async (path) => {
+  const root = createRootRoute({ component: Header });
+  const settings = createRoute({ getParentRoute: () => root, path });
+  const router = createRouter({
+    routeTree: root.addChildren([settings]),
+    history: createMemoryHistory({ initialEntries: [path] }),
+  });
+  await router.load();
+  render(
+    <QueryClientProvider client={new QueryClient()}>
+      <RouterProvider router={router} />
+    </QueryClientProvider>,
+  );
+  expect(
+    (await screen.findByRole("link", { name: "Settings" })).getAttribute(
+      "aria-current",
+    ),
+  ).toBe("page");
+  expect(
+    screen.getByRole("link", { name: "Overview" }).getAttribute("aria-current"),
+  ).toBeNull();
+});
+
 it.each(["daily", "monthly", "yearly"])(
   "keeps Overview active for the %s period",
   async (period) => {

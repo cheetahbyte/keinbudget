@@ -17,6 +17,10 @@ import { Route as ConsentRouteImport } from './routes/consent'
 import { Route as CategoriesRouteImport } from './routes/categories'
 import { Route as BreakdownRouteImport } from './routes/breakdown'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as SettingsIndexRouteImport } from './routes/settings.index'
+import { Route as SettingsSecurityRouteImport } from './routes/settings.security'
+import { Route as SettingsIntegrationsRouteImport } from './routes/settings.integrations'
+import { Route as SettingsAccountRouteImport } from './routes/settings.account'
 import { Route as ApiMcpRouteImport } from './routes/api/mcp'
 import { Route as DotwellKnownSplatRouteImport } from './routes/[.]well-known.$'
 import { Route as ApiAuthSplatRouteImport } from './routes/api/auth/$'
@@ -61,6 +65,26 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const SettingsIndexRoute = SettingsIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => SettingsRoute,
+} as any)
+const SettingsSecurityRoute = SettingsSecurityRouteImport.update({
+  id: '/security',
+  path: '/security',
+  getParentRoute: () => SettingsRoute,
+} as any)
+const SettingsIntegrationsRoute = SettingsIntegrationsRouteImport.update({
+  id: '/integrations',
+  path: '/integrations',
+  getParentRoute: () => SettingsRoute,
+} as any)
+const SettingsAccountRoute = SettingsAccountRouteImport.update({
+  id: '/account',
+  path: '/account',
+  getParentRoute: () => SettingsRoute,
+} as any)
 const ApiMcpRoute = ApiMcpRouteImport.update({
   id: '/api/mcp',
   path: '/api/mcp',
@@ -84,10 +108,14 @@ export interface FileRoutesByFullPath {
   '/consent': typeof ConsentRoute
   '/entries': typeof EntriesRoute
   '/login': typeof LoginRoute
-  '/settings': typeof SettingsRoute
+  '/settings': typeof SettingsRouteWithChildren
   '/signup': typeof SignupRoute
   '/.well-known/$': typeof DotwellKnownSplatRoute
   '/api/mcp': typeof ApiMcpRoute
+  '/settings/account': typeof SettingsAccountRoute
+  '/settings/integrations': typeof SettingsIntegrationsRoute
+  '/settings/security': typeof SettingsSecurityRoute
+  '/settings/': typeof SettingsIndexRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
 }
 export interface FileRoutesByTo {
@@ -97,10 +125,13 @@ export interface FileRoutesByTo {
   '/consent': typeof ConsentRoute
   '/entries': typeof EntriesRoute
   '/login': typeof LoginRoute
-  '/settings': typeof SettingsRoute
   '/signup': typeof SignupRoute
   '/.well-known/$': typeof DotwellKnownSplatRoute
   '/api/mcp': typeof ApiMcpRoute
+  '/settings/account': typeof SettingsAccountRoute
+  '/settings/integrations': typeof SettingsIntegrationsRoute
+  '/settings/security': typeof SettingsSecurityRoute
+  '/settings': typeof SettingsIndexRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
 }
 export interface FileRoutesById {
@@ -111,10 +142,14 @@ export interface FileRoutesById {
   '/consent': typeof ConsentRoute
   '/entries': typeof EntriesRoute
   '/login': typeof LoginRoute
-  '/settings': typeof SettingsRoute
+  '/settings': typeof SettingsRouteWithChildren
   '/signup': typeof SignupRoute
   '/.well-known/$': typeof DotwellKnownSplatRoute
   '/api/mcp': typeof ApiMcpRoute
+  '/settings/account': typeof SettingsAccountRoute
+  '/settings/integrations': typeof SettingsIntegrationsRoute
+  '/settings/security': typeof SettingsSecurityRoute
+  '/settings/': typeof SettingsIndexRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
 }
 export interface FileRouteTypes {
@@ -130,6 +165,10 @@ export interface FileRouteTypes {
     | '/signup'
     | '/.well-known/$'
     | '/api/mcp'
+    | '/settings/account'
+    | '/settings/integrations'
+    | '/settings/security'
+    | '/settings/'
     | '/api/auth/$'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -139,10 +178,13 @@ export interface FileRouteTypes {
     | '/consent'
     | '/entries'
     | '/login'
-    | '/settings'
     | '/signup'
     | '/.well-known/$'
     | '/api/mcp'
+    | '/settings/account'
+    | '/settings/integrations'
+    | '/settings/security'
+    | '/settings'
     | '/api/auth/$'
   id:
     | '__root__'
@@ -156,6 +198,10 @@ export interface FileRouteTypes {
     | '/signup'
     | '/.well-known/$'
     | '/api/mcp'
+    | '/settings/account'
+    | '/settings/integrations'
+    | '/settings/security'
+    | '/settings/'
     | '/api/auth/$'
   fileRoutesById: FileRoutesById
 }
@@ -166,7 +212,7 @@ export interface RootRouteChildren {
   ConsentRoute: typeof ConsentRoute
   EntriesRoute: typeof EntriesRoute
   LoginRoute: typeof LoginRoute
-  SettingsRoute: typeof SettingsRoute
+  SettingsRoute: typeof SettingsRouteWithChildren
   SignupRoute: typeof SignupRoute
   DotwellKnownSplatRoute: typeof DotwellKnownSplatRoute
   ApiMcpRoute: typeof ApiMcpRoute
@@ -231,6 +277,34 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/settings/': {
+      id: '/settings/'
+      path: '/'
+      fullPath: '/settings/'
+      preLoaderRoute: typeof SettingsIndexRouteImport
+      parentRoute: typeof SettingsRoute
+    }
+    '/settings/security': {
+      id: '/settings/security'
+      path: '/security'
+      fullPath: '/settings/security'
+      preLoaderRoute: typeof SettingsSecurityRouteImport
+      parentRoute: typeof SettingsRoute
+    }
+    '/settings/integrations': {
+      id: '/settings/integrations'
+      path: '/integrations'
+      fullPath: '/settings/integrations'
+      preLoaderRoute: typeof SettingsIntegrationsRouteImport
+      parentRoute: typeof SettingsRoute
+    }
+    '/settings/account': {
+      id: '/settings/account'
+      path: '/account'
+      fullPath: '/settings/account'
+      preLoaderRoute: typeof SettingsAccountRouteImport
+      parentRoute: typeof SettingsRoute
+    }
     '/api/mcp': {
       id: '/api/mcp'
       path: '/api/mcp'
@@ -255,6 +329,24 @@ declare module '@tanstack/react-router' {
   }
 }
 
+interface SettingsRouteChildren {
+  SettingsAccountRoute: typeof SettingsAccountRoute
+  SettingsIntegrationsRoute: typeof SettingsIntegrationsRoute
+  SettingsSecurityRoute: typeof SettingsSecurityRoute
+  SettingsIndexRoute: typeof SettingsIndexRoute
+}
+
+const SettingsRouteChildren: SettingsRouteChildren = {
+  SettingsAccountRoute: SettingsAccountRoute,
+  SettingsIntegrationsRoute: SettingsIntegrationsRoute,
+  SettingsSecurityRoute: SettingsSecurityRoute,
+  SettingsIndexRoute: SettingsIndexRoute,
+}
+
+const SettingsRouteWithChildren = SettingsRoute._addFileChildren(
+  SettingsRouteChildren,
+)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   BreakdownRoute: BreakdownRoute,
@@ -262,7 +354,7 @@ const rootRouteChildren: RootRouteChildren = {
   ConsentRoute: ConsentRoute,
   EntriesRoute: EntriesRoute,
   LoginRoute: LoginRoute,
-  SettingsRoute: SettingsRoute,
+  SettingsRoute: SettingsRouteWithChildren,
   SignupRoute: SignupRoute,
   DotwellKnownSplatRoute: DotwellKnownSplatRoute,
   ApiMcpRoute: ApiMcpRoute,
