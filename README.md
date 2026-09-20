@@ -23,6 +23,31 @@ For non-local deployments, set these environment variables before building:
 | `POSTGRES_DB` | `keinbudget` | |
 | `DISABLE_SIGNUP` | `false` | Set to `true` to lock registration after setup |
 
+## Passkeys
+
+Users can add passkeys (Touch ID, Face ID, Windows Hello, security keys) under Settings and sign in with them on the login page. The WebAuthn relying party is derived from `BETTER_AUTH_URL`: its hostname is the RP ID and the full origin is the allowed origin, so that variable must match the URL users open in the browser. Passkeys registered on one hostname do not work on another.
+
+## MCP
+
+keinbudget is an MCP server. Point an MCP client (Claude, Cursor, ChatGPT, ...) at `https://<your-host>/api/mcp`. The client discovers the built-in OAuth 2.1 authorization server, registers itself through a Client ID Metadata Document, opens the login and consent pages in the browser, and then calls tools with a short-lived access token bound to your account.
+
+Scopes:
+
+| scope | grants |
+|---|---|
+| `budget:read` | `list_entries`, `list_categories`, `get_monthly_overview`, `upcoming_renewals` |
+| `budget:write` | `create_entry`, `update_entry`, `delete_entry`, `create_category`, `update_category`, `delete_category` |
+
+Connected apps are listed under Settings. Revoking one deletes its consent and revokes its refresh tokens; the MCP endpoint also checks the consent on every call, so an app loses access at once even though its current access token is still cryptographically valid.
+
+### Security properties
+
+- Access tokens are JWTs valid for 10 minutes; refresh tokens for 30 days. PKCE is required for every client.
+- Only the scopes above can be requested or registered. Consent is per client and shown with the client's registered name and URL.
+- Client ID Metadata Documents are fetched only from `https` URLs with a path, without following redirects, with a 5 s timeout and a 5 KB limit. On Node (Docker) the fetcher resolves DNS once and pins the address. On Cloudflare Workers the runtime cannot reach private addresses, and the `global_fetch_strictly_public` compatibility flag in `wrangler.toml` stops `fetch` from short-circuiting to this zone's origin, which is the same setup Cloudflare's own `workers-oauth-provider` uses.
+- Rate limiting stores counters in the `rate_limit` table so limits hold across Workers isolates.
+- Discovery documents are served at `/.well-known/oauth-authorization-server` and `/.well-known/oauth-protected-resource`, so the app must be reachable at the root of its origin. Signing keys for access tokens are generated on first use and stored in the `jwks` table; back it up with the rest of the database.
+
 ## Cloudflare Workers deployment
 
 The app can be deployed as a Cloudflare Worker (SSR included) that talks directly to an external PostgreSQL database over TCP (`postgres` driver + `connect()` sockets, so **no Hyperdrive binding is required**). The Node/Docker path above keeps working unchanged — `bun run build` still builds the Node server, `bun run build:cf` builds the Worker.

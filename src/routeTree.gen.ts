@@ -13,9 +13,12 @@ import { Route as SignupRouteImport } from './routes/signup'
 import { Route as SettingsRouteImport } from './routes/settings'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as EntriesRouteImport } from './routes/entries'
+import { Route as ConsentRouteImport } from './routes/consent'
 import { Route as CategoriesRouteImport } from './routes/categories'
 import { Route as BreakdownRouteImport } from './routes/breakdown'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as ApiMcpRouteImport } from './routes/api/mcp'
+import { Route as DotwellKnownSplatRouteImport } from './routes/[.]well-known.$'
 import { Route as ApiAuthSplatRouteImport } from './routes/api/auth/$'
 
 const SignupRoute = SignupRouteImport.update({
@@ -38,6 +41,11 @@ const EntriesRoute = EntriesRouteImport.update({
   path: '/entries',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ConsentRoute = ConsentRouteImport.update({
+  id: '/consent',
+  path: '/consent',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const CategoriesRoute = CategoriesRouteImport.update({
   id: '/categories',
   path: '/categories',
@@ -53,6 +61,16 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiMcpRoute = ApiMcpRouteImport.update({
+  id: '/api/mcp',
+  path: '/api/mcp',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DotwellKnownSplatRoute = DotwellKnownSplatRouteImport.update({
+  id: '/.well-known/$',
+  path: '/.well-known/$',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiAuthSplatRoute = ApiAuthSplatRouteImport.update({
   id: '/api/auth/$',
   path: '/api/auth/$',
@@ -63,20 +81,26 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/breakdown': typeof BreakdownRoute
   '/categories': typeof CategoriesRoute
+  '/consent': typeof ConsentRoute
   '/entries': typeof EntriesRoute
   '/login': typeof LoginRoute
   '/settings': typeof SettingsRoute
   '/signup': typeof SignupRoute
+  '/.well-known/$': typeof DotwellKnownSplatRoute
+  '/api/mcp': typeof ApiMcpRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/breakdown': typeof BreakdownRoute
   '/categories': typeof CategoriesRoute
+  '/consent': typeof ConsentRoute
   '/entries': typeof EntriesRoute
   '/login': typeof LoginRoute
   '/settings': typeof SettingsRoute
   '/signup': typeof SignupRoute
+  '/.well-known/$': typeof DotwellKnownSplatRoute
+  '/api/mcp': typeof ApiMcpRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
 }
 export interface FileRoutesById {
@@ -84,10 +108,13 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/breakdown': typeof BreakdownRoute
   '/categories': typeof CategoriesRoute
+  '/consent': typeof ConsentRoute
   '/entries': typeof EntriesRoute
   '/login': typeof LoginRoute
   '/settings': typeof SettingsRoute
   '/signup': typeof SignupRoute
+  '/.well-known/$': typeof DotwellKnownSplatRoute
+  '/api/mcp': typeof ApiMcpRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
 }
 export interface FileRouteTypes {
@@ -96,30 +123,39 @@ export interface FileRouteTypes {
     | '/'
     | '/breakdown'
     | '/categories'
+    | '/consent'
     | '/entries'
     | '/login'
     | '/settings'
     | '/signup'
+    | '/.well-known/$'
+    | '/api/mcp'
     | '/api/auth/$'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
     | '/breakdown'
     | '/categories'
+    | '/consent'
     | '/entries'
     | '/login'
     | '/settings'
     | '/signup'
+    | '/.well-known/$'
+    | '/api/mcp'
     | '/api/auth/$'
   id:
     | '__root__'
     | '/'
     | '/breakdown'
     | '/categories'
+    | '/consent'
     | '/entries'
     | '/login'
     | '/settings'
     | '/signup'
+    | '/.well-known/$'
+    | '/api/mcp'
     | '/api/auth/$'
   fileRoutesById: FileRoutesById
 }
@@ -127,10 +163,13 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   BreakdownRoute: typeof BreakdownRoute
   CategoriesRoute: typeof CategoriesRoute
+  ConsentRoute: typeof ConsentRoute
   EntriesRoute: typeof EntriesRoute
   LoginRoute: typeof LoginRoute
   SettingsRoute: typeof SettingsRoute
   SignupRoute: typeof SignupRoute
+  DotwellKnownSplatRoute: typeof DotwellKnownSplatRoute
+  ApiMcpRoute: typeof ApiMcpRoute
   ApiAuthSplatRoute: typeof ApiAuthSplatRoute
 }
 
@@ -164,6 +203,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof EntriesRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/consent': {
+      id: '/consent'
+      path: '/consent'
+      fullPath: '/consent'
+      preLoaderRoute: typeof ConsentRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/categories': {
       id: '/categories'
       path: '/categories'
@@ -185,6 +231,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/mcp': {
+      id: '/api/mcp'
+      path: '/api/mcp'
+      fullPath: '/api/mcp'
+      preLoaderRoute: typeof ApiMcpRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/.well-known/$': {
+      id: '/.well-known/$'
+      path: '/.well-known/$'
+      fullPath: '/.well-known/$'
+      preLoaderRoute: typeof DotwellKnownSplatRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/auth/$': {
       id: '/api/auth/$'
       path: '/api/auth/$'
@@ -199,10 +259,13 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   BreakdownRoute: BreakdownRoute,
   CategoriesRoute: CategoriesRoute,
+  ConsentRoute: ConsentRoute,
   EntriesRoute: EntriesRoute,
   LoginRoute: LoginRoute,
   SettingsRoute: SettingsRoute,
   SignupRoute: SignupRoute,
+  DotwellKnownSplatRoute: DotwellKnownSplatRoute,
+  ApiMcpRoute: ApiMcpRoute,
   ApiAuthSplatRoute: ApiAuthSplatRoute,
 }
 export const routeTree = rootRouteImport

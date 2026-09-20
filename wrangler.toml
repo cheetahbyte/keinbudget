@@ -6,9 +6,11 @@ name = "keinbudget"
 main = "dist/server/index.mjs"
 compatibility_date = "2025-09-01"
 
-# postgres.js talks to PostgreSQL over TCP sockets (connect()), which needs
-# Node.js compatibility APIs in the Workers runtime.
-compatibility_flags = ["nodejs_compat"]
+# nodejs_compat: postgres.js talks to PostgreSQL over TCP sockets (connect()).
+# global_fetch_strictly_public: fetch() never short-circuits to this zone's
+# origin, so Client ID Metadata Document fetches can only reach the public
+# internet (same setup as cloudflare/workers-oauth-provider).
+compatibility_flags = ["nodejs_compat", "global_fetch_strictly_public"]
 
 # Static assets emitted by the Vite build (dist/public).
 [assets]

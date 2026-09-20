@@ -5,12 +5,14 @@ import {
   useNavigate,
   useRouter,
 } from "@tanstack/react-router";
-import { useState } from "react";
+import { KeyRound } from "lucide-react";
+import { useEffect, useState } from "react";
 
 import { Button } from "#/components/ui/button";
 import { Input } from "#/components/ui/input";
 import { Label } from "#/components/ui/label";
 import { authClient } from "#/lib/auth-client";
+import { oauthResumeUrl } from "#/lib/oauth-resume";
 
 export const Route = createFileRoute("/login")({
   component: LoginPage,
@@ -24,6 +26,19 @@ function LoginPage() {
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  const [passkeyLoading, setPasskeyLoading] = useState(false);
+
+  async function finishSignIn() {
+    // An OAuth client (e.g. an MCP client) sent us here: resume its flow
+    const resume = oauthResumeUrl(window.location.search);
+    if (resume) {
+      window.location.assign(resume);
+      return;
+    }
+    queryClient.clear();
+    await navigate({ to: "/" });
+    await router.invalidate();
+  }
 
   async function handleSubmit(event: React.FormEvent) {
     event.preventDefault();
@@ -38,12 +53,38 @@ function LoginPage() {
       return;
     }
 
-    queryClient.clear();
-
-    await navigate({ to: "/" });
-
-    await router.invalidate();
+    await finishSignIn();
   }
+
+  async function handlePasskey() {
+    setPasskeyLoading(true);
+    setError(null);
+    const result = await authClient.signIn.passkey();
+    if (result?.error) {
+      setError(result.error.message ?? "Passkey sign-in failed.");
+      setPasskeyLoading(false);
+      return;
+    }
+    await finishSignIn();
+  }
+
+  useEffect(() => {
+    // Conditional UI: offers saved passkeys in the browser's autofill
+    if (
+      typeof PublicKeyCredential === "undefined" ||
+      !PublicKeyCredential.isConditionalMediationAvailable
+    ) {
+      return;
+    }
+    void PublicKeyCredential.isConditionalMediationAvailable().then(
+      async (available) => {
+        if (!available) return;
+        const result = await authClient.signIn.passkey({ autoFill: true });
+        if (result?.data) await finishSignIn();
+      },
+    );
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return (
     <div className="mx-auto w-full max-w-5xl px-6 py-16">
@@ -56,6 +97,7 @@ function LoginPage() {
               <Input
                 id="email"
                 type="email"
+                autoComplete="username webauthn"
                 placeholder="you@example.com"
                 value={email}
                 onChange={(event) => setEmail(event.target.value)}
@@ -67,6 +109,7 @@ function LoginPage() {
               <Input
                 id="password"
                 type="password"
+                autoComplete="current-password webauthn"
                 placeholder="••••••••"
                 value={password}
                 onChange={(event) => setPassword(event.target.value)}
@@ -78,6 +121,16 @@ function LoginPage() {
               {loading ? "Signing in…" : "Sign in"}
             </Button>
           </form>
+          <Button
+            type="button"
+            variant="outline"
+            className="mt-3 w-full"
+            disabled={passkeyLoading}
+            onClick={handlePasskey}
+          >
+            <KeyRound className="size-4" />
+            {passkeyLoading ? "Waiting for device…" : "Sign in with a passkey"}
+          </Button>
         </div>
         <p className="mt-6 text-sm text-muted-foreground">
           New here?{" "}
