@@ -4,7 +4,7 @@ import { createFileRoute } from "@tanstack/react-router";
 
 import { getDb } from "#/db";
 import { getAuth, getMcpResource } from "#/lib/auth";
-import { MCP_READ_SCOPE } from "#/lib/mcp-scopes";
+import { MCP_READ_SCOPE, MCP_WRITE_SCOPE } from "#/lib/mcp-scopes";
 import { createBudgetMcpServer } from "#/mcp/server";
 import { ConnectedAppsService } from "#/services/connected-apps";
 
@@ -61,7 +61,11 @@ const handle = async ({ request }: { request: Request }) =>
         },
       });
     },
-    { resource: getMcpResource(), requiredScopes: [MCP_READ_SCOPE] },
+    {
+      resource: getMcpResource(),
+      requiredScopes: [MCP_READ_SCOPE],
+      challengeScopes: [MCP_READ_SCOPE, MCP_WRITE_SCOPE],
+    },
   )(request);
 
 export const Route = createFileRoute("/api/mcp")({
