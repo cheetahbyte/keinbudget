@@ -31,8 +31,7 @@ export function Breakdown({
   const { formatMoney, formatShare } = useFormatters();
   const multiplier =
     period === "daily" ? 12 / 365 : period === "yearly" ? 12 : 1;
-  const [breakdownType, setBreakdownType] =
-    useState<BreakdownType>("category");
+  const [breakdownType, setBreakdownType] = useState<BreakdownType>("category");
 
   const visibleItems = useMemo(() => {
     if (breakdownType === "subscription") {
