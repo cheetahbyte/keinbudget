@@ -1,13 +1,14 @@
-@import url("https://fonts.googleapis.com/css2?family=Schibsted+Grotesk:wght@400;500;700&family=Martian+Mono:wdth,wght@75..112.5,300..700&display=swap");
+@import "@fontsource-variable/schibsted-grotesk";
+@import "@fontsource-variable/martian-mono/standard.css";
 @import "tailwindcss";
 @import "tw-animate-css";
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: "Schibsted Grotesk", ui-sans-serif, system-ui, sans-serif;
-  --font-mono: "Martian Mono", ui-monospace, monospace;
-  --font-heading: "Schibsted Grotesk", ui-sans-serif, system-ui, sans-serif;
+  --font-sans: "Schibsted Grotesk Variable", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "Martian Mono Variable", ui-monospace, monospace;
+  --font-heading: "Schibsted Grotesk Variable", ui-sans-serif, system-ui, sans-serif;
   --color-pen: var(--pen);
   --color-chart-5: var(--chart-5);
   --color-chart-4: var(--chart-4);

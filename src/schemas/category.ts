@@ -1,29 +1,24 @@
+import { createInsertSchema, createSelectSchema } from "drizzle-zod";
 import { z } from "zod";
 
-import { CATEGORY_TYPES } from "#/lib/category-type";
+import { categories, categoryType } from "#/db/schema/categories";
 
 import type { entityIdSchema } from "./rest";
 
-export const categoryTypeSchema = z.enum(CATEGORY_TYPES);
+export const categoryTypeSchema = createSelectSchema(categoryType);
 
-export const categorySchema = z.object({
-  id: z.number(),
-  name: z.string(),
-  icon: z.string(),
-  type: categoryTypeSchema,
+export const categorySchema = createSelectSchema(categories).omit({
+  userId: true,
 });
 
-export const createCategorySchema = z.object({
-  name: z.string().min(1),
-  icon: z.string().min(1),
+export const createCategorySchema = createInsertSchema(categories, {
+  name: (schema) => schema.min(1),
+  icon: (schema) => schema.min(1),
   type: categoryTypeSchema,
-});
+}).pick({ name: true, icon: true, type: true });
 
-export const updateCategorySchema = z.object({
+export const updateCategorySchema = createCategorySchema.extend({
   id: z.number().int().positive(),
-  name: z.string().min(1),
-  icon: z.string().min(1),
-  type: categoryTypeSchema,
 });
 
 export type Category = z.infer<typeof categorySchema>;

@@ -54,7 +54,7 @@ src/
 
 - Server actions (`createServerFn`) in `features/*/actions.ts`
 - DB queries in `features/*/repo.ts`, business logic in `features/*/service.ts`
-- Zod schemas are the single source of truth — shared between client form parsing and server input validation
+- Zod schemas in `schemas/` are derived from the Drizzle tables with `drizzle-zod` (import tables from `#/db/schema/*`, never `#/db`, so the client bundle stays free of the driver) and shared between client form parsing and server input validation
 - Drizzle schemas in `db/schema/` are also used as Better Auth adapter schema
 
 ## DB & Auth for Dev

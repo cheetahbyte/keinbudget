@@ -1,41 +1,41 @@
+import { createInsertSchema, createSelectSchema } from "drizzle-zod";
 import { z } from "zod";
 
+import { priceHistory } from "#/db/schema/price-history";
+import { billingInterval, subscriptions } from "#/db/schema/subscriptions";
 import type { BillingInterval } from "#/lib/billing-interval";
-import { BILLING_INTERVALS } from "#/lib/billing-interval";
 
 import { categorySchema } from "./category";
 import type { entityIdSchema } from "./rest";
 
 export type { BillingInterval };
 
-export const billingIntervalSchema = z.enum(BILLING_INTERVALS);
+export const billingIntervalSchema = createSelectSchema(billingInterval);
 
-export const priceChangeSchema = z.object({
-  price: z.number(),
+export const priceChangeSchema = createSelectSchema(priceHistory, {
   changedAt: z.iso.datetime(),
-});
+}).pick({ price: true, changedAt: true });
 
-const entryFieldsSchema = z.object({
-  name: z.string().min(1),
-  price: z.number().positive(),
+const entryFieldsSchema = createInsertSchema(subscriptions, {
+  name: (schema) => schema.min(1),
+  price: (schema) => schema.positive(),
   billingInterval: billingIntervalSchema,
   categoryId: z.number().int().positive().nullable(),
   notes: z.string().max(2000).default(""),
   isActive: z.boolean().default(true),
   nextBillingDate: z.iso.date().nullable().default(null),
+}).omit({ id: true, userId: true });
+
+const subscriptionRowSchema = createSelectSchema(subscriptions, {
+  nextBillingDate: z.iso.date().nullable(),
 });
 
-export const subscriptionSchema = z.object({
-  id: z.number(),
-  name: z.string(),
-  price: z.number(),
-  billingInterval: billingIntervalSchema,
-  category: categorySchema.nullable(),
-  notes: z.string(),
-  isActive: z.boolean(),
-  nextBillingDate: z.iso.date().nullable(),
-  priceHistory: z.array(priceChangeSchema),
-});
+export const subscriptionSchema = subscriptionRowSchema
+  .omit({ userId: true, categoryId: true })
+  .extend({
+    category: categorySchema.nullable(),
+    priceHistory: z.array(priceChangeSchema),
+  });
 
 export const monthlyProjectionsSchema = z.object({
   income: z.number(),
@@ -44,13 +44,9 @@ export const monthlyProjectionsSchema = z.object({
   remaining: z.number(),
 });
 
-export const monthlyCostSchema = z.object({
-  id: z.number(),
-  name: z.string(),
-  price: z.number(),
-  billingInterval: billingIntervalSchema,
-  monthlyPrice: z.number(),
-});
+export const monthlyCostSchema = subscriptionRowSchema
+  .pick({ id: true, name: true, price: true, billingInterval: true })
+  .extend({ monthlyPrice: z.number() });
 
 export const createSubscriptionSchema = entryFieldsSchema;
 
