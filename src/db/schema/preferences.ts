@@ -10,4 +10,4 @@ export const userPreferences = pgTable("user_preferences", {
     .references(() => user.id, { onDelete: "cascade" }),
   locale: text("locale").notNull().default(DEFAULT_LOCALE),
   currency: text("currency").notNull().default(DEFAULT_CURRENCY),
-});
+}).enableRLS();

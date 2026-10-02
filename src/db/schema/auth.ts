@@ -8,7 +8,7 @@ export const user = pgTable("user", {
   image: text("image"),
   createdAt: timestamp("createdAt", { mode: "date" }).notNull(),
   updatedAt: timestamp("updatedAt", { mode: "date" }).notNull(),
-});
+}).enableRLS();
 
 export const session = pgTable("session", {
   id: text("id").primaryKey(),
@@ -21,7 +21,7 @@ export const session = pgTable("session", {
   userAgent: text("userAgent"),
   createdAt: timestamp("createdAt", { mode: "date" }).notNull(),
   updatedAt: timestamp("updatedAt", { mode: "date" }).notNull(),
-});
+}).enableRLS();
 
 export const account = pgTable("account", {
   id: text("id").primaryKey(),
@@ -39,7 +39,7 @@ export const account = pgTable("account", {
   password: text("password"),
   createdAt: timestamp("createdAt", { mode: "date" }).notNull(),
   updatedAt: timestamp("updatedAt", { mode: "date" }).notNull(),
-});
+}).enableRLS();
 
 export const verification = pgTable("verification", {
   id: text("id").primaryKey(),
@@ -48,4 +48,4 @@ export const verification = pgTable("verification", {
   expiresAt: timestamp("expiresAt", { mode: "date" }).notNull(),
   createdAt: timestamp("createdAt", { mode: "date" }),
   updatedAt: timestamp("updatedAt", { mode: "date" }),
-});
+}).enableRLS();

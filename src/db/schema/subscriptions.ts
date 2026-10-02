@@ -33,4 +33,4 @@ export const subscriptions = pgTable("subscriptions", {
   notes: text("notes").notNull().default(""),
   isActive: boolean("isActive").notNull().default(true),
   nextBillingDate: date("nextBillingDate", { mode: "string" }),
-});
+}).enableRLS();

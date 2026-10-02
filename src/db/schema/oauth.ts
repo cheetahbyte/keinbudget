@@ -35,7 +35,7 @@ export const passkey = pgTable(
     index("passkey_userId_idx").on(table.userId),
     index("passkey_credentialID_idx").on(table.credentialID),
   ],
-);
+).enableRLS();
 
 export const jwks = pgTable("jwks", {
   id: text("id").primaryKey(),
@@ -45,7 +45,7 @@ export const jwks = pgTable("jwks", {
   expiresAt: timestamp("expires_at"),
   alg: text("alg"),
   crv: text("crv"),
-});
+}).enableRLS();
 
 export const oauthClient = pgTable(
   "oauth_client",
@@ -90,7 +90,7 @@ export const oauthClient = pgTable(
     metadata: jsonb("metadata"),
   },
   (table) => [index("oauthClient_userId_idx").on(table.userId)],
-);
+).enableRLS();
 
 export const oauthResource = pgTable("oauth_resource", {
   id: text("id").primaryKey(),
@@ -110,7 +110,7 @@ export const oauthResource = pgTable("oauth_resource", {
   updatedAt: timestamp("updated_at"),
   policyVersion: integer("policy_version").default(1),
   metadata: jsonb("metadata"),
-});
+}).enableRLS();
 
 export const oauthClientResource = pgTable(
   "oauth_client_resource",
@@ -129,7 +129,7 @@ export const oauthClientResource = pgTable(
     index("oauthClientResource_clientId_idx").on(table.clientId),
     index("oauthClientResource_resourceId_idx").on(table.resourceId),
   ],
-);
+).enableRLS();
 
 export const oauthRefreshToken = pgTable(
   "oauth_refresh_token",
@@ -167,7 +167,7 @@ export const oauthRefreshToken = pgTable(
       table.authorizationCodeId,
     ),
   ],
-);
+).enableRLS();
 
 export const oauthAccessToken = pgTable(
   "oauth_access_token",
@@ -203,7 +203,7 @@ export const oauthAccessToken = pgTable(
     ),
     index("oauthAccessToken_refreshId_idx").on(table.refreshId),
   ],
-);
+).enableRLS();
 
 export const oauthConsent = pgTable(
   "oauth_consent",
@@ -224,9 +224,9 @@ export const oauthConsent = pgTable(
     index("oauthConsent_clientId_idx").on(table.clientId),
     index("oauthConsent_userId_idx").on(table.userId),
   ],
-);
+).enableRLS();
 
 export const oauthClientAssertion = pgTable("oauth_client_assertion", {
   id: text("id").primaryKey(),
   expiresAt: timestamp("expires_at").notNull(),
-});
+}).enableRLS();

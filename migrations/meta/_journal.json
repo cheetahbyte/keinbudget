@@ -57,6 +57,13 @@
       "when": 1789898641443,
       "tag": "0007_late_thaddeus_ross",
       "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "7",
+      "when": 1790937404315,
+      "tag": "0008_glorious_puma",
+      "breakpoints": true
     }
   ]
 }

@@ -9,4 +9,4 @@ export const priceHistory = pgTable("price_history", {
     .references(() => subscriptions.id, { onDelete: "cascade" }),
   price: real("price").notNull(),
   changedAt: timestamp("changedAt", { mode: "date" }).notNull().defaultNow(),
-});
+}).enableRLS();

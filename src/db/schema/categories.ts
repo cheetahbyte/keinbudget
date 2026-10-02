@@ -14,4 +14,4 @@ export const categories = pgTable("categories", {
   name: text("name").notNull(),
   icon: text("icon").notNull(),
   type: categoryType("type").notNull().default("expense"),
-});
+}).enableRLS();
