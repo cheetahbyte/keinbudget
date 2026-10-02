@@ -1,6 +1,9 @@
+import Scritto from "@scritto/react";
 import { useMemo, useState } from "react";
 
 import { useFormatters } from "#/lib/preferences-context";
+
+const transition = { duration: 300, easing: "ease-out" } as const;
 
 export interface BreakdownItem {
   name: string;
@@ -124,7 +127,10 @@ export function Breakdown({
               >
                 <span className="truncate text-sm">{item.name}</span>
                 <span className="amount text-sm sm:order-last">
-                  {formatMoney(item.value * multiplier)}
+                  <Scritto
+                    value={formatMoney(item.value * multiplier)}
+                    transition={transition}
+                  />
                   <span className="ml-3 inline-block w-14 text-right text-muted-foreground">
                     {formatShare(share)}
                   </span>
